@@ -1,12 +1,17 @@
 import { View, Text} from "react-native";
 import React from "react";
-import { useSafeAreaInserts } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const ScreenWrapper = ({
+interface ScreenWrapperProps {
+  children?: React.ReactNode,
+  bg?: any
+}
+
+const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   children,
   bg
 }) => {
-  const { top } = useSafeAreaInserts();
+  const { top } = useSafeAreaInsets();
   const paddingTop = (top > 0)? (top + 5): 30;
   return (
     <View style={{ 
@@ -18,3 +23,4 @@ const ScreenWrapper = ({
     </View>
   )
 }
+export default ScreenWrapper
