@@ -7,8 +7,15 @@ import { StyleSheet } from 'react-native'
 import { theme } from "@/constants/theme"
 import Button from "@/components/Button"
 
+/**
+ * This component is the welcome page.
+ * 
+ * It shows the welcome image and displays a button
+ * for getting started.
+ */
 const Welcome = () => {
-  const welcomeImage = require('../assets/images/welcome.png')
+  const welcomeImage = require('../assets/images/welcome.png');
+
   return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark" />
@@ -26,7 +33,6 @@ const Welcome = () => {
           <Button 
             title='Getting Started'
             buttonStyle={{ marginhorizontal: wp(3) }}
-            textStyle=""
             onPress={() => {}}
           />
         </View>

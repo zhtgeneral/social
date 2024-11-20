@@ -1,21 +1,24 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import React from 'react'
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
 import Loading from './Loading'
 
 interface ButtonProps {
-  buttonStyle: any,
-  textStyle: any,
+  buttonStyle?: any,
+  textStyle?: any,
   title?: string,
   onPress?: () => void,
   loading?: boolean,
   hasShadow?: boolean
 }
 
+/**
+ * This component is a reusable button with custom style.
+ */
 const Button: React.FC<ButtonProps> = ({
-  buttonStyle,
-  textStyle,
+  buttonStyle = '',
+  textStyle = '',
   title = '',
   onPress = () => {},
   loading = false,
@@ -37,8 +40,13 @@ const Button: React.FC<ButtonProps> = ({
     )
   }
   return (
-    <Pressable onPress={onPress} style={[styles.button, buttonStyle, hasShadow && shadowStyle]}>
-      <Text style={[styles.text, textStyle]}>{title}</Text>
+    <Pressable 
+      onPress={onPress} 
+      style={[styles.button, buttonStyle, hasShadow && shadowStyle]}
+    >
+      <Text style={[styles.text, textStyle]}>
+        {title}
+      </Text>
     </Pressable>
   )
 }

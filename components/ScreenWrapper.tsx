@@ -7,6 +7,10 @@ interface ScreenWrapperProps {
   bg?: any
 }
 
+/**
+ * This component adds padding from the top of the screen 
+ * and sets the background color of the children.
+ */
 const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   children,
   bg
