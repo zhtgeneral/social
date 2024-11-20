@@ -1,6 +1,6 @@
 import ScreenWrapper from "@/components/ScreenWrapper"
 import React from "react"
-import { View, Image, Text } from "react-native"
+import { View, Image, Text, Pressable } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { hp, wp } from "@/helpers/common"
 import { StyleSheet } from 'react-native'
@@ -35,6 +35,16 @@ const Welcome = () => {
             buttonStyle={{ marginhorizontal: wp(3) }}
             onPress={() => {}}
           />
+          <View style={styles.buttonTextContainer}>
+            <Text style={[styles.loginText]}>
+              Already have an account?
+            </Text>
+            <Pressable>
+              <Text style={[styles.loginText, { color: theme.colors.primaryDark, fontWeight: theme.fonts.semibold as "600" }]}>
+                Login
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </ScreenWrapper>
@@ -70,6 +80,17 @@ const styles = StyleSheet.create({
   footer: {
     gap: 30,
     width: '100%'
+  },
+  buttonTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5
+  },
+  loginText: {
+    textAlign: 'center',
+    color: theme.colors.text,
+    fontSize: hp(1.6)
   }
 })
 
