@@ -30,7 +30,7 @@ const SignUp: React.FC = () => {
     console.log("password: " + password);
 
     if (!name || !email || !password) {
-      Alert.alert('Sign up', "Please fill in all fields");
+      Alert.alert('Signup error', "Please fill in all fields");
     }
 
     setLoading(true);
@@ -44,7 +44,7 @@ const SignUp: React.FC = () => {
       }
     })
     if (error) {
-      Alert.alert("Sign up", error.message);
+      Alert.alert("Signup error", error.message);
     }
     setLoading(false);
   }

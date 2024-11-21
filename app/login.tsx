@@ -5,6 +5,7 @@ import Input from '@/components/Input';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { theme } from '@/constants/theme';
 import { hp, wp } from '@/helpers/common';
+import { supabase } from '@/lib/Supabase';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
@@ -19,10 +20,22 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   async function onSubmit() {
-    setLoading(true);
-    if (!emailRef.current || !passwordRef.current) {
-      Alert.alert('Login', "Please fill in all fields");
+    const email = emailRef.current.trim();
+    const password = passwordRef.current;
+
+    if (!email || !password) {
+      Alert.alert('Login error', "Please fill in all fields");
     }
+
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    })
+    if (error) {
+      Alert.alert("Login error", error.message);
+    }
+    console.log('data: ', JSON.stringify(data.user, null, 2));
     setLoading(false);
   }
   return (
