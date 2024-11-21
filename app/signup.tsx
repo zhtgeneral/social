@@ -11,7 +11,16 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
-
+/**
+ * This page handles `/register`.
+ * 
+ * It shows a form with 3 fields and a sign up button.
+ * 
+ * When the form is submitted,
+ * it alerts the user of any empty fields or possible errors.
+ * 
+ * Otherwise it takes the user to @TODO page.
+ */
 const SignUp: React.FC = () => {
   const router = useRouter();
 
@@ -24,10 +33,6 @@ const SignUp: React.FC = () => {
     const name = nameRef.current.trim();
     const email = emailRef.current.trim();
     const password = passwordRef.current;
-
-    console.log("name: " + name);
-    console.log("email: " + email);
-    console.log("password: " + password);
 
     if (!name || !email || !password) {
       Alert.alert('Signup error', "Please fill in all fields");

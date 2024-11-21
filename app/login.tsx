@@ -11,7 +11,16 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
-
+/**
+ * This page handles `/login`.
+ * 
+ * It shows a login form with 2 inputs and a login button.
+ * 
+ * When the form is submitted, 
+ * it alerts the user of unfilled fields or possible errors.
+ * 
+ * Otherwise it redirects the user to @TODO
+ */
 const Login: React.FC = () => {
   const router = useRouter();
 
@@ -35,7 +44,6 @@ const Login: React.FC = () => {
     if (error) {
       Alert.alert("Login error", error.message);
     }
-    console.log('data: ', JSON.stringify(data.user, null, 2));
     setLoading(false);
   }
   return (
@@ -86,8 +94,6 @@ const Login: React.FC = () => {
                 Sign up
               </Text>
             </Pressable>
-              
-
           </View>
       </View>
     </ScreenWrapper>
