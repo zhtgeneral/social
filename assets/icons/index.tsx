@@ -19,6 +19,10 @@ import ThreeDotsCircle from './ThreeDotsCircle';
 import Comment from './Comment';
 import Share from './Share';
 import Send from './Send';
+import Delete from './Delete';
+import Logout from './Logout';
+import Image from './Image';
+import Video from './Video';
 
 const icons = {
   home: Home,
@@ -37,7 +41,11 @@ const icons = {
   threeDotsCircle: ThreeDotsCircle,
   comment: Comment,
   share: Share,
-  send: Send
+  send: Send,
+  delete: Delete,
+  logout: Logout,
+  image: Image,
+  video: Video
 }
 
 interface IconProps extends SvgProps {

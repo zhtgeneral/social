@@ -1,5 +1,5 @@
 import React from 'react';
-import Svg, { Rect, SvgProps } from "react-native-svg"
+import Svg, { Circle, SvgProps } from "react-native-svg"
 
 /**
  * This component renders a custom three dots icon.
@@ -8,40 +8,35 @@ import Svg, { Rect, SvgProps } from "react-native-svg"
 const ThreeDotsHorizontal: React.FC<SvgProps> = ({
   ...props
 }) => {
-  const widthValue = Number(props.width?.toString());
-  const right = widthValue * 0.75;
-  const middle = widthValue * 0.4375;
-  const left = widthValue * 0.125;
-  const thickness = widthValue * 0.15;
-  const radius = widthValue * 0.1;
   return (
     <Svg  
-      fill="none"  
+      fill="none"
+      viewBox="0 0 24 24"
       {...props}
     >
-      <Rect 
-        x={right} 
-        y={middle} 
-        width={thickness} 
-        height={thickness} 
-        rx={radius}
+      <Circle 
+        cx="4" 
+        cy="12" 
+        r="1.5" 
+        strokeLinecap="round" 
         strokeLinejoin="round" 
+        {...props}
       />
-      <Rect 
-        x={middle} 
-        y={middle}
-        width={thickness} 
-        height={thickness} 
-        rx={radius}
+      <Circle 
+        cx="12" 
+        cy="12" 
+        r="1.5" 
+        strokeLinecap="round" 
         strokeLinejoin="round" 
+        {...props}
       />
-      <Rect 
-        x={left} 
-        y={middle}
-        width={thickness} 
-        height={thickness} 
-        rx={radius}
+      <Circle 
+        cx="20" 
+        cy="12" 
+        r="1.5" 
+        strokeLinecap="round" 
         strokeLinejoin="round" 
+        {...props}
       />
     </Svg>
   );
