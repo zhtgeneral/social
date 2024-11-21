@@ -5,6 +5,7 @@ import Input from '@/components/Input';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { theme } from '@/constants/theme';
 import { hp, wp } from '@/helpers/common';
+import { supabase } from '@/lib/Supabase';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
@@ -14,15 +15,36 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 const SignUp: React.FC = () => {
   const router = useRouter();
 
-  const emailRef = useRef("");
   const nameRef = useRef("");
+  const emailRef = useRef("");
   const passwordRef= useRef("");
   const [loading, setLoading] = useState(false);
 
   async function onSubmit() {
-    setLoading(true);
-    if (!emailRef.current || !passwordRef.current) {
+    const name = nameRef.current.trim();
+    const email = emailRef.current.trim();
+    const password = passwordRef.current;
+
+    console.log("name: " + name);
+    console.log("email: " + email);
+    console.log("password: " + password);
+
+    if (!name || !email || !password) {
       Alert.alert('Sign up', "Please fill in all fields");
+    }
+
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          name: name
+        }
+      }
+    })
+    if (error) {
+      Alert.alert("Sign up", error.message);
     }
     setLoading(false);
   }
