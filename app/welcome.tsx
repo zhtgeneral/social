@@ -15,7 +15,6 @@ import Footer from "./components/welcome/Footer"
  */
 const Welcome = () => {
   const welcomeImage = require('../assets/images/welcome.png');
-
   return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark" />

@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import { theme } from '@/constants/theme';
 import { hp, wp } from '@/helpers/common';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -12,18 +13,19 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
  * It shows text to allow the user to login rather than create account.
  */
 const Footer: React.FC = () => {
+  const router = useRouter();
   return (
     <View style={styles.footer}>
       <Button 
         title='Getting Started'
         buttonStyle={{ marginhorizontal: wp(3) }}
-        onPress={() => {}}
+        onPress={() => router.push('./signup')}
       />
       <View style={styles.buttonTextContainer}>
         <Text style={[styles.loginText]}>
           Already have an account?
         </Text>
-        <Pressable>
+        <Pressable onPress={() => router.push('/login')}>
           <Text style={[styles.loginText, styles.loginButtonText]}>
             Login
           </Text>
