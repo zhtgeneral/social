@@ -12,6 +12,10 @@ const Login: React.FC = () => {
         Login
       </Text>
       <Icon name="home" stroke={theme.colors.primary} />
+      <Icon name="lock" stroke={theme.colors.primary} />
+      <Icon name="mail" stroke={theme.colors.primary} />
+      <Icon name="user" stroke={theme.colors.primary} />
+      <Icon name="heart" stroke={theme.colors.primary} />
     </ScreenWrapper>
   );
 }
