@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: { 
     color: theme.colors.primaryDark, 
-    fontWeight: theme.fonts.semibold as "600" 
+    fontWeight: theme.fonts.semibold as 600
   }
 })
 

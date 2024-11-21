@@ -1,5 +1,5 @@
 import React from 'react';
-import Svg, { Circle, Path, SvgProps } from "react-native-svg"
+import Svg, { Path, SvgProps } from "react-native-svg";
 
 /**
  * This component renders a custom LeftArrow icon.
@@ -14,14 +14,8 @@ const ArrowLeft: React.FC<SvgProps> = ({
       viewBox="0 0 24 24"
       {...props}
     >
-      <Circle 
-        cx="12" 
-        cy="12" 
-        r="10" 
-        {...props}
-      />
       <Path 
-        d="M13.5 16C13.5 16 10.5 13.054 10.5 12C10.5 10.9459 13.5 8 13.5 8"
+        d="M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18"
         strokeLinejoin="round" 
       />
     </Svg>
