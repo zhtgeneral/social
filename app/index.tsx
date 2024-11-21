@@ -15,7 +15,7 @@ const Index = () => {
       <Text>index page</Text>
       <Button 
         title="welcome" 
-        onPress={() => router.push('./welcome')}
+        onPress={() => router.push('/welcome')}
       >
 
       </Button>

@@ -17,9 +17,9 @@ const Footer: React.FC = () => {
   return (
     <View style={styles.footer}>
       <Button 
-        title='Getting Started'
+        title='Get Started'
         buttonStyle={{ marginhorizontal: wp(3) }}
-        onPress={() => router.push('./signup')}
+        onPress={() => router.push('/signup')}
       />
       <View style={styles.buttonTextContainer}>
         <Text style={[styles.loginText]}>

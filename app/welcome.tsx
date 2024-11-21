@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: hp(4),
     textAlign: 'center',
-    fontWeight: theme.fonts.extraBold as "800"
+    fontWeight: theme.fonts.extraBold as 800
   },
   punchline: {  
     textAlign: 'center',

@@ -68,7 +68,7 @@ const Login: React.FC = () => {
             <Text style={styles.footerText}>
               Don't have an account?
             </Text>
-            <Pressable>
+            <Pressable onPress={() => router.push('/signup')}>
               <Text style={[styles.footerText, styles.footerLink]}>
                 Sign up
               </Text>
