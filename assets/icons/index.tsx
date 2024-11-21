@@ -9,6 +9,9 @@ import Heart from './Heart';
 import Plus from './Plus';
 import Search from './Search';
 import Location from './Location';
+import Call from './Call';
+import Camera from './Camera';
+import Edit from './Edit';
 
 const icons = {
   home: Home,
@@ -18,7 +21,10 @@ const icons = {
   heart: Heart,
   plus: Plus,
   search: Search,
-  location: Location
+  location: Location,
+  call: Call,
+  camera: Camera,
+  edit: Edit
 }
 
 interface IconProps {
