@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { SvgProps } from 'react-native-svg';
 import { theme } from '@/constants/theme';
 import Home from './Home';
 import Mail from './Mail';
 import Lock from './Lock';
-import User from './user';
 import Heart from './Heart';
 import Plus from './Plus';
 import Search from './Search';
@@ -13,8 +13,8 @@ import Call from './Call';
 import Camera from './Camera';
 import Edit from './Edit';
 import ArrowLeft from './ArrowLeft';
-import { SvgProps } from 'react-native-svg';
 import ThreeDots from './ThreeDots';
+import User from './User';
 
 const icons = {
   home: Home,
@@ -36,13 +36,14 @@ interface IconProps extends SvgProps {
   name: keyof typeof icons,
   size?: number,
   strokeWidth?: number,
-  stroke: string
+  stroke?: string
 }
 
-const Icon: React.FC<IconProps> = ({
+export const Icon: React.FC<IconProps> = ({
   name,
   size = 24,
   strokeWidth = 1.9,
+  stroke = theme.colors.textLight,
   ...props
 }) => {
   const IconComponent = icons[name];
@@ -51,7 +52,7 @@ const Icon: React.FC<IconProps> = ({
       height={size}
       width={size}
       strokeWidth={strokeWidth}
-      color={theme.colors.textLight}
+      stroke={stroke}
       {...props}
     />
   )

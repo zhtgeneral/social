@@ -23,7 +23,7 @@ const Login: React.FC = () => {
       <Icon name="camera" stroke={theme.colors.primary} />
       <Icon name="edit" stroke={theme.colors.primary} />
       <Icon name="arrowLeft" stroke={theme.colors.primary} />
-      <Icon name="threeDots" stroke={theme.colors.primary} width={60} height={60}/>
+      <Icon name="threeDots" stroke={theme.colors.primary} />
     </ScreenWrapper>
   );
 }

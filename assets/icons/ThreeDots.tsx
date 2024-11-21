@@ -1,63 +1,46 @@
 import React from 'react';
-import Svg, { NumberProp, Rect, SvgProps } from "react-native-svg"
+import Svg, { Rect, SvgProps } from "react-native-svg"
 
-interface ThreeDotsProps extends SvgProps {
-  strokeWidth?: number,
-  stroke?: string
-  width?: NumberProp;
-  height?: NumberProp
-}
-
-const ThreeDots: React.FC<ThreeDotsProps> = ({
-  strokeWidth = 1.5,
-  stroke = "black", 
-  width = 24,
-  height = 24,
+/**
+ * This component renders a custom three dots icon.
+ * @requires index.tsx sets `height` `width`, `stroke`, `strokeWidth`
+ */
+const ThreeDots: React.FC<SvgProps> = ({
   ...props
 }) => {
-  const widthValue = Number(width.toString());
+  const widthValue = Number(props.width?.toString());
   const right = widthValue * 0.75;
   const middle = widthValue * 0.4375;
   const left = widthValue * 0.125;
+  const thickness = widthValue * 0.15;
+  const radius = widthValue * 0.1;
   return (
     <Svg  
-      fill="none"
-      // viewBox="0 0 24 24"
-      viewBox={`0 0 ${width} ${height}`}
-      width={width}
-      height={height}
-      strokeWidth={strokeWidth}
-      stroke={stroke} 
+      fill="none"  
       {...props}
     >
       <Rect 
         x={right} 
         y={middle} 
-        width="3" 
-        height="3" 
-        rx="1"
-        stroke={stroke}
-        strokeWidth={strokeWidth} 
+        width={thickness} 
+        height={thickness} 
+        rx={radius}
         strokeLinejoin="round" 
       />
       <Rect 
         x={middle} 
         y={middle}
-        width="3" 
-        height="3" 
-        rx="1"
-        stroke={stroke}
-        strokeWidth={strokeWidth} 
+        width={thickness} 
+        height={thickness} 
+        rx={radius}
         strokeLinejoin="round" 
       />
       <Rect 
         x={left} 
         y={middle}
-        width="3" 
-        height="3" 
-        rx="1"
-        stroke={stroke}
-        strokeWidth={strokeWidth} 
+        width={thickness} 
+        height={thickness} 
+        rx={radius}
         strokeLinejoin="round" 
       />
     </Svg>
