@@ -22,6 +22,8 @@ const Login: React.FC = () => {
       <Icon name="call" stroke={theme.colors.primary} />
       <Icon name="camera" stroke={theme.colors.primary} />
       <Icon name="edit" stroke={theme.colors.primary} />
+      <Icon name="arrowLeft" stroke={theme.colors.primary} />
+      <Icon name="threeDots" stroke={theme.colors.primary} width={60} height={60}/>
     </ScreenWrapper>
   );
 }

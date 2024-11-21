@@ -12,6 +12,9 @@ import Location from './Location';
 import Call from './Call';
 import Camera from './Camera';
 import Edit from './Edit';
+import ArrowLeft from './ArrowLeft';
+import { SvgProps } from 'react-native-svg';
+import ThreeDots from './ThreeDots';
 
 const icons = {
   home: Home,
@@ -24,10 +27,12 @@ const icons = {
   location: Location,
   call: Call,
   camera: Camera,
-  edit: Edit
+  edit: Edit,
+  arrowLeft: ArrowLeft,
+  threeDots: ThreeDots
 }
 
-interface IconProps {
+interface IconProps extends SvgProps {
   name: keyof typeof icons,
   size?: number,
   strokeWidth?: number,
