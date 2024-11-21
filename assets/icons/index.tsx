@@ -1,18 +1,24 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Home from './Home';
 import { theme } from '@/constants/theme';
+import Home from './Home';
 import Mail from './Mail';
 import Lock from './Lock';
 import User from './user';
 import Heart from './Heart';
+import Plus from './Plus';
+import Search from './Search';
+import Location from './Location';
 
 const icons = {
   home: Home,
   mail: Mail,
   lock: Lock,
   user: User,
-  heart: Heart
+  heart: Heart,
+  plus: Plus,
+  search: Search,
+  location: Location
 }
 
 interface IconProps {

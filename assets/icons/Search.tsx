@@ -1,12 +1,12 @@
 import React from 'react';
 import Svg, { Path, SvgProps } from "react-native-svg"
 
-interface UserProps extends SvgProps {
+interface SearchProps extends SvgProps {
   strokeWidth?: number,
   stroke?: string
 }
 
-const User: React.FC<UserProps> = ({
+const Search: React.FC<SearchProps> = ({
   strokeWidth = 1.5,
   stroke = "black", 
   ...props
@@ -28,7 +28,7 @@ const User: React.FC<UserProps> = ({
         strokeLinejoin="round" 
       />
       <Path 
-        d="M7.5 17C9.8317 14.5578 14.1432 14.4428 16.5 17M14.4951 9.5C14.4951 10.8807 13.3742 12 11.9915 12C10.6089 12 9.48797 10.8807 9.48797 9.5C9.48797 8.11929 10.6089 7 11.9915 7C13.3742 7 14.4951 8.11929 14.4951 9.5Z"
+        d="M15 15L17 17M16 11.5C16 9.01469 13.9853 7 11.5 7C9.01469 7 7 9.01469 7 11.5C7 13.9853 9.01469 16 11.5 16C13.9853 16 16 13.9853 16 11.5Z"
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinejoin="round" 
@@ -36,4 +36,4 @@ const User: React.FC<UserProps> = ({
     </Svg>
   );
 }
-export default User;
+export default Search;
