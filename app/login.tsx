@@ -23,9 +23,14 @@ const Login: React.FC = () => {
       <Icon name="camera" stroke={theme.colors.primary} />
       <Icon name="edit" stroke={theme.colors.primary} />
       <Icon name="arrowLeft" stroke={theme.colors.primary} />
-      <Icon name="threeDots" stroke={theme.colors.primary} />
+      <Icon name="threeDotsHorizontal" stroke={theme.colors.primary} />
+      <Icon name="threeDotsCircle" stroke={theme.colors.primary} />
+      <Icon name="comment" stroke={theme.colors.primary} />
+      <Icon name="share" stroke={theme.colors.primary} />
+      <Icon name="send" stroke={theme.colors.primary} />
     </ScreenWrapper>
   );
 }
 
 export default Login;
+

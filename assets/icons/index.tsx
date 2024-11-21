@@ -13,8 +13,12 @@ import Call from './Call';
 import Camera from './Camera';
 import Edit from './Edit';
 import ArrowLeft from './ArrowLeft';
-import ThreeDots from './ThreeDots';
+import ThreeDotsHorizontal from './ThreeDotsHorizontal';
 import User from './User';
+import ThreeDotsCircle from './ThreeDotsCircle';
+import Comment from './Comment';
+import Share from './Share';
+import Send from './Send';
 
 const icons = {
   home: Home,
@@ -29,7 +33,11 @@ const icons = {
   camera: Camera,
   edit: Edit,
   arrowLeft: ArrowLeft,
-  threeDots: ThreeDots
+  threeDotsHorizontal: ThreeDotsHorizontal,
+  threeDotsCircle: ThreeDotsCircle,
+  comment: Comment,
+  share: Share,
+  send: Send
 }
 
 interface IconProps extends SvgProps {

@@ -5,7 +5,7 @@ import Svg, { Rect, SvgProps } from "react-native-svg"
  * This component renders a custom three dots icon.
  * @requires index.tsx sets `height` `width`, `stroke`, `strokeWidth`
  */
-const ThreeDots: React.FC<SvgProps> = ({
+const ThreeDotsHorizontal: React.FC<SvgProps> = ({
   ...props
 }) => {
   const widthValue = Number(props.width?.toString());
@@ -46,4 +46,4 @@ const ThreeDots: React.FC<SvgProps> = ({
     </Svg>
   );
 }
-export default ThreeDots;
+export default ThreeDotsHorizontal;
