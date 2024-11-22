@@ -9,6 +9,11 @@ interface BackButtonProps {
   router: Router
 }
 
+/**
+ * This component renders a custom back button.
+ * 
+ * It takes the user to the previous page when pressed.
+ */
 const BackButton: React.FC<BackButtonProps> = ({
   size = 26,
   router

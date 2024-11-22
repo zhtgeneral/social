@@ -13,6 +13,9 @@ interface AvatarProps {
   style?: any
 }
 
+/**
+ * This component renders an avatar.
+ */
 const Avatar: FC<AvatarProps> = ({
   uri,
   size = hp(4.5),
