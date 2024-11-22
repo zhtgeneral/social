@@ -25,7 +25,7 @@ const Home = () => {
     }
   }
   return (
-    <ScreenWrapper>
+    <ScreenWrapper bg="white">
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Unlinkedout</Text>

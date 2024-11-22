@@ -3,6 +3,7 @@ import React, { FC } from 'react'
 import { hp } from '@/helpers/common'
 import { theme } from '@/constants/theme'
 import { Image } from 'expo-image'
+import { getUserImageSource } from '@/services/imageServices'
 
 
 interface AvatarProps {
@@ -20,7 +21,7 @@ const Avatar: FC<AvatarProps> = ({
 }) => {
   return (
     <Image 
-      source={{ uri }}  
+      source={getUserImageSource(uri)}  
       transition={100}
       style={[styles.avatar, style, { height: size, width: size, borderRadius: rounded }]}
     />
