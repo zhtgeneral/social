@@ -1,5 +1,7 @@
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/Supabase";
+import { getUserData, Response } from "@/services/userService";
+import { User } from "@supabase/supabase-js";
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from "react";
 
@@ -28,22 +30,29 @@ export default _Layout;
  * @requires supabase needs to be setup
  */
 const MainLayout = () => {
-  const { setAuth } = useAuth();
+  const { setAuth, setUserData } = useAuth();
   const router = useRouter();
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event: any, session) => {
       if (session) {
+        console.log("session user: " + JSON.stringify(session?.user, null, 2));
         setAuth(session?.user);
+        updateUserData(session?.user);
         router.replace('/home');
       } else {
         setAuth(null);
         router.replace('/welcome');
       }
     })    
-    return () => {
-
-    }
   }, [])
+
+  async function updateUserData(user: User) {
+    let response: Response = await getUserData(user.id);
+    if (response.success) {
+      setUserData(response.data);
+    }
+    console.log('got user data: ' + JSON.stringify(response,null,2));
+  }
   return (
     <Stack 
       screenOptions={{
