@@ -8,10 +8,12 @@ import { theme } from "@/constants/theme"
 import Footer from "./components/welcome/Footer"
 
 /**
- * This component is the welcome page.
+ * This page handles `/welcome`.
  * 
  * It shows the welcome image and displays a button
  * for getting started.
+ * 
+ * When the get started button is pressed, it takes the user to `/signup`.
  */
 const Welcome = () => {
   const welcomeImage = require('../assets/images/welcome.png');

@@ -1,25 +1,20 @@
-import { Text, Button } from 'react-native';
+import Loading from '@/components/Loading';
 import React from 'react';
-import { useRouter } from 'expo-router';
-import ScreenWrapper from '@/components/ScreenWrapper';
+import { View } from 'react-native';
 
 /**
- * This component is the main page.
+ * This component shows a loading animation until `_layout.tsx` loads.
  * 
- * It shows a button that redirects the user to `/welcome` when clicked
+ * On `_layout.tsx` it sends the user to different locations 
+ * depending on if the user is logged in.
+ * 
+ * @requires _layout.tsx needs to send the user to locations other than here
  */
 const Index = () => {
-  const router = useRouter();
   return (
-    <ScreenWrapper>
-      <Text>index page</Text>
-      <Button 
-        title="welcome" 
-        onPress={() => router.push('/welcome')}
-      >
-
-      </Button>
-    </ScreenWrapper>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Loading />
+    </View>
   )
 }
 export default Index;

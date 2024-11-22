@@ -8,11 +8,11 @@ interface LoadingProps {
 }
 
 /**
- * This component renders a loading spinner animation.
+ * This component renders a custom loading spinner animation.
  */
 const Loading: React.FC<LoadingProps> = ({
-  size="large",
-  color=theme.colors.primary
+  size = "large",
+  color = theme.colors.primary
 }) => {
   return (
     <View style={styles.activity}>

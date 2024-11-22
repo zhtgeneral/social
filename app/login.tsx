@@ -19,7 +19,11 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
  * When the form is submitted, 
  * it alerts the user of unfilled fields or possible errors.
  * 
- * Otherwise it redirects the user to @TODO
+ * Otherwise it triggers an auth change.
+ * Because supabase is listening to this event in `_layout.tsx`,
+ * the user will be redirected to `/home`.
+ * 
+ * @requires supabase.auth needs to be listening to `onAuthStateChange`
  */
 const Login: React.FC = () => {
   const router = useRouter();

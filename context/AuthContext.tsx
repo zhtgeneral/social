@@ -2,8 +2,11 @@ import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useState } from "react";
 
 interface AuthContextType {
+  /** The is the global state of the user */
   user: User | null,
-  setAuth: (authUser: User) => void,
+  /** This function sets the global state of the user */
+  setAuth: (authUser: User | null) => void,
+  /** This function sets the global data of the user */
   setUserData: (userData: User) => void
 }
 
@@ -28,7 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const setAuth = (authUser: User) => {
+  const setAuth = (authUser: User | null) => {
     setUser(authUser);
   }
   const setUserData = (userData: User) => {
@@ -46,5 +49,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
  * This function gives access to `user`, `setAuth`, and `setUserData`.
  */
 export function useAuth() { 
-  useContext(AuthContext);
+  return useContext(AuthContext);
 }

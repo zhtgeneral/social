@@ -12,14 +12,18 @@ import React, { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
- * This page handles `/register`.
+ * This page handles `/signup`.
  * 
- * It shows a form with 3 fields and a sign up button.
+ * It shows a form with 3 inputs and a sign up button.
  * 
  * When the form is submitted,
  * it alerts the user of any empty fields or possible errors.
  * 
- * Otherwise it takes the user to @TODO page.
+ * Otherwise it triggers an auth change.
+ * Because supabase is listening to this event in `_layout.tsx`,
+ * the user will be redirected to `/home`.
+ * 
+ * @requires supabase.auth needs to be listening to `onAuthStateChange`
  */
 const SignUp: React.FC = () => {
   const router = useRouter();
