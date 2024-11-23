@@ -7,7 +7,7 @@ import { getUserImageSource } from '@/services/imageServices'
 
 
 interface AvatarProps {
-  uri: string,
+  uri: string | null,
   size?: number,
   rounded?: number,
   style?: any

@@ -3,7 +3,7 @@
  * 
  * If there is no image, return the uri for the default avatar.
  */
-export function getUserImageSource(imagePath: string) {
+export function getUserImageSource(imagePath: string | null) {
   if (imagePath) {
     return { uri: imagePath };
   } else {

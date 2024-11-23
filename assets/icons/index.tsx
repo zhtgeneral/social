@@ -23,6 +23,7 @@ import Delete from './Delete';
 import Logout from './Logout';
 import Image from './Image';
 import Video from './Video';
+import Phone from './Phone';
 
 const icons = {
   home: Home,
@@ -45,7 +46,8 @@ const icons = {
   delete: Delete,
   logout: Logout,
   image: Image,
-  video: Video
+  video: Video,
+  phone: Phone
 }
 
 interface IconProps extends SvgProps {

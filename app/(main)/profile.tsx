@@ -1,34 +1,35 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { useAuth } from '@/context/AuthContext'
-import { Router, useRouter } from 'expo-router';
-import ScreenWrapper from '@/components/ScreenWrapper';
-import { User } from '@supabase/supabase-js';
-import Header from '@/components/Header';
-import { hp, wp } from '@/helpers/common';
 import Icon from '@/assets/icons';
+import Avatar from '@/components/Avatar';
+import Header from '@/components/Header';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import { theme } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
+import { hp, wp } from '@/helpers/common';
 import { supabase } from '@/lib/Supabase';
+import { User } from '@/types/supabase';
+import { User as AuthUser } from '@supabase/supabase-js';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Alert, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const Profile = () => {
-  const { user, setAuth } = useAuth();
-  const router = useRouter();
+  
+  const { user } = useAuth();
   return (
     <ScreenWrapper bg="white" >
-      <UserHeader user={user} router={router} />
+      <UserHeader user={user} />
     </ScreenWrapper>
   )
 }
 
 interface UserHeaderProps {
-  user: User | null,
-  router: Router
+  user: AuthUser | User | null,
 }
 
 const UserHeader: React.FC<UserHeaderProps> = ({
   user, 
-  router
 }) => {
+  const router = useRouter();
   async function onLogout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -54,7 +55,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
       <View>
         <Header 
           title="profile" 
-          showBackButton={true} 
+          mb={30}
         />
         <TouchableOpacity 
           style={styles.logoutButton} 
@@ -62,6 +63,69 @@ const UserHeader: React.FC<UserHeaderProps> = ({
         >
           <Icon name="logout" stroke={theme.colors.rose} />
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.container} >
+        <View style={{ gap: 15 }}>
+          <View style={styles.avatarContainer} >
+            <Avatar 
+              uri={user?.image} 
+              size={hp(12)}
+              rounded={theme.radius.xxl * 1.4}
+            />
+            <Pressable 
+              style={styles.editIcon}
+              onPress={() => router.push('/editProfile')}
+            >
+              <Icon 
+                name="edit" 
+                strokeWidth={2.5} 
+                size={20} 
+              />
+            </Pressable>
+          </View>
+
+          <View style={{ alignItems: 'center', gap: 4 }}> 
+            <Text style={styles.userName} >
+              {user && user.name}
+            </Text>
+            <Text style={styles.infoText} >
+              {user && user.address}
+            </Text>
+          </View>
+
+          <View style={{ gap: 10 }}>
+            <View style={styles.info}>
+              <Icon 
+                name="mail" 
+                size={20} 
+                color={theme.colors.textLight} 
+              /> 
+              <Text style={styles.infoText}>
+                {user && user.email}
+              </Text>
+            </View>
+            {user && user.phone && (
+              <View style={styles.info}>
+                <Icon 
+                  name="phone" 
+                  size={20} 
+                  color={theme.colors.textLight} 
+                /> 
+                <Text style={styles.infoText}>
+                  {user.phone}
+                </Text>
+              </View>
+            )}
+            {user && user.bio && (
+              <View style={styles.info}>
+                <Text style={styles.infoText}>
+                  {user.bio}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
       </View>
     </View>
   )
@@ -86,7 +150,7 @@ const styles = StyleSheet.create({
     width: hp(12),
     alignSelf: 'center'
   },
-  editIcons: {
+  editIcon: {
     position: 'absolute',
     bottom: 0,
     right: -12,

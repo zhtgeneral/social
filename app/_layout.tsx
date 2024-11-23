@@ -35,7 +35,7 @@ const MainLayout = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event: any, session) => {
       if (session) {
-        console.log("session user: " + JSON.stringify(session?.user, null, 2));
+        console.log("session user in MainLayout: " + JSON.stringify(session?.user, null, 2));
         setAuth(session?.user);
         updateUserData(session?.user);
         router.replace('/home');
@@ -51,7 +51,7 @@ const MainLayout = () => {
     if (response.success) {
       setUserData(response.data);
     }
-    console.log('got user data: ' + JSON.stringify(response,null,2));
+    console.log('got user data in MainLayout: ' + JSON.stringify(response,null,2));
   }
   return (
     <Stack 

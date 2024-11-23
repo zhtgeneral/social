@@ -13,7 +13,7 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({
   title = "",
-  showBackButton = false,
+  showBackButton = true,
   mb = 10
 }) => {
   const router = useRouter();
