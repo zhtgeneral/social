@@ -3,6 +3,7 @@ import Avatar from '@/components/Avatar'
 import Button from '@/components/Button'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
+import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
 import { useRouter } from 'expo-router'
@@ -18,6 +19,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
  */
 const Home = () => {
   const router = useRouter();
+  const { user } = useAuth();
   async function onLogout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -48,8 +50,7 @@ const Home = () => {
             </Pressable>
             <Pressable onPress={() => router.push('/profile')}>
               <Avatar 
-                // uri={user?.image} 
-                uri={null} 
+                uri={user?.image} 
                 size={hp(4.3)}
                 rounded={theme.radius.sm}
                 style={{ borderWidth: 2 }}

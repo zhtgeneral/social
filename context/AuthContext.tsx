@@ -1,13 +1,14 @@
-import { User } from "@supabase/supabase-js";
+import { User } from "@/types/supabase";
+import { User as AuthUser } from "@supabase/supabase-js";
 import { createContext, useContext, useState } from "react";
 
 interface AuthContextType {
-  /** The is the global state of the user */
-  user: User | null,
-  /** This function sets the global state of the user */
-  setAuth: (authUser: User | null) => void,
-  /** This function sets the global data of the user */
-  setUserData: (userData: User) => void
+  /** The is the global state of the user in the app*/
+  user: AuthUser | User | null,
+  /** This function sets the global state of the user in the app*/
+  setAuth: (authUser: AuthUser | null) => void,
+  /** This function sets the global data of the user in the app */
+  setUserData: (userData: AuthUser) => void
 }
 
 /**

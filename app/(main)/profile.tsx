@@ -7,10 +7,10 @@ import { useAuth } from '@/context/AuthContext';
 import { hp, wp } from '@/helpers/common';
 import { supabase } from '@/lib/Supabase';
 import { User } from '@/types/supabase';
-import { User as AuthUser } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 
 const Profile = () => {
   
@@ -23,7 +23,7 @@ const Profile = () => {
 }
 
 interface UserHeaderProps {
-  user: AuthUser | User | null,
+  user: User
 }
 
 const UserHeader: React.FC<UserHeaderProps> = ({
@@ -120,7 +120,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({
             {user && user.bio && (
               <View style={styles.info}>
                 <Text style={styles.infoText}>
-                  {user.bio}
+                  About me: {user.bio}
                 </Text>
               </View>
             )}
