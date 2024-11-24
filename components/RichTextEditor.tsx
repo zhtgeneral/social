@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   rich: {
     minHeight: 240,
-    height: hp(50), 
+    // height: hp(50), 
     flex: 1,
     overflow: 'scroll',
     borderWidth: 1.5,

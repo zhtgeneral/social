@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/Supabase";
+import { supabase, supabaseUrl } from "@/lib/Supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
 
@@ -6,6 +6,13 @@ export interface Response {
   success: boolean,
   message?: string
   data?: any
+}
+
+export function getSupabaseFileUrl(filePath: string) {
+  if (filePath) {
+    return { uri: `${supabaseUrl}/storage/v1/object/public/${filePath}`};
+  }
+  return null;
 }
 
 /**
