@@ -49,7 +49,7 @@ const MainLayout = () => {
   async function updateUserData(user: User) {
     let response: Response = await getUserData(user.id);
     if (response.success) {
-      setUserData(response.data);
+      setUserData({...response.data});
     }
     console.log('got user data in MainLayout: ' + JSON.stringify(response,null,2));
   }

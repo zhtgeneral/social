@@ -23,7 +23,7 @@ const EditProfile = () => {
   const router = useRouter();
   
   const [loading, setLoading] = useState(false);
-  const [userInfo, setUserInfo] = useState<User>({
+  const [formUser, setformUser] = useState<User>({
     name: null,
     phoneNumber: null,
     image: null,
@@ -33,7 +33,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (user) {
-      setUserInfo({
+      setformUser({
         name: user.name,
         phone: user.phone,
         image: user.image,
@@ -63,7 +63,7 @@ const EditProfile = () => {
    * If the response is successful, it sets the global state of the user.
    */
   async function onSubmit() {
-    let { name, phone, address, bio, image} = userInfo;
+    let { name, phone, address, bio, image} = formUser;
     if (!name || !phone || !address || !bio) {
       Alert.alert('Incomplete profile', "Please fill all fields");
       return;
@@ -81,7 +81,7 @@ const EditProfile = () => {
     const response = await updateUser(user.id, user); 
     
     if (response.success) {
-      setUserData({...user, ...userInfo});
+      setUserData({...user, ...formUser});
       setLoading(false);
       router.back();
       return;
@@ -93,7 +93,7 @@ const EditProfile = () => {
     setLoading(false);
   }
 
-  let imageSource = (userInfo.image)? userInfo.image :getUserImageSource(user?.image);
+  let imageSource = (formUser.image)? formUser.image :getUserImageSource(user?.image);
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
@@ -122,27 +122,27 @@ const EditProfile = () => {
             <Input 
               icon={<Icon name="user" />}
               placeholder='Enter your username'
-              value={userInfo.name}
-              onChangeText={(value: string) => setUserInfo({ ...userInfo, name: value })}
+              value={formUser.name}
+              onChangeText={(value: string) => setformUser({ ...formUser, name: value })}
             />
             <Input 
               icon={<Icon name="phone" />}
               placeholder='Enter your phone number'
-              value={userInfo.phone}
-              onChangeText={(value: string) => setUserInfo({ ...userInfo, phone: value })}
+              value={formUser.phone}
+              onChangeText={(value: string) => setformUser({ ...formUser, phone: value })}
             />
             <Input 
               icon={<Icon name="location" />}
               placeholder='Enter your address'
-              value={userInfo.address}
-              onChangeText={(value: string) => setUserInfo({ ...userInfo, address: value })}
+              value={formUser.address}
+              onChangeText={(value: string) => setformUser({ ...formUser, address: value })}
             />
             <Input 
               placeholder='Enter your bio'
-              value={userInfo.bio}
+              value={formUser.bio}
               multiline={true}
               containerStyle={styles.bio}
-              onChangeText={(value: string) => setUserInfo({ ...userInfo, bio: value })}
+              onChangeText={(value: string) => setformUser({ ...formUser, bio: value })}
             />
             <Button title="Update" loading={loading} onPress={onSubmit}/>
           </View>
