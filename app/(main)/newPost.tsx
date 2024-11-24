@@ -39,7 +39,7 @@ const NewPost = () => {
               </View>
             </View>
           {/* Text editor */}
-          <View>
+          <View style={styles.editor}>
              <RichTextEditor 
                 editorRef={editorRef}
                 onChange={(body: string) => bodyRef.current = body}
@@ -130,5 +130,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10
+  },
+  editor: {
+    paddingBottom: hp(50)
   }
 })

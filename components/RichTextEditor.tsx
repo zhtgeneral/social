@@ -1,4 +1,5 @@
 import { theme } from '@/constants/theme'
+import { hp } from '@/helpers/common'
 import React, { Component, FC } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { actions, RichEditor, RichToolbar, RichEditorProps } from "react-native-pell-rich-editor"
@@ -39,6 +40,9 @@ const RichTextEditor: FC<RichTextEditorProps> = ({
         editorStyle={editorStyle}
         placeholder="What's on your mind?"
         onChange={onChange}
+        autoCorrect={false}
+        useContainer={true}
+        scrollEnabled={false}
       />
     </View>
   )
@@ -57,8 +61,12 @@ const styles = StyleSheet.create({
     gap: 3
   },
   rich: {
+    // minHeight: 240,
+    // maxHeight: hp(50),
     minHeight: 240,
+    height: hp(50), 
     flex: 1,
+    overflow: 'scroll',
     borderWidth: 1.5,
     borderTopWidth: 0,
     borderBottomLeftRadius: theme.radius.xl,
