@@ -29,29 +29,29 @@ const Welcome = () => {
         />
         <View style={{ gap: 20 }}>
           <Text style={styles.title}>
-            Link up
+            Unlinkedout
           </Text>
           <Text style={styles.punchline}>
             Punchline
           </Text>
         </View>
         <View style={styles.footer}>
-        <Button 
-          title='Get Started'
-          buttonStyle={{ marginhorizontal: wp(3) }}
-          onPress={() => router.push('/signup')}
-        />
-        <View style={styles.buttonTextContainer}>
-          <Text style={[styles.loginText]}>
-            Already have an account?
-          </Text>
-          <Pressable onPress={() => router.push('/login')}>
-            <Text style={[styles.loginText, styles.loginButtonText]}>
-              Login
+          <Button 
+            title='Get Started'
+            buttonStyle={{ marginhorizontal: wp(3) }}
+            onPress={() => router.push('/signup')}
+          />
+          <View style={styles.buttonTextContainer}>
+            <Text style={[styles.loginText]}>
+              Already have an account?
             </Text>
-          </Pressable>
+            <Pressable onPress={() => router.push('/login')}>
+              <Text style={[styles.loginText, styles.loginButtonText]}>
+                Login
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
       </View>
     </ScreenWrapper>
   )

@@ -18,6 +18,15 @@ import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
 
+interface EditProfilePictureProps {
+  user: User,
+  formUser: User,
+  setUserData: (userData: User) => void
+}
+
+/**
+ * This page handles `/editProfile`.
+ */
 const EditProfile = () => {
   const { user, setUserData } = useAuth();
   const router = useRouter();
@@ -42,17 +51,6 @@ const EditProfile = () => {
       })
     }
   }, [user])
-  async function onPickImage() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
-      allowsEditing: true,
-      aspect: [3, 3],
-      quality: 0.5,
-    });
-    if (!result.canceled) {
-      setUserData({...user, image: result.assets[0].uri});
-    } 
-  }
 
   /**
    * This function handles submitting updated user data.
@@ -89,30 +87,20 @@ const EditProfile = () => {
     if (response.message) {
       Alert.alert("Update error", response.message);
     }
-
     setLoading(false);
   }
-
-  let imageSource = (formUser.image)? formUser.image :getUserImageSource(user?.image);
+  
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }}>
           <Header title="Edit profile" />
           <View style={styles.form}>
-            <View style={styles.avatarContainer}>
-              <Image 
-                source={imageSource} 
-                style={styles.avatar}
-              />
-              <Pressable style={styles.cameraIcon} onPress={onPickImage}>
-                <Icon 
-                  name="camera" 
-                  size={20} 
-                  strokeWidth={2.5} 
-                />
-              </Pressable>
-            </View>
+            <EditProfilePicture 
+              user={user} 
+              setUserData={setUserData} 
+              formUser={formUser}
+            />
             <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
               Please fill your profile details
             </Text>
@@ -149,7 +137,37 @@ const EditProfile = () => {
   )
 }
 
-export default EditProfile
+export default EditProfile;
+
+/**
+ * This component displays the profile picture with a button to edit it.
+ */
+const EditProfilePicture: React.FC<EditProfilePictureProps> = ({
+  user,
+  formUser,
+  setUserData
+}) => {
+  async function onPickImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "images",
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 0.5,
+    });
+    if (!result.canceled) {
+      setUserData({...user, image: result.assets[0].uri});
+    } 
+  }
+  let imageSource = (formUser.image)? formUser.image :getUserImageSource(user?.image);
+  return (
+    <View style={styles.avatarContainer}>
+      <Image source={imageSource} style={styles.avatar} />
+      <Pressable style={styles.cameraIcon} onPress={onPickImage}>
+        <Icon name="camera" size={20} strokeWidth={2.5} />
+      </Pressable>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {

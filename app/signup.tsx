@@ -61,52 +61,51 @@ const SignUp: React.FC = () => {
     <ScreenWrapper bg="white">
       <StatusBar style="dark"/>
       <View style={styles.container}>
+        {/* Header */}
         <BackButton router={router} />
         <View>
           <Text style={styles.welcomeText}>
             Let's get started
           </Text>
         </View>
-
+        {/* Form */}
         <View style={styles.form}>
-            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
-              Please complete the form to create an account
+          <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
+            Please complete the form to create an account
+          </Text>
+          <Input 
+            icon={<Icon name="user" size={26} strokeWidth={1.6} />}
+            placeholder='Enter your username'
+            onChangeText={(value: string) => { nameRef.current = value }}
+          />
+          <Input 
+            icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
+            placeholder='Enter your email'
+            onChangeText={(value: string) => { emailRef.current = value }}
+          />
+          <Input 
+            icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
+            placeholder='Enter your password'
+            secureTextEntry
+            onChangeText={(value: string) => { passwordRef.current = value }}
+          />
+          <Button 
+            title="Sign up" 
+            loading={loading} 
+            onPress={onSubmit}
+          />
+        </View>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Already have an account?
+          </Text>
+          <Pressable onPress={() => router.push('/login')}>
+            <Text style={[styles.footerText, styles.footerLink]}>
+              Log in
             </Text>
-            <Input 
-              icon={<Icon name="user" size={26} strokeWidth={1.6} />}
-              placeholder='Enter your username'
-              onChangeText={(value: string) => { nameRef.current = value }}
-            />
-            <Input 
-              icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
-              placeholder='Enter your email'
-              onChangeText={(value: string) => { emailRef.current = value }}
-            />
-            <Input 
-              icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
-              placeholder='Enter your password'
-              secureTextEntry
-              onChangeText={(value: string) => { passwordRef.current = value }}
-            />
-            <Button 
-              title="Sign up" 
-              loading={loading} 
-              onPress={onSubmit}
-            />
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              Already have an account?
-            </Text>
-            <Pressable onPress={() => router.push('/login')}>
-              <Text style={[styles.footerText, styles.footerLink]}>
-                Log in
-              </Text>
-            </Pressable>
-              
-
-          </View>
+          </Pressable>
+        </View>
       </View>
     </ScreenWrapper>
   );
