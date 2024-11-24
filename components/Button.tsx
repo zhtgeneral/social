@@ -1,7 +1,7 @@
-import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
-import React from 'react'
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
+import React from 'react'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Loading from './Loading'
 
 interface ButtonProps {
@@ -40,10 +40,7 @@ const Button: React.FC<ButtonProps> = ({
     )
   }
   return (
-    <Pressable 
-      onPress={onPress} 
-      style={[styles.button, buttonStyle, hasShadow && shadowStyle]}
-    >
+    <Pressable onPress={onPress} style={[styles.button, buttonStyle, hasShadow && shadowStyle]}>
       <Text style={[styles.text, textStyle]}>
         {title}
       </Text>

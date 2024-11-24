@@ -19,10 +19,7 @@ const BackButton: React.FC<BackButtonProps> = ({
   router
 }) => {
   return (
-    <Pressable 
-      onPress={() => router.back()}
-      style={styles.button}
-    >
+    <Pressable onPress={() => router.back()} style={styles.button}>
       <Icon 
         name="arrowLeft" 
         strokeWidth={2.5}

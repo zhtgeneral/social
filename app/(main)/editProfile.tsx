@@ -13,7 +13,7 @@ import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { getUserImageSource, uploadFile } from '@/services/imageServices'
-import { updateUser } from '@/services/userService';
+import { updateUser } from '@/services/userService'
 import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
@@ -105,10 +105,7 @@ const EditProfile = () => {
                 source={imageSource} 
                 style={styles.avatar}
               />
-              <Pressable 
-                style={styles.cameraIcon}
-                onPress={onPickImage}
-              >
+              <Pressable style={styles.cameraIcon} onPress={onPickImage}>
                 <Icon 
                   name="camera" 
                   size={20} 

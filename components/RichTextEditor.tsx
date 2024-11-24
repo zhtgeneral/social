@@ -1,8 +1,8 @@
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
-import React, { Component, FC } from 'react'
+import React, { FC } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { actions, RichEditor, RichToolbar, RichEditorProps } from "react-native-pell-rich-editor"
+import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 
 
 interface RichTextEditorProps {

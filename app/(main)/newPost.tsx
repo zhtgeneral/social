@@ -47,9 +47,9 @@ const NewPost = () => {
           <View style={styles.editor}>
             <View>
               <RichTextEditor 
-                  editorRef={editorRef}
-                  onChange={(body: string) => bodyRef.current = body}
-                  />
+                editorRef={editorRef}
+                onChange={(body: string) => bodyRef.current = body}
+              />
             </View>
             <View style={styles.media}>
               <Text style={styles.addImageText}>

@@ -1,6 +1,5 @@
 import Icon from '@/assets/icons'
 import Avatar from '@/components/Avatar'
-import Button from '@/components/Button'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'

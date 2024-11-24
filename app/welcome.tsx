@@ -1,12 +1,11 @@
-import ScreenWrapper from "@/components/ScreenWrapper"
-import React from "react"
-import { View, Image, Text, Pressable } from "react-native"
-import { StatusBar } from "expo-status-bar"
-import { hp, wp } from "@/helpers/common"
-import { StyleSheet } from 'react-native'
-import { theme } from "@/constants/theme"
 import Button from "@/components/Button"
+import ScreenWrapper from "@/components/ScreenWrapper"
+import { theme } from "@/constants/theme"
+import { hp, wp } from "@/helpers/common"
 import { useRouter } from "expo-router"
+import { StatusBar } from "expo-status-bar"
+import React from "react"
+import { Image, Pressable, StyleSheet, Text, View } from "react-native"
 
 /**
  * This page handles `/welcome`.

@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { FC } from 'react'
-import { useRouter } from 'expo-router'
-import BackButton from './BackButton'
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
+import { useRouter } from 'expo-router'
+import React, { FC } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import BackButton from './BackButton'
 
 interface HeaderProps {
   title?: string,

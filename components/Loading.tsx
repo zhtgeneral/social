@@ -1,6 +1,6 @@
 import { theme } from '@/constants/theme'
 import React from 'react'
-import { StyleSheet, View, ActivityIndicator, ActivityIndicatorProps } from 'react-native'
+import { ActivityIndicator, ActivityIndicatorProps, StyleSheet, View } from 'react-native'
 
 interface LoadingProps {
   size?: ActivityIndicatorProps["size"],

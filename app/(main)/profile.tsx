@@ -53,14 +53,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({
   return (
     <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: wp(4) }}>
       <View>
-        <Header 
-          title="profile" 
-          mb={30}
-        />
-        <TouchableOpacity 
-          style={styles.logoutButton} 
-          onPress={handleLogout}
-        >
+        <Header title="profile" mb={30} />
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Icon name="logout" stroke={theme.colors.rose} />
         </TouchableOpacity>
       </View>
@@ -68,20 +62,9 @@ const UserHeader: React.FC<UserHeaderProps> = ({
       <View style={styles.container} >
         <View style={{ gap: 15 }}>
           <View style={styles.avatarContainer} >
-            <Avatar 
-              uri={user?.image} 
-              size={hp(12)}
-              rounded={theme.radius.xxl * 1.4}
-            />
-            <Pressable 
-              style={styles.editIcon}
-              onPress={() => router.push('/editProfile')}
-            >
-              <Icon 
-                name="edit" 
-                strokeWidth={2.5} 
-                size={20} 
-              />
+            <Avatar uri={user?.image} size={hp(12)} rounded={theme.radius.xxl * 1.4} />
+            <Pressable style={styles.editIcon} onPress={() => router.push('/editProfile')} >
+              <Icon name="edit" strokeWidth={2.5} size={20} />
             </Pressable>
           </View>
 
@@ -96,22 +79,14 @@ const UserHeader: React.FC<UserHeaderProps> = ({
 
           <View style={{ gap: 10 }}>
             <View style={styles.info}>
-              <Icon 
-                name="mail" 
-                size={20} 
-                color={theme.colors.textLight} 
-              /> 
+              <Icon name="mail" size={20} color={theme.colors.textLight} /> 
               <Text style={styles.infoText}>
                 {user && user.email}
               </Text>
             </View>
             {user && user.phone && (
               <View style={styles.info}>
-                <Icon 
-                  name="phone" 
-                  size={20} 
-                  color={theme.colors.textLight} 
-                /> 
+                <Icon name="phone" size={20} color={theme.colors.textLight} /> 
                 <Text style={styles.infoText}>
                   {user.phone}
                 </Text>

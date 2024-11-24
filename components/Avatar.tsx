@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { FC } from 'react'
-import { hp } from '@/helpers/common'
 import { theme } from '@/constants/theme'
-import { Image } from 'expo-image'
+import { hp } from '@/helpers/common'
 import { getUserImageSource } from '@/services/imageServices'
+import { Image } from 'expo-image'
+import React, { FC } from 'react'
+import { StyleSheet } from 'react-native'
 
 
 interface AvatarProps {
