@@ -11,25 +11,41 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+interface ProfileMainProps {
+  user: User
+}
+interface ProfileBannerProps {
+  user: User
+}
 
+/**
+ * This page handles `/profile`.
+ */
 const Profile = () => {
-  
   const { user } = useAuth();
   return (
     <ScreenWrapper bg="white" >
-      <UserHeader user={user} />
+      <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: wp(4) }}>
+        <ProfileHeader />
+        <View style={styles.container} >
+          <View style={{ gap: 15 }}>
+            <ProfileMain user={user} />
+            <ProfileBanner user={user} />
+          </View>
+        </View>
+      </View>
     </ScreenWrapper>
   )
 }
 
-interface UserHeaderProps {
-  user: User
-}
+export default Profile;
 
-const UserHeader: React.FC<UserHeaderProps> = ({
-  user, 
-}) => {
-  const router = useRouter();
+/**
+ * This component displays the header of the profile.
+ * 
+ * It shows a back button and a logout button.
+ */
+const ProfileHeader: React.FC = () => {
   async function onLogout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -51,62 +67,84 @@ const UserHeader: React.FC<UserHeaderProps> = ({
     ])
   }
   return (
-    <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: wp(4) }}>
-      <View>
-        <Header title="profile" mb={30} />
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Icon name="logout" stroke={theme.colors.rose} />
-        </TouchableOpacity>
+    <View>
+      <Header title="profile" mb={30} />
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Icon 
+          name="logout" 
+          stroke={theme.colors.rose} 
+        />
+      </TouchableOpacity>
+    </View>
+  );
+}
+/**
+ * This component renders the details of the user.
+ * 
+ * If the user does not have any of the details, 
+ * the section for that detail is hidden.
+ */
+const ProfileBanner: React.FC<ProfileBannerProps> = ({
+  user
+}) => {
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={styles.info}>
+        <Icon name="mail" size={20} color={theme.colors.textLight} /> 
+        <Text style={styles.infoText}>
+          {user && user.email}
+        </Text>
       </View>
-
-      <View style={styles.container} >
-        <View style={{ gap: 15 }}>
-          <View style={styles.avatarContainer} >
-            <Avatar uri={user?.image} size={hp(12)} rounded={theme.radius.xxl * 1.4} />
-            <Pressable style={styles.editIcon} onPress={() => router.push('/editProfile')} >
-              <Icon name="edit" strokeWidth={2.5} size={20} />
-            </Pressable>
-          </View>
-
-          <View style={{ alignItems: 'center', gap: 4 }}> 
-            <Text style={styles.userName} >
-              {user && user.name}
-            </Text>
-            <Text style={styles.infoText} >
-              {user && user.address}
-            </Text>
-          </View>
-
-          <View style={{ gap: 10 }}>
-            <View style={styles.info}>
-              <Icon name="mail" size={20} color={theme.colors.textLight} /> 
-              <Text style={styles.infoText}>
-                {user && user.email}
-              </Text>
-            </View>
-            {user && user.phone && (
-              <View style={styles.info}>
-                <Icon name="phone" size={20} color={theme.colors.textLight} /> 
-                <Text style={styles.infoText}>
-                  {user.phone}
-                </Text>
-              </View>
-            )}
-            {user && user.bio && (
-              <View style={styles.info}>
-                <Text style={styles.infoText}>
-                  About me: {user.bio}
-                </Text>
-              </View>
-            )}
-          </View>
+      {user && user.phone && (
+        <View style={styles.info}>
+          <Icon name="phone" size={20} color={theme.colors.textLight} /> 
+          <Text style={styles.infoText}>
+            {user.phone}
+          </Text>
         </View>
+      )}
+      {user && user.bio && (
+        <View style={styles.info}>
+          <Text style={styles.infoText}>
+            About me: {user.bio}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+/**
+ * This component renders the profile picture and the location.
+ * 
+ * It displays a button on the profile picture to edit profile details.
+ */
+const ProfileMain: React.FC<ProfileMainProps> = ({
+  user
+}) => {
+  const router = useRouter();
+  return (
+    <View style={{ gap: 5 }}>
+      <View style={styles.avatarContainer} >
+        <Avatar uri={user?.image} size={hp(12)} rounded={theme.radius.xxl * 1.4} />
+        <Pressable style={styles.editIcon} onPress={() => router.push('/editProfile')} >
+          <Icon 
+            name="edit" 
+            strokeWidth={2.5} 
+            size={20} 
+          />
+        </Pressable>
+      </View>
+      <View style={{ alignItems: 'center', gap: 4 }}> 
+        <Text style={styles.userName} >
+          {user && user.name}
+        </Text>
+        <Text style={styles.infoText} >
+          {user && user.address}
+        </Text>
       </View>
     </View>
-  )
+  );
 }
-
-export default Profile
 
 const styles = StyleSheet.create({
   container: {
