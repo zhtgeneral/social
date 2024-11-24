@@ -61,8 +61,6 @@ const styles = StyleSheet.create({
     gap: 3
   },
   rich: {
-    // minHeight: 240,
-    // maxHeight: hp(50),
     minHeight: 240,
     height: hp(50), 
     flex: 1,

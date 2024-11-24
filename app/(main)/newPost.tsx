@@ -1,3 +1,4 @@
+import Icon from '@/assets/icons'
 import Avatar from '@/components/Avatar'
 import Header from '@/components/Header'
 import RichTextEditor from '@/components/RichTextEditor'
@@ -7,7 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const NewPost = () => {
   const { user } = useAuth();
@@ -16,6 +17,10 @@ const NewPost = () => {
   const router = useRouter();
   const [loading, setLoading ] = useState(false);
   const [file, setFile] = useState(false);
+
+  function onPick() {
+    
+  }
 
   return (
     <ScreenWrapper bg="white" >
@@ -40,10 +45,26 @@ const NewPost = () => {
             </View>
           {/* Text editor */}
           <View style={styles.editor}>
-             <RichTextEditor 
-                editorRef={editorRef}
-                onChange={(body: string) => bodyRef.current = body}
-              />
+            <View>
+              <RichTextEditor 
+                  editorRef={editorRef}
+                  onChange={(body: string) => bodyRef.current = body}
+                  />
+            </View>
+            <View style={styles.media}>
+              <Text style={styles.addImageText}>
+                Add to your post
+              </Text>
+              <View style={styles.mediaIcons}>
+                <TouchableOpacity onPress={onPick}>
+                  <Icon 
+                    name='image' 
+                    size={30} 
+                    stroke={theme.colors.dark} 
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </View> 
@@ -89,14 +110,12 @@ const styles = StyleSheet.create({
     fontWeight: theme.fonts.medium as 500,
     color: theme.colors.textLight
   },
-  textEditor: {
-
-  },
   media: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1.5,
+    marginTop: 20,
     padding: 12,
     paddingHorizontal: 18,
     borderRadius: theme.radius.xl,
