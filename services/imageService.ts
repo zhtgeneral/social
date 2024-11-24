@@ -1,12 +1,7 @@
 import { supabase, supabaseUrl } from "@/lib/Supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
-
-export interface Response {
-  success: boolean,
-  message?: string
-  data?: any
-}
+import { Response } from "./index";
 
 export function getSupabaseFileUrl(filePath: string) {
   if (filePath) {
@@ -77,6 +72,6 @@ export async function uploadFile(
  * This function gets the file path 
  * @example `/profiles/2038476.png`
  */
-function getFilePath(folderName: string, isImage: boolean) {
-  return `/${folderName}/${(new Date).getTime()}${isImage? '.png' : 'mp4'}`
+function getFilePath(folderName: string, isImage: boolean): string {
+  return `/${folderName}/${(new Date).getTime()}${isImage? '.png' : '.mp4'}`
 }

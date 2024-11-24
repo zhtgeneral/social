@@ -1,11 +1,6 @@
 import { supabase } from "@/lib/Supabase";
 import { User } from "@/types/supabase";
-
-export interface Response {
-  success: boolean,
-  message?: string
-  data?: any
-}
+import { Response } from "./index";
 
 /**
  * This function gets the user data from Supabase.

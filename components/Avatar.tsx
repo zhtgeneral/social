@@ -1,6 +1,6 @@
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
-import { getUserImageSource } from '@/services/imageServices'
+import { getUserImageSource } from '@/services/imageService'
 import { Image } from 'expo-image'
 import React, { FC } from 'react'
 import { StyleSheet } from 'react-native'

@@ -7,7 +7,8 @@ import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
-import { getSupabaseFileUrl } from '@/services/imageServices'
+import { getSupabaseFileUrl } from '@/services/imageService'
+import { createOrUpdatePost, UpsertPostData } from '@/services/postService'
 import { User } from '@/types/supabase'
 import { ResizeMode, Video } from 'expo-av'
 import { Image } from 'expo-image'
@@ -16,7 +17,8 @@ import { ImagePickerAsset } from 'expo-image-picker'
 import type { MediaType } from 'expo-image-picker/src/ImagePicker.types'
 import { useRouter } from 'expo-router'
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { RichEditor } from 'react-native-pell-rich-editor'
 
 interface NewPostHeaderProps {
   user: User
@@ -39,20 +41,39 @@ interface NewPostDisplayMediaProps {
 const NewPost = () => {
   const { user } = useAuth();
   const bodyRef = useRef("");
-  const editorRef = useRef(null);
+  const editorRef = useRef<RichEditor | null>(null);
   const router = useRouter();
   const [loading, setLoading ] = useState(false);
   const [file, setFile] = useState<ImagePickerAsset | null>(null);
 
   async function onSubmit() {
-
+    if (!bodyRef.current && !file) {
+      Alert.alert("Invalid post", "Please choose a message or an image.");
+      return;
+    }
+    const data: UpsertPostData = {
+      file: file,
+      body: bodyRef.current,
+      userId: user?.id
+    };
+    setLoading(true);
+    const response = await createOrUpdatePost(data);
+    setLoading(false);
+    if (response.success) {
+      setFile(null);
+      bodyRef.current = "";
+      editorRef.current?.setContentHTML("");
+      router.back();
+    } else {
+      Alert.alert("Post error", response.message);
+    }
   }
 
   return (
     <ScreenWrapper bg="white" >
       <View style={styles.container}>
         <Header title="Create post" />
-        <ScrollView contentContainerStyle={{ gap: 20 }}>  
+        <ScrollView contentContainerStyle={{ gap: 15 }}>  
           <NewPostHeader user={user} />
           <View style={styles.body} >
             <RichTextEditor 

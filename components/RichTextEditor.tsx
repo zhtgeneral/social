@@ -1,12 +1,12 @@
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
-import React, { FC } from 'react'
+import React, { FC, MutableRefObject } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 
 
 interface RichTextEditorProps {
-  editorRef: React.MutableRefObject<null>,
+  editorRef: MutableRefObject<RichEditor | null>,
   onChange: (body: string) => void
 }
 
