@@ -17,7 +17,16 @@ import { ImagePickerAsset } from 'expo-image-picker'
 import type { MediaType } from 'expo-image-picker/src/ImagePicker.types'
 import { useRouter } from 'expo-router'
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { 
+  Alert, 
+  Keyboard, 
+  Pressable, 
+  ScrollView, 
+  StyleSheet,
+  Text, 
+  TouchableOpacity, 
+  View 
+} from 'react-native'
 import { RichEditor } from 'react-native-pell-rich-editor'
 
 interface NewPostHeaderProps {
@@ -69,11 +78,9 @@ const NewPost = () => {
     }
   }
   function handleKeyboard() {
-    if (editorRef.current?.isKeyboardOpen === true) {
+    if (editorRef.current?.isKeyboardOpen) {
       editorRef.current?.blurContentEditor();
-    } else {
-      editorRef.current?.focusContentEditor();
-    }
+    } 
   }
 
   return (
