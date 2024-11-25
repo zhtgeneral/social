@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/Supabase";
 import { uploadFile } from "./imageService";
-import { Response } from "./index";
+import { CustomResponse } from "./index";
 import { ImagePickerAsset } from "expo-image-picker";
 
 export interface UpsertPostData {
@@ -9,7 +9,7 @@ export interface UpsertPostData {
   userId: string
 }
 
-export async function createOrUpdatePost(post: UpsertPostData): Promise<Response> {
+export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomResponse> {
   let { file, body, userId } = post;
   try {
     if (file && typeof post === 'object') {

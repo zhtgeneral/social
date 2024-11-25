@@ -1,7 +1,7 @@
 import { supabase, supabaseUrl } from "@/lib/Supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
-import { Response } from "./index";
+import { CustomResponse } from "./index";
 
 export function getSupabaseFileUrl(filePath: string) {
   if (filePath) {
@@ -31,7 +31,7 @@ export async function uploadFile(
   folderName: string, 
   fileURI: string, 
   isImage: boolean = true
-): Promise<Response> {
+): Promise<CustomResponse> {
   try {
     const fileName = getFilePath(folderName, isImage);
     const fileBase64 = await FileSystem.readAsStringAsync(fileURI, {

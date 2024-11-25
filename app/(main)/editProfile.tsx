@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Dispatch, useEffect, useState } from 'react'
 
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
@@ -21,7 +21,7 @@ import { useRouter } from 'expo-router'
 interface EditProfilePictureProps {
   user: User,
   formUser: User,
-  setUserData: (userData: User) => void
+  setformUser: Dispatch<any>
 }
 
 /**
@@ -70,14 +70,11 @@ const EditProfile = () => {
 
     if (image) {
       let imageResponse = await uploadFile('profiles', image, true);
-      if (imageResponse.success) {
-        user.image = imageResponse.data;
-      } else {
+      if (!imageResponse.success) {
         user.image = null;
-      }
+      } 
     }
-    const response = await updateUser(user.id, user); 
-    
+    const response = await updateUser(user.id, formUser); 
     if (response.success) {
       setUserData({...user, ...formUser});
       setLoading(false);
@@ -98,7 +95,7 @@ const EditProfile = () => {
           <View style={styles.form}>
             <EditProfilePicture 
               user={user} 
-              setUserData={setUserData} 
+              setformUser={setformUser} 
               formUser={formUser}
             />
             <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
@@ -145,7 +142,7 @@ export default EditProfile;
 const EditProfilePicture: React.FC<EditProfilePictureProps> = ({
   user,
   formUser,
-  setUserData
+  setformUser
 }) => {
   async function onPickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -155,7 +152,7 @@ const EditProfilePicture: React.FC<EditProfilePictureProps> = ({
       quality: 0.5,
     });
     if (!result.canceled) {
-      setUserData({...user, image: result.assets[0].uri});
+      setformUser({...user, image: result.assets[0].uri});
     } 
   }
   let imageSource = (formUser.image)? formUser.image :getUserImageSource(user?.image);

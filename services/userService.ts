@@ -1,13 +1,13 @@
 import { supabase } from "@/lib/Supabase";
 import { User } from "@/types/supabase";
-import { Response } from "./index";
+import { CustomResponse } from "./index";
 
 /**
  * This function gets the user data from Supabase.
  * 
  * @usecase use thie because `user` from Supabase auth has little info
  */
-export async function getUserData(userId: string): Promise<Response> {
+export async function getUserData(userId: string): Promise<CustomResponse> {
   try {
     const { data, error } = await supabase
     .from("users")
@@ -37,7 +37,7 @@ export async function getUserData(userId: string): Promise<Response> {
 /**
  * This function updates the user data into Supabase.
  */
-export async function updateUser(userId: string, data: User): Promise<Response> {
+export async function updateUser(userId: string, data: User): Promise<CustomResponse> {
   try {
     const { error } = await supabase
     .from("users")

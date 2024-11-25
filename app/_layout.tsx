@@ -1,9 +1,10 @@
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/Supabase";
-import { getUserData, Response } from "@/services/userService";
+import { getUserData } from "@/services/userService";
 import { User } from "@supabase/supabase-js";
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from "react";
+import { CustomResponse } from '@/services/index'
 
 /**
  * This component provides app with Auth.
@@ -47,7 +48,7 @@ const MainLayout = () => {
   }, [])
 
   async function updateUserData(user: User) {
-    let response: Response = await getUserData(user.id);
+    let response: CustomResponse = await getUserData(user.id);
     if (response.success) {
       setUserData({...response.data});
     }
