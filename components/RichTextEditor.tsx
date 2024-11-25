@@ -1,7 +1,6 @@
 import { theme } from '@/constants/theme'
-import { hp } from '@/helpers/common'
-import React, { FC, MutableRefObject } from 'react'
-import { StyleSheet, View } from 'react-native'
+import React, { FC, MutableRefObject, useEffect } from 'react'
+import { Keyboard, Pressable, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 
 
@@ -15,36 +14,39 @@ const RichTextEditor: FC<RichTextEditorProps> = ({
   onChange
 }) => {
   return (
-    <View style={{ minHeight: 285 }}>
-      <RichToolbar 
-        actions={[
-          actions.setStrikethrough,
-          actions.removeFormat,
-          actions.setBold,
-          actions.setItalic,
-          actions.insertBulletsList,
-          actions.insertOrderedList,
-          actions.blockquote,
-          actions.code,
-          actions.line
-        ]}
-        style={styles.richBar}
-        flatContainerStyle={styles.flatStyle}
-        selectedIconTint={theme.colors.primaryDark}
-        editor={editorRef}
-        disabled={false}
-      />
-      <RichEditor 
-        ref={editorRef}
-        containerStyle={styles.rich}
-        editorStyle={editorStyle}
-        placeholder="What's on your mind?"
-        onChange={onChange}
-        autoCorrect={false}
-        useContainer={true}
-        scrollEnabled={false}
-      />
-    </View>
+    <Pressable>
+      <View style={{ minHeight: 285 }}>
+        <RichToolbar 
+          actions={[
+            actions.setStrikethrough,
+            actions.removeFormat,
+            actions.setBold,
+            actions.setItalic,
+            actions.insertBulletsList,
+            actions.insertOrderedList,
+            actions.blockquote,
+            actions.code,
+            actions.line
+          ]}
+          style={styles.richBar}
+          flatContainerStyle={styles.flatStyle}
+          selectedIconTint={theme.colors.primaryDark}
+          editor={editorRef}
+          disabled={false}
+        />
+        <RichEditor 
+          ref={editorRef}
+          containerStyle={styles.rich}
+          editorStyle={editorStyle}
+          placeholder="What's on your mind?"
+          onChange={onChange}
+          autoCorrect={false}
+          useContainer={true}
+          scrollEnabled={false}
+          initialFocus={true}
+        />
+      </View>
+    </Pressable>
   )
 }
 

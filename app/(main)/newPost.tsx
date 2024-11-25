@@ -68,29 +68,38 @@ const NewPost = () => {
       Alert.alert("Post error", response.message);
     }
   }
+  function handleKeyboard() {
+    if (editorRef.current?.isKeyboardOpen === true) {
+      editorRef.current?.blurContentEditor();
+    } else {
+      editorRef.current?.focusContentEditor();
+    }
+  }
 
   return (
     <ScreenWrapper bg="white" >
       <View style={styles.container}>
-        <Header title="Create post" />
-        <ScrollView contentContainerStyle={{ gap: 15 }}>  
-          <NewPostHeader user={user} />
-          <View style={styles.body} >
-            <RichTextEditor 
-              editorRef={editorRef}
-              onChange={(body: string) => bodyRef.current = body}
-            />
-            <NewPostDisplayMedia file={file} setFile={setFile}/>
-            <NewPostUploadMedia setFile={setFile} />
-          </View>
-        </ScrollView>
-        <Button 
-          buttonStyle={{ height: hp(6.2)}}
-          title="Create post"
-          loading={loading}
-          hasShadow={false}
-          onPress={onSubmit}
-        />
+        <Pressable onPress={() => handleKeyboard()}>
+          <Header title="Create post" />
+          <ScrollView contentContainerStyle={{ gap: 15 }}>  
+            <NewPostHeader user={user} />
+            <View style={styles.body} >
+              <RichTextEditor 
+                editorRef={editorRef}
+                onChange={(body: string) => bodyRef.current = body}
+              />
+              <NewPostDisplayMedia file={file} setFile={setFile}/>
+              <NewPostUploadMedia setFile={setFile} />
+            </View>
+          </ScrollView>
+          <Button 
+            buttonStyle={{ height: hp(6.2)}}
+            title="Create post"
+            loading={loading}
+            hasShadow={false}
+            onPress={onSubmit}
+          />
+        </Pressable>
       </View> 
     </ScreenWrapper>
   )
