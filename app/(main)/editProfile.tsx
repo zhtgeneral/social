@@ -97,36 +97,40 @@ const EditProfile = () => {
               user={user} 
               setformUser={setformUser} 
               formUser={formUser}
-            />
-            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
-              Please fill your profile details
-            </Text>
+              />  
+            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}
+              >Please fill your profile details
+              </Text>
             <Input 
               icon={<Icon name="user" />}
               placeholder='Enter your username'
               value={formUser.name}
               onChangeText={(value: string) => setformUser({ ...formUser, name: value })}
-            />
+              />
             <Input 
               icon={<Icon name="phone" />}
               placeholder='Enter your phone number'
               value={formUser.phone}
               onChangeText={(value: string) => setformUser({ ...formUser, phone: value })}
-            />
+              />
             <Input 
               icon={<Icon name="location" />}
               placeholder='Enter your address'
               value={formUser.address}
               onChangeText={(value: string) => setformUser({ ...formUser, address: value })}
-            />
+              />
             <Input 
               placeholder='Enter your bio'
               value={formUser.bio}
               multiline={true}
               containerStyle={styles.bio}
               onChangeText={(value: string) => setformUser({ ...formUser, bio: value })}
-            />
-            <Button title="Update" loading={loading} onPress={onSubmit}/>
+              />
+            <Button 
+              title="Update" 
+              loading={loading} 
+              onPress={onSubmit}
+              />
           </View>
         </ScrollView>
       </View>
@@ -158,10 +162,17 @@ const EditProfilePicture: React.FC<EditProfilePictureProps> = ({
   let imageSource = (formUser.image)? formUser.image :getUserImageSource(user?.image);
   return (
     <View style={styles.avatarContainer}>
-      <Image source={imageSource} style={styles.avatar} />
+      <Image 
+        source={imageSource} 
+        style={styles.avatar} 
+        />
       <Pressable style={styles.cameraIcon} onPress={onPickImage}>
-        <Icon name="camera" size={20} strokeWidth={2.5} />
-      </Pressable>
+        <Icon 
+          name="camera" 
+          size={20} 
+          strokeWidth={2.5} 
+          />
+        </Pressable>
     </View>
   );
 }

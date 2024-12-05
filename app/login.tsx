@@ -8,7 +8,7 @@ import { hp, wp } from '@/helpers/common';
 import { supabase } from '@/lib/Supabase';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
@@ -28,9 +28,9 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 const Login: React.FC = () => {
   const router = useRouter();
 
-  const emailRef = useRef("");
-  const passwordRef= useRef("");
-  const [loading, setLoading] = useState(false);
+  const emailRef = React.useRef("");
+  const passwordRef= React.useRef("");
+  const [loading, setLoading] = React.useState(false);
 
   async function onSubmit() {
     const email = emailRef.current.trim();

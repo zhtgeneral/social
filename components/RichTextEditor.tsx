@@ -1,50 +1,50 @@
 import { theme } from '@/constants/theme'
-import React, { FC, MutableRefObject } from 'react'
+import React from 'react'
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 
 interface RichTextEditorProps {
-  editorRef: MutableRefObject<RichEditor | null>,
+  editorRef: React.MutableRefObject<RichEditor | null>,
   onChange: (body: string) => void
 }
 
-const RichTextEditor: FC<RichTextEditorProps> = ({
+const RichTextEditor: React.FC<RichTextEditorProps> = ({
   editorRef,
   onChange
 }) => {
   return (
     <TouchableWithoutFeedback >
       <View style={{ minHeight: 285 }}>
-          <RichToolbar 
-            actions={[
-              actions.undo,
-              actions.redo,
-              actions.setBold,
-              actions.setItalic,
-              actions.setStrikethrough,
-              actions.removeFormat,
-              actions.insertBulletsList,
-              actions.insertOrderedList,
-              actions.blockquote,
-              actions.code,
-            ]}
-            style={styles.richBar}
-            flatContainerStyle={styles.flatStyle}
-            selectedIconTint={theme.colors.primaryDark}
-            editor={editorRef}
-            disabled={false}
-          />        
-          <RichEditor 
-            ref={editorRef}
-            containerStyle={styles.rich}
-            editorStyle={editorStyle}
-            placeholder="What's on your mind?"
-            onChange={onChange}
-            autoCorrect={false}
-            useContainer={true}
-            scrollEnabled={false}
-            initialFocus={true}
-          />        
+        <RichToolbar 
+          actions={[
+            actions.undo,
+            actions.redo,
+            actions.setBold,
+            actions.setItalic,
+            actions.setStrikethrough,
+            actions.removeFormat,
+            actions.insertBulletsList,
+            actions.insertOrderedList,
+            actions.blockquote,
+            actions.code,
+          ]}
+          style={styles.richBar}
+          flatContainerStyle={styles.flatStyle}
+          selectedIconTint={theme.colors.primaryDark}
+          editor={editorRef}
+          disabled={false}
+          />
+        <RichEditor 
+          ref={editorRef}
+          containerStyle={styles.rich}
+          editorStyle={editorStyle}
+          placeholder="What's on your mind?"
+          onChange={onChange}
+          autoCorrect={false}
+          useContainer={true}
+          scrollEnabled={false}
+          initialFocus={true}
+          />
       </View>
     </TouchableWithoutFeedback>
   )

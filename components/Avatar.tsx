@@ -2,7 +2,7 @@ import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
 import { getUserImageSource } from '@/services/imageService'
 import { Image } from 'expo-image'
-import React, { FC } from 'react'
+import React from 'react'
 import { StyleSheet } from 'react-native'
 
 
@@ -16,7 +16,7 @@ interface AvatarProps {
 /**
  * This component renders an avatar.
  */
-const Avatar: FC<AvatarProps> = ({
+const Avatar: React.FC<AvatarProps> = ({
   uri,
   size = hp(4.5),
   rounded = theme.radius.md,

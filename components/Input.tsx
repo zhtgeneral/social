@@ -1,11 +1,11 @@
 import { theme } from '@/constants/theme';
 import { hp } from '@/helpers/common';
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Falsy, RegisteredStyle, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 
 interface InputProps extends TextInputProps {
   containerStyle?: Falsy | ViewStyle | RegisteredStyle<ViewStyle>
-  icon?: ReactNode,
+  icon?: React.ReactNode,
   inputRef?: string
 }
 
@@ -27,7 +27,6 @@ const Input: React.FC<InputProps> = ({
         ref={inputRef}
         {...props}
       />
-
     </View>
   );
 }

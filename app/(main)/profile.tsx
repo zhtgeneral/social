@@ -73,7 +73,7 @@ const ProfileHeader: React.FC = () => {
         <Icon 
           name="logout" 
           stroke={theme.colors.rose} 
-        />
+          />
       </TouchableOpacity>
     </View>
   );
@@ -90,24 +90,32 @@ const ProfileBanner: React.FC<ProfileBannerProps> = ({
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.info}>
-        <Icon name="mail" size={20} color={theme.colors.textLight} /> 
-        <Text style={styles.infoText}>
-          {user && user.email}
-        </Text>
-      </View>
+        <Icon 
+          name="mail" 
+          size={20} 
+          color={theme.colors.textLight} 
+          /> 
+        <Text style={styles.infoText}
+          >{user && user.email}
+          </Text>
+        </View>
       {user && user.phone && (
         <View style={styles.info}>
-          <Icon name="phone" size={20} color={theme.colors.textLight} /> 
-          <Text style={styles.infoText}>
-            {user.phone}
-          </Text>
+          <Icon 
+            name="phone" 
+            size={20} 
+            color={theme.colors.textLight} 
+            /> 
+          <Text style={styles.infoText}
+            >{user.phone}
+            </Text>
         </View>
       )}
       {user && user.bio && (
         <View style={styles.info}>
-          <Text style={styles.infoText}>
-            About me: {user.bio}
-          </Text>
+          <Text style={styles.infoText}
+            >About me: {user.bio}
+            </Text>
         </View>
       )}
     </View>
@@ -125,23 +133,30 @@ const ProfileMain: React.FC<ProfileMainProps> = ({
   return (
     <View style={{ gap: 5 }}>
       <View style={styles.avatarContainer} >
-        <Avatar uri={user?.image} size={hp(12)} rounded={theme.radius.xxl * 1.4} />
-        <Pressable style={styles.editIcon} onPress={() => router.push('/editProfile')} >
+        <Avatar 
+          uri={user?.image} 
+          size={hp(12)} 
+          rounded={theme.radius.xxl * 1.4}
+          />
+        <Pressable 
+          style={styles.editIcon} 
+          onPress={() => router.push('/editProfile')} 
+          >
           <Icon 
             name="edit" 
             strokeWidth={2.5} 
             size={20} 
-          />
-        </Pressable>
-      </View>
+            />
+          </Pressable>
+        </View>
       <View style={{ alignItems: 'center', gap: 4 }}> 
-        <Text style={styles.userName} >
-          {user && user.name}
-        </Text>
-        <Text style={styles.infoText} >
-          {user && user.address}
-        </Text>
-      </View>
+        <Text style={styles.userName} 
+          >{user && user.name}
+          </Text>
+        <Text style={styles.infoText} 
+          >{user && user.address}
+          </Text>
+        </View>
     </View>
   );
 }

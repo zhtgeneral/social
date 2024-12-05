@@ -26,30 +26,30 @@ const Welcome = () => {
           style={styles.welcomeImage} 
           source={welcomeImage}
           resizeMode="contain"
-        />
+          />
         <View style={{ gap: 20 }}>
-          <Text style={styles.title}>
-            Unlinkedout
-          </Text>
-          <Text style={styles.punchline}>
-            Punchline
-          </Text>
-        </View>
+          <Text style={styles.title}
+            >Unlinkedout
+            </Text>
+          <Text style={styles.punchline}
+            >Punchline
+            </Text>
+          </View>
         <View style={styles.footer}>
           <Button 
             title='Get Started'
             buttonStyle={{ marginhorizontal: wp(3) }}
             onPress={() => router.push('/signup')}
-          />
+            />
           <View style={styles.buttonTextContainer}>
-            <Text style={[styles.loginText]}>
-              Already have an account?
-            </Text>
-            <Pressable onPress={() => router.push('/login')}>
-              <Text style={[styles.loginText, styles.loginButtonText]}>
-                Login
+            <Text style={[styles.loginText]}
+              >Already have an account?
               </Text>
-            </Pressable>
+            <Pressable onPress={() => router.push('/login')}>
+              <Text style={[styles.loginText, styles.loginButtonText]}
+                >Login
+                </Text>
+              </Pressable>
           </View>
         </View>
       </View>

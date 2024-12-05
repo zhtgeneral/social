@@ -1,10 +1,10 @@
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/Supabase";
+import { CustomResponse } from '@/services/index';
 import { getUserData } from "@/services/userService";
 import { User } from "@supabase/supabase-js";
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from "react";
-import { CustomResponse } from '@/services/index'
 
 /**
  * This component provides app with Auth.

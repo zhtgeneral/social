@@ -19,6 +19,8 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 const Home = () => {
   const router = useRouter();
   const { user } = useAuth();
+
+  // TODO remove
   async function onLogout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -37,7 +39,7 @@ const Home = () => {
                 size={hp(3.2)} 
                 strokeWidth={2} 
                 stroke={theme.colors.text}
-              />
+                />
             </Pressable>
             <Pressable onPress={() => router.push('/newPost')}>
               <Icon 
@@ -45,7 +47,7 @@ const Home = () => {
                 size={hp(3.2)} 
                 strokeWidth={2} 
                 stroke={theme.colors.text} 
-              />
+                />
             </Pressable>
             <Pressable onPress={() => router.push('/profile')}>
               <Avatar 
@@ -53,7 +55,7 @@ const Home = () => {
                 size={hp(4.3)}
                 rounded={theme.radius.sm}
                 style={{ borderWidth: 2 }}
-              />
+                />
             </Pressable>
           </View>
         </View>

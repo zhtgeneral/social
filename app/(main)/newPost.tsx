@@ -16,16 +16,15 @@ import * as ImagePicker from 'expo-image-picker'
 import { ImagePickerAsset } from 'expo-image-picker'
 import type { MediaType } from 'expo-image-picker/src/ImagePicker.types'
 import { useRouter } from 'expo-router'
-import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
-import { 
-  Alert, 
-  Keyboard, 
-  Pressable, 
-  ScrollView, 
+import React from 'react'
+import {
+  Alert,
+  Pressable,
+  ScrollView,
   StyleSheet,
-  Text, 
-  TouchableOpacity, 
-  View 
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native'
 import { RichEditor } from 'react-native-pell-rich-editor'
 
@@ -33,11 +32,11 @@ interface NewPostHeaderProps {
   user: User
 }
 interface NewPostUploadMediaProps {
-  setFile: Dispatch<SetStateAction<ImagePickerAsset | null>>
+  setFile: React.Dispatch<React.SetStateAction<ImagePickerAsset | null>>
 }
 interface NewPostDisplayMediaProps {
   file: ImagePickerAsset | null,
-  setFile: Dispatch<SetStateAction<ImagePickerAsset | null>>
+  setFile: React.Dispatch<React.SetStateAction<ImagePickerAsset | null>>
 }
 
 /**
@@ -49,11 +48,12 @@ interface NewPostDisplayMediaProps {
  */
 const NewPost = () => {
   const { user } = useAuth();
-  const bodyRef = useRef("");
-  const editorRef = useRef<RichEditor | null>(null);
+  const bodyRef = React.useRef("");
+  const editorRef = React.useRef<RichEditor | null>(null);
   const router = useRouter();
-  const [loading, setLoading ] = useState(false);
-  const [file, setFile] = useState<ImagePickerAsset | null>(null);
+
+  const [loading, setLoading ] = React.useState(false);
+  const [file, setFile] = React.useState<ImagePickerAsset | null>(null);
 
   async function onSubmit() {
     if (!bodyRef.current && !file) {
@@ -94,7 +94,7 @@ const NewPost = () => {
               <RichTextEditor 
                 editorRef={editorRef}
                 onChange={(body: string) => bodyRef.current = body}
-              />
+                />
               <NewPostDisplayMedia file={file} setFile={setFile}/>
               <NewPostUploadMedia setFile={setFile} />
             </View>
@@ -105,7 +105,7 @@ const NewPost = () => {
             loading={loading}
             hasShadow={false}
             onPress={onSubmit}
-          />
+            />
         </Pressable>
       </View> 
     </ScreenWrapper>
@@ -157,20 +157,20 @@ const NewPostDisplayMedia: React.FC<NewPostDisplayMediaProps> = ({
           useNativeControls={true}
           resizeMode={ResizeMode.COVER}
           isLooping={true}
-        />
+          />
       ): (
         <Image 
           source={{ uri: getFileUri(file) }}
           contentFit='cover'
           style={{ flex: 1 }}
-        />
+          />
       )}
       <Pressable style={styles.closeIcon} onPress={() => setFile(null)}>
         <Icon 
           name="delete" 
           size={20} 
           stroke="white" 
-        />
+          />
       </Pressable>
     </View>
   );
@@ -203,25 +203,25 @@ const NewPostUploadMedia: React.FC<NewPostUploadMediaProps> = ({
   }
   return (
     <View style={styles.media}>
-      <Text style={styles.addImageText}>
-        Add to your post
-      </Text>
+      <Text style={styles.addImageText}
+        >Add to your post
+        </Text>
       <View style={styles.mediaIcons}>
         <TouchableOpacity onPress={() => onPick(true)}>
           <Icon 
             name='image' 
             size={30} 
             stroke={theme.colors.dark} 
-          />
-        </TouchableOpacity>
+            />
+          </TouchableOpacity>
         <TouchableOpacity onPress={() => onPick(false)}>
           <Icon 
             name='video' 
             size={35} 
             strokeWidth={1.7}
             stroke={theme.colors.dark} 
-          />
-        </TouchableOpacity>
+            />
+          </TouchableOpacity>
       </View>
     </View>
   );
@@ -240,15 +240,15 @@ const NewPostHeader: React.FC<NewPostHeaderProps> = ({
         uri={user.image}
         size={hp(6.6)}
         rounded={theme.radius.xl}
-      />
+        />
       <View style={{ gap: 2 }}> 
-        <Text style={styles.username}>
-          {user && user.name}
-        </Text>
-        <Text style={styles.publicText}>
-          public
-        </Text>
-      </View>
+        <Text style={styles.username}
+          >{user && user.name}
+          </Text>
+        <Text style={styles.publicText}
+          >public
+          </Text>
+        </View>
     </View>
   );
 }

@@ -13,7 +13,7 @@ const ThreeDotsHorizontal: React.FC<SvgProps> = ({
       fill="none"
       viewBox="0 0 24 24"
       {...props}
-    >
+      >
       <Circle 
         cx="4" 
         cy="12" 
@@ -21,7 +21,7 @@ const ThreeDotsHorizontal: React.FC<SvgProps> = ({
         strokeLinecap="round" 
         strokeLinejoin="round" 
         {...props}
-      />
+        />
       <Circle 
         cx="12" 
         cy="12" 
@@ -29,7 +29,7 @@ const ThreeDotsHorizontal: React.FC<SvgProps> = ({
         strokeLinecap="round" 
         strokeLinejoin="round" 
         {...props}
-      />
+        />
       <Circle 
         cx="20" 
         cy="12" 
@@ -37,7 +37,7 @@ const ThreeDotsHorizontal: React.FC<SvgProps> = ({
         strokeLinecap="round" 
         strokeLinejoin="round" 
         {...props}
-      />
+        />
     </Svg>
   );
 }
