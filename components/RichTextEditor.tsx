@@ -8,6 +8,12 @@ interface RichTextEditorProps {
   onChange: (body: string) => void
 }
 
+/**
+ * This component renders a rich text editor with custom format.
+ * 
+ * When the editor is pressed, it doesn't close the keyboard.
+ * @requires parent needs to handle keyboard close events.
+ */
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
   editorRef,
   onChange

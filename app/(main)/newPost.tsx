@@ -95,8 +95,13 @@ const NewPost = () => {
                 editorRef={editorRef}
                 onChange={(body: string) => bodyRef.current = body}
                 />
-              <NewPostDisplayMedia file={file} setFile={setFile}/>
-              <NewPostUploadMedia setFile={setFile} />
+              <NewPostDisplayMedia 
+                file={file} 
+                setFile={setFile}
+                />
+              <NewPostUploadMedia 
+                setFile={setFile} 
+                />
             </View>
           </ScrollView>
           <Button 

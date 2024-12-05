@@ -17,7 +17,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({
   title = "",
   showBackButton = true,
-  mb = 10
+  mb = 15
 }) => {
   const router = useRouter();
   return (
