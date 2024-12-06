@@ -147,7 +147,7 @@ const NewPostDisplayMedia: React.FC<NewPostDisplayMediaProps> = ({
     if (isLocalFile(file)) {
       return file.uri;
     }
-    return getSupabaseFileUrl(file.uri)?.uri || "";
+    return getSupabaseFileUrl(file.uri);
   }
 
   if (!file) {

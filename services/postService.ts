@@ -9,6 +9,9 @@ export interface UpsertPostData {
   userId: string
 }
 
+/**
+ * This function upserts a post into Supabase.
+ */
 export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomResponse> {
   let { file, body, userId } = post;
   try {
@@ -46,6 +49,42 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
     }
   } catch (error: any) {
     console.log("createOrUpdatePost: upsert error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+
+/**
+ * This function upserts a post into Supabase.
+ */
+export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select(`
+        *, 
+        user: users (id, name, image)
+      `)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.log("getPost: get error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    console.log("got data from getPosts: ", JSON.stringify(data, null, 2));
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("getPost: get error: ", error.message);
     return {
       success: false,
       message: error.message

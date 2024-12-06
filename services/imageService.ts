@@ -5,9 +5,9 @@ import { CustomResponse } from "./index";
 
 export function getSupabaseFileUrl(filePath: string) {
   if (filePath) {
-    return { uri: `${supabaseUrl}/storage/v1/object/public/${filePath}`};
+    return `${supabaseUrl}/storage/v1/object/public/${filePath}`;
   }
-  return null;
+  return "";
 }
 
 /**

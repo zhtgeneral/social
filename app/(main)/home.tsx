@@ -1,13 +1,18 @@
 import Icon from '@/assets/icons'
 import Avatar from '@/components/Avatar'
+import PostCard from '@/components/PostCard'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
+import { fetchPosts } from '@/services/postService'
+import { Post } from '@/types/supabase'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
+
+var limit = 10;
 
 /**
  * This page handles `/home`.
@@ -20,13 +25,29 @@ const Home = () => {
   const router = useRouter();
   const { user } = useAuth();
 
-  // TODO remove
-  async function onLogout() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      Alert.alert("Logout error", error.message);
+  const [posts, setPosts] = React.useState<Post[]>([]);
+
+  React.useEffect(() => {
+    async function getPosts() {
+      const result = await fetchPosts();
+      if (result.success) {
+        setPosts(result.data);
+      } else {
+        Alert.alert("Posts error", result.message);
+      }
+      console.log("fetched limit: " + limit);
+      limit += 10;
     }
-  }
+    getPosts();
+  }, [])
+
+  // TODO remove
+  // async function onLogout() {
+  //   const { error } = await supabase.auth.signOut();
+  //   if (error) {
+  //     Alert.alert("Logout error", error.message);
+  //   }
+  // }
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
@@ -40,7 +61,7 @@ const Home = () => {
                 strokeWidth={2} 
                 stroke={theme.colors.text}
                 />
-            </Pressable>
+              </Pressable>
             <Pressable onPress={() => router.push('/newPost')}>
               <Icon 
                 name="plus" 
@@ -48,7 +69,7 @@ const Home = () => {
                 strokeWidth={2} 
                 stroke={theme.colors.text} 
                 />
-            </Pressable>
+              </Pressable>
             <Pressable onPress={() => router.push('/profile')}>
               <Avatar 
                 uri={user?.image} 
@@ -56,9 +77,23 @@ const Home = () => {
                 rounded={theme.radius.sm}
                 style={{ borderWidth: 2 }}
                 />
-            </Pressable>
+              </Pressable>
           </View>
         </View>
+        <FlatList
+          data={posts}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listStyle}
+          keyExtractor={(item: Post) => item.id.toString()}
+          renderItem={
+            ( info: ListRenderItemInfo<Post> ) => (
+              <PostCard 
+                item={info.item}
+                currentUser={user}
+              /> 
+            )
+          }
+        />
       </View>
     </ScreenWrapper>
   )
