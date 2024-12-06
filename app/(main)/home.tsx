@@ -8,7 +8,9 @@ import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
 import { fetchPosts } from '@/services/postService'
+import { getUserData } from '@/services/userService'
 import { Post } from '@/types/supabase'
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
@@ -30,18 +32,42 @@ const Home = () => {
   const [posts, setPosts] = React.useState<Post[]>([]);
 
   React.useEffect(() => {
-    async function getPosts() {
-      const result = await fetchPosts();
-      if (result.success) {
-        setPosts(result.data);
-      } else {
-        Alert.alert("Posts error", result.message);
-      }
-      console.log("fetched limit: " + limit);
-      limit += 10;
-    }
+    const postChannel = supabase
+      .channel('posts')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts'}, handlePostEvents)
+      .subscribe();
+
     getPosts();
-  }, [])
+
+    return () => {
+      supabase.removeChannel(postChannel);
+    }
+  }, []);
+
+  async function getPosts() {
+    const result = await fetchPosts();
+    if (result.success) {
+      setPosts(result.data);
+    } else {
+      Alert.alert("Posts error", result.message);
+    }
+    console.log("fetched limit: " + limit);
+    limit += 10;
+  }
+
+  /**
+   * This callback function sets the posts on the home page.
+   * 
+   * It is called whenever supabase channels detects an INSERT event.
+   */
+  async function handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
+    if (payload.eventType == "INSERT" && payload.new?.id) {
+      const newPost = {...payload.new};
+      const userResponse = await getUserData(newPost.user_id);
+      newPost.user = userResponse.success? userResponse.data: {};
+      setPosts((previousPosts) => [newPost, ...previousPosts]);
+    } 
+  }
 
   // TODO remove
   // async function onLogout() {

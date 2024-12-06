@@ -78,7 +78,6 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
         message: error.message
       }
     } 
-    console.log("got data from getPosts: ", JSON.stringify(data, null, 2));
     return {
       success: true,
       data: data
