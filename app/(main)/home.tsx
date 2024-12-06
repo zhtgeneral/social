@@ -1,5 +1,6 @@
 import Icon from '@/assets/icons'
 import Avatar from '@/components/Avatar'
+import Loading from '@/components/Loading'
 import PostCard from '@/components/PostCard'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
@@ -17,9 +18,10 @@ var limit = 10;
 /**
  * This page handles `/home`.
  * 
- * @requires user needs to be logged in to get here.
+ * It displays the header with actions for viewing liked posts,
+ * adding posts, and updating user info.
  * 
- * @TODO
+ * @requires user needs to be logged in to get here.
  */
 const Home = () => {
   const router = useRouter();
@@ -93,6 +95,11 @@ const Home = () => {
               /> 
             )
           }
+          ListFooterComponent={(
+            <View style={{ marginVertical: !posts.length? 200: 30 }}>
+              <Loading />
+            </View>
+          )}
         />
       </View>
     </ScreenWrapper>

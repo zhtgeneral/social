@@ -1,17 +1,16 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { Post, User } from '@/types/supabase'
-import { useRouter } from 'expo-router'
-import { theme } from '../constants/theme';
-import { hp } from '@/helpers/common';
-import Avatar from './Avatar';
-import moment from 'moment';
 import Icon from '@/assets/icons';
-import RenderHtml from 'react-native-render-html';
-import { Image } from 'expo-image';
+import { hp } from '@/helpers/common';
 import { getSupabaseFileUrl } from '@/services/imageService';
+import { Post, User } from '@/types/supabase';
 import { ResizeMode, Video } from 'expo-av'; // TODO migrate to expo-video
-import { LogBox } from 'react-native';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import moment from 'moment';
+import React from 'react';
+import { LogBox, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import RenderHtml from 'react-native-render-html';
+import { theme } from '../constants/theme';
+import Avatar from './Avatar';
 
 interface PostCardProps {
   item: Post,
@@ -58,6 +57,8 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   }
   const createdAt = moment(item?.created_at).format('MMM D');
+  const liked = true;
+  const likes = [];
 
   function openPostDetails() {
 
@@ -113,6 +114,42 @@ const PostCard: React.FC<PostCardProps> = ({
             />
           )}
           </View>
+        </View>
+        <View style={styles.footer}>
+          <View style={styles.footerButton}>
+            <TouchableOpacity>
+              <Icon 
+                name="heart" 
+                size={24} 
+                fill={liked? theme.colors.rose: 'transparent'}
+                stroke={liked? theme.colors.rose: theme.colors.textLight} 
+                />
+              </TouchableOpacity>
+              <Text>
+                {
+                  likes.length 
+                }
+              </Text>
+            </View>
+          <View style={styles.footerButton}>
+            <TouchableOpacity>
+              <Icon 
+                name="comment" 
+                size={24} 
+                stroke={theme.colors.textLight} 
+                />
+              </TouchableOpacity>
+              <Text>0</Text>
+            </View>
+          <View style={styles.footerButton}>
+            <TouchableOpacity>
+              <Icon 
+                name="share" 
+                size={24} 
+                stroke={theme.colors.textLight} 
+                />
+              </TouchableOpacity>
+            </View>
         </View>
     </View>
   )
