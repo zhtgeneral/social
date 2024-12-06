@@ -78,8 +78,8 @@ const Home = () => {
                 style={{ borderWidth: 2 }}
                 />
               </Pressable>
+            </View>
           </View>
-        </View>
         <FlatList
           data={posts}
           showsVerticalScrollIndicator={false}

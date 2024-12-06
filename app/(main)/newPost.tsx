@@ -86,7 +86,7 @@ const NewPost = () => {
   return (
     <ScreenWrapper bg="white" >
       <View style={styles.container}>
-        <Pressable onPress={() => handleKeyboard()}>
+        <Pressable onPress={handleKeyboard}>
           <Header title="Create post" />
           <ScrollView contentContainerStyle={{ gap: 15 }}>  
             <NewPostHeader user={user} />
@@ -102,15 +102,15 @@ const NewPost = () => {
               <NewPostUploadMedia 
                 setFile={setFile} 
                 />
+              <Button 
+                buttonStyle={{ height: hp(6.2)}}
+                title="Create post"
+                loading={loading}
+                hasShadow={false}
+                onPress={onSubmit}
+                />
             </View>
           </ScrollView>
-          <Button 
-            buttonStyle={{ height: hp(6.2)}}
-            title="Create post"
-            loading={loading}
-            hasShadow={false}
-            onPress={onSubmit}
-            />
         </Pressable>
       </View> 
     </ScreenWrapper>

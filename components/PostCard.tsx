@@ -42,6 +42,21 @@ const PostCard: React.FC<PostCardProps> = ({
     shadowRadius: 6,
     elevation: 1
   }
+  const textStyle = {
+    color: theme.colors.dark,
+    fontSize: hp(1.75)
+  }
+  const tagStyles = {
+    div: textStyle,
+    p: textStyle,
+    ol: textStyle,
+    h1: {
+      color: theme.colors.dark
+    },
+    h4: {
+      color: theme.colors.dark
+    }
+  }
   const createdAt = moment(item?.created_at).format('MMM D');
 
   function openPostDetails() {
@@ -105,23 +120,6 @@ const PostCard: React.FC<PostCardProps> = ({
 
 export default PostCard
 
-const textStyle = {
-  color: theme.colors.dark,
-  fontSize: hp(1.75)
-}
-const tagStyles = {
-  div: textStyle,
-  p: textStyle,
-  ol: textStyle,
-  h1: {
-    color: theme.colors.dark
-  },
-  h4: {
-    color: theme.colors.dark
-  }
-}
-
-
 const styles = StyleSheet.create({
   container: {
     gap: 10,
@@ -161,10 +159,10 @@ const styles = StyleSheet.create({
     height: hp(40),
     width: '100%',
     borderRadius: theme.radius.xl,
-    borderCurve: 'continuous'
+    borderCurve: 'continuous'    
   },
   postBody: {
-    marginLeft: 5,
+    marginHorizontal: 4,
     gap: 10
   },
   footer: {
