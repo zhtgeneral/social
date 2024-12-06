@@ -9,24 +9,28 @@ import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
 import { fetchPosts } from '@/services/postService'
 import { getUserData } from '@/services/userService'
-import { Post } from '@/types/supabase'
+import { Post, User } from '@/types/supabase'
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
+
+interface HomeHeaderProps {
+  user: User
+}
 
 var limit = 10;
 
 /**
  * This page handles `/home`.
  * 
- * It displays the header with actions for viewing liked posts,
- * adding posts, and updating user info.
+ * It renders the home header and all the posts.
+ * 
+ * It loads posts in chunks of `limit` and loads posts in real time from supabase.
  * 
  * @requires user needs to be logged in to get here.
  */
 const Home = () => {
-  const router = useRouter();
   const { user } = useAuth();
 
   const [posts, setPosts] = React.useState<Post[]>([]);
@@ -69,45 +73,10 @@ const Home = () => {
     } 
   }
 
-  // TODO remove
-  // async function onLogout() {
-  //   const { error } = await supabase.auth.signOut();
-  //   if (error) {
-  //     Alert.alert("Logout error", error.message);
-  //   }
-  // }
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Unlinkedout</Text>
-          <View style={styles.icons}>
-            <Pressable onPress={() => router.push('/notifications')}>
-              <Icon 
-                name="heart" 
-                size={hp(3.2)} 
-                strokeWidth={2} 
-                stroke={theme.colors.text}
-                />
-              </Pressable>
-            <Pressable onPress={() => router.push('/newPost')}>
-              <Icon 
-                name="plus" 
-                size={hp(3.2)} 
-                strokeWidth={2} 
-                stroke={theme.colors.text} 
-                />
-              </Pressable>
-            <Pressable onPress={() => router.push('/profile')}>
-              <Avatar 
-                uri={user?.image} 
-                size={hp(4.3)}
-                rounded={theme.radius.sm}
-                style={{ borderWidth: 2 }}
-                />
-              </Pressable>
-            </View>
-          </View>
+        <HomeHeader user={user} />
         <FlatList
           data={posts}
           showsVerticalScrollIndicator={false}
@@ -133,6 +102,50 @@ const Home = () => {
 }
 
 export default Home
+
+/**
+ * This component displays the header with actions for viewing liked posts,
+ * adding posts, and updating user info.
+ * 
+ * It displays the brand name.
+ */
+const HomeHeader: React.FC<HomeHeaderProps> = ({
+  user
+}) => {
+  const router = useRouter();
+  return (
+    <View style={styles.header}>
+      <Text style={styles.title}>Unlinkedout</Text>
+      <View style={styles.icons}>
+        <Pressable onPress={() => router.push('/notifications')}>
+          <Icon 
+            name="heart" 
+            size={hp(3.2)} 
+            strokeWidth={2} 
+            stroke={theme.colors.text}
+            />
+          </Pressable>
+        <Pressable onPress={() => router.push('/newPost')}>
+          <Icon 
+            name="plus" 
+            size={hp(3.2)} 
+            strokeWidth={2} 
+            stroke={theme.colors.text} 
+            />
+          </Pressable>
+        <Pressable onPress={() => router.push('/profile')}>
+          <Avatar 
+            uri={user?.image} 
+            size={hp(4.3)}
+            rounded={theme.radius.sm}
+            style={{ borderWidth: 2 }}
+            />
+          </Pressable>
+        </View>
+    </View>
+  )
+}
+
 
 const styles = StyleSheet.create({
   container: {

@@ -27,9 +27,7 @@ const Header: React.FC<HeaderProps> = ({
           <BackButton router={router} />
         </View>
       )}
-      <Text style={styles.title}
-        >{title}
-        </Text>
+      <Text style={styles.title}>{title}</Text>
     </View>
   )
 }

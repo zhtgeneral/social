@@ -28,12 +28,8 @@ const Welcome = () => {
           resizeMode="contain"
           />
         <View style={{ gap: 20 }}>
-          <Text style={styles.title}
-            >Unlinkedout
-            </Text>
-          <Text style={styles.punchline}
-            >Punchline
-            </Text>
+          <Text style={styles.title}>Unlinkedout</Text>
+          <Text style={styles.punchline}>Punchline</Text>
           </View>
         <View style={styles.footer}>
           <Button 
@@ -42,17 +38,13 @@ const Welcome = () => {
             onPress={() => router.push('/signup')}
             />
           <View style={styles.buttonTextContainer}>
-            <Text style={[styles.loginText]}
-              >Already have an account?
-              </Text>
+            <Text style={[styles.loginText]}>Already have an account?</Text>
             <Pressable onPress={() => router.push('/login')}>
-              <Text style={[styles.loginText, styles.loginButtonText]}
-                >Login
-                </Text>
+              <Text style={[styles.loginText, styles.loginButtonText]}>Login</Text>
               </Pressable>
+            </View>
           </View>
         </View>
-      </View>
     </ScreenWrapper>
   )
 }
