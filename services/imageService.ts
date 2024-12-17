@@ -3,6 +3,9 @@ import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
 import { CustomResponse } from "./index";
 
+/**
+ * This function gets the file URI in the form `{supabaseUrl}/storage/v1/object/public/{filePath}`
+ */
 export function getSupabaseFileUrl(filePath: string) {
   if (filePath) {
     return `${supabaseUrl}/storage/v1/object/public/${filePath}`;

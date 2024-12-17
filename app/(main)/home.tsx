@@ -35,6 +35,9 @@ const Home = () => {
 
   const [posts, setPosts] = React.useState<Post[]>([]);
 
+  /**
+   * This hook makes the home page responsive to any changes to uploaded posts
+   */
   React.useEffect(() => {
     const postChannel = supabase
       .channel('posts')
@@ -63,14 +66,24 @@ const Home = () => {
    * This callback function sets the posts on the home page.
    * 
    * It is called whenever supabase channels detects an INSERT event.
+   * 
+   * It fills the user for the new post.
    */
   async function handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
     if (payload.eventType == "INSERT" && payload.new?.id) {
       const newPost = {...payload.new};
-      const userResponse = await getUserData(newPost.user_id);
-      newPost.user = userResponse.success? userResponse.data: {};
+      setUser(newPost);
       setPosts((previousPosts) => [newPost, ...previousPosts]);
     } 
+  }
+  /**
+   * This function sets the user for the new post.
+   * 
+   * If the request for getting the user fails, it sets the user as null.
+   */
+  async function setUser(newPost: any) {
+    const userResponse = await getUserData(newPost.user_id);
+    newPost.user = userResponse.success? userResponse.data: {};
   }
 
   return (

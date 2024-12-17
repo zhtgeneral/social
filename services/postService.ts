@@ -9,6 +9,14 @@ export interface UpsertPostData {
   userId: string
 }
 
+export function formatPostData(file: ImagePickerAsset | null, body: string, userId: string): UpsertPostData {
+  return {
+    file: file,
+    body: body,
+    userId: userId
+  }
+}
+
 /**
  * This function upserts a post into Supabase.
  */

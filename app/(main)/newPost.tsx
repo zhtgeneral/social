@@ -8,7 +8,7 @@ import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { getSupabaseFileUrl } from '@/services/imageService'
-import { createOrUpdatePost, UpsertPostData } from '@/services/postService'
+import { createOrUpdatePost, formatPostData, UpsertPostData } from '@/services/postService'
 import { User } from '@/types/supabase'
 import { ResizeMode, Video } from 'expo-av'
 import { Image } from 'expo-image'
@@ -48,6 +48,7 @@ interface NewPostDisplayMediaProps {
  */
 const NewPost = () => {
   const { user } = useAuth();
+
   const bodyRef = React.useRef("");
   const editorRef = React.useRef<RichEditor | null>(null);
   const router = useRouter();
@@ -55,17 +56,24 @@ const NewPost = () => {
   const [loading, setLoading ] = React.useState(false);
   const [file, setFile] = React.useState<ImagePickerAsset | null>(null);
 
+  /**
+   * This function handles the user submitting new posts.
+   * 
+   * If the body of the post is empty and there is no image/video, 
+   * it alerts the user with "Invalid Post".
+   * 
+   * Otherwise it creates a post into the database.
+   * 
+   * If the post is successfully added, the user is taken to the home page.
+   * Otherwise the user is alerted with "Post error".
+   */
   async function onSubmit() {
     if (!bodyRef.current && !file) {
       Alert.alert("Invalid post", "Please choose a message or an image.");
       return;
     }
-    const data: UpsertPostData = {
-      file: file,
-      body: bodyRef.current,
-      userId: user?.id
-    };
     setLoading(true);
+    const data: UpsertPostData = formatPostData(file, bodyRef.current, user?.id);
     const response = await createOrUpdatePost(data);
     setLoading(false);
     if (response.success) {
@@ -77,6 +85,10 @@ const NewPost = () => {
       Alert.alert("Post error", response.message);
     }
   }
+  /**
+   * This function makes the editor respond as expected 
+   * by closing the keyboard when outside of the editor is pressed.
+   */
   function handleKeyboard() {
     if (editorRef.current?.isKeyboardOpen) {
       editorRef.current?.blurContentEditor();
@@ -121,7 +133,7 @@ const NewPost = () => {
  * This component handles displaying the selected media.
  * 
  * For images, it displays the image.
- * For video, it displays the video player that loops the video.
+ * For videos, it displays the video player that loops the video.
  * 
  * It displays a close icon that closes the display media when pressed.
  */
@@ -140,6 +152,13 @@ const NewPostDisplayMedia: React.FC<NewPostDisplayMediaProps> = ({
       return file.type;
     }
   }
+  /**
+   * This function gets the file uri.
+   * 
+   * If there is no file, return empty string.
+   * If the file is a local file, return its uri.
+   * Otherwise return the supabase file uri.
+   */
   function getFileUri(file: ImagePickerAsset | null): string {
     if (!file) {
       return "";
@@ -188,6 +207,10 @@ const NewPostDisplayMedia: React.FC<NewPostDisplayMediaProps> = ({
 const NewPostUploadMedia: React.FC<NewPostUploadMediaProps> = ({
   setFile
 }) => {
+  /**
+   * This function opens the user's image library and allows them to select
+   * either an image or a video.
+   */
   async function onPick(isImage: boolean) {
     let mediaConfig = {
       mediaTypes: "images" as MediaType,
