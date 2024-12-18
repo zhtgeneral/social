@@ -16,7 +16,7 @@ import React from 'react'
 import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
 
 var limit = 10;
-const debugging = true;
+const debugging = false;
 
 interface HomeHeaderProps {
   user: User
@@ -131,7 +131,7 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Home;
 
 /**
  * This component displays the header with actions for viewing liked posts,
@@ -175,7 +175,6 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   container: {
