@@ -19,7 +19,7 @@ import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { Router, useRouter } from 'expo-router'
 
-const debugging = false;
+const debugging = true;
 
 class EditProfileUtil {
   /**
@@ -49,9 +49,17 @@ class EditProfileUtil {
 
     setLoading(true);
     let updateResponse: CustomResponse = { success: false };
-    if (image) {
+    const imageDifferent = formData.image != user.image;
+
+    if (image && imageDifferent) {
+      if (debugging) {
+        console.log("EditProfileUtil::onSubmit: didn't expect this route (images should be the same)");
+      }
       updateResponse = await EditProfileUtil.handleUpdateImageAndUser(image, formData, user, setUserData);
     } else {
+      if (debugging) {
+        console.log("EditProfileUtil::onSubmit: expected this route");
+      }
       updateResponse = await EditProfileUtil.handleUpdateUser(user, formData, setUserData);
     }
     setLoading(false);
