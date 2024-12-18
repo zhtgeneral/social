@@ -14,13 +14,13 @@ export function getSupabaseFileUrl(filePath: string) {
 }
 
 /**
- * This function gets the source of the image.
+ * This function gets the source of the image using Supabase.
  * 
  * If there is no image, return the uri for the default avatar.
  */
 export function getUserImageSource(imagePath: string | null) {
   if (imagePath) {
-    return { uri: imagePath };
+    return { uri: getSupabaseFileUrl(imagePath) };
   } else {
     return require("../assets/images/defaultUser.png")
   }
@@ -57,7 +57,6 @@ export async function uploadFile(
         message: error.message
       }
     } 
-    console.log("data uploadFile: ", JSON.stringify(data, null, 2));
     return {
       success: true,
       data: data.fullPath

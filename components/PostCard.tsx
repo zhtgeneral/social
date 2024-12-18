@@ -54,6 +54,7 @@ export default PostCard;
 const PostCardHeader: React.FC<PostCardHeaderProps> = ({
   item
 }) => {
+  // console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
   const createdAt = moment(item?.created_at).format('MMM D');  
   function openPostDetails() {}
   return (

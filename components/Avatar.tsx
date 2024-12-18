@@ -15,6 +15,9 @@ interface AvatarProps {
 
 /**
  * This component renders an avatar.
+ * 
+ * It takes in uri which is a string in the format of `/uploads/<location>/id.ext` or `""`
+ * where the first format is the shortened Supabase storage path.
  */
 const Avatar: React.FC<AvatarProps> = ({
   uri,

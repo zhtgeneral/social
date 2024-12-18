@@ -16,12 +16,123 @@ import { getUserImageSource, uploadFile } from '@/services/imageService'
 import { updateUser } from '@/services/userService'
 import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
-import { useRouter } from 'expo-router'
+import { Router, useRouter } from 'expo-router'
+import { CustomResponse } from '@/services'
+
+const debugging = false;
+
+class EditProfileUtil {
+  /**
+   * This function handles submitting updated user data.
+   * 
+   * It checks for any missing fields and alerts the user before returning.
+   * 
+   * If the image is updated, it uploads it before updating the user's data.
+   * Otherwise it simply updates the user's data.
+   * 
+   * If the update is successful, it takes the user to the previous screen.
+   */
+  public static async onSubmit(
+    formData: User, 
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    router: Router,
+    user: any, 
+    setUserData: (userData: User) => void
+  ) {
+    let image: string
+    try {
+      image = EditProfileUtil.handleValidateForm(formData);
+    } catch (error: any) {
+      Alert.alert('Incomplete profile', "Please fill all fields");
+      return;
+    }
+
+    setLoading(true);
+    let updateResponse: CustomResponse = { success: false };
+    if (image) {
+      updateResponse = await EditProfileUtil.handleUpdateImageAndUser(image, formData, user, setUserData);
+    } else {
+      updateResponse = await EditProfileUtil.handleUpdateUser(user, formData, setUserData);
+    }
+    setLoading(false);
+
+    if (updateResponse.success) {
+      router.back();
+    }
+  }
+  /**
+   * This function validates the updated data by throwing an error for empty inputs.
+   */
+  private static handleValidateForm(formData: User): string {
+    let { name, phone, address, bio, image} = formData;
+    if (!name || !phone || !address || !bio) {
+      throw new Error();
+    }
+    return image;
+  }
+  /**
+   * This function updates both the Image and the User.
+   * 
+   * It uploads image to Supabase under `profiles`.
+   * If the upload is successful, it saves the image path to the form.
+   * 
+   * Then it updates the user in the database and the user state.
+   */
+  private static async handleUpdateImageAndUser(
+    image: string, 
+    formData: User,
+    user: any,
+    setUserData: (userData: User) => void
+  ): Promise<CustomResponse> {
+    const uploadResponse = await uploadFile('profiles', image, true);
+    let updateResponse = { success: false };
+
+    if (uploadResponse.success) {
+      if (debugging) {
+        console.log("editProfile::onSubmit got uploaded image: " + JSON.stringify(uploadResponse, null, 2));
+      }
+
+      formData.image = uploadResponse.data;
+      updateResponse = await EditProfileUtil.handleUpdateUser(user, formData, setUserData);
+    } else {
+      formData.image = null;
+    } 
+    return updateResponse;
+  }
+  /**
+   * This function updates the user in the database and the user state.
+   */
+  private static async handleUpdateUser(
+    user: any, 
+    formData: User, 
+    setUserData: (userData: User) => void
+  ): Promise<CustomResponse> {
+    const updateResponse = await updateUser(user.id, formData); 
+    if (updateResponse.success) {
+      /** Note this was the only reliable to way to update the user's info */
+      user.name = formData.name
+      user.image = formData.image;
+      user.bio = formData.bio;
+      user.address = formData.address;
+      user.phone = formData.phone;
+      setUserData(user);
+
+      if (debugging) {
+        console.log("editProfile::handleUpdateUser updated user state: " + JSON.stringify(user, null, 2));
+        console.log("editProfile::handleUpdateUser updated form state: " + JSON.stringify(formData, null, 2));
+      }
+
+    } else {
+      Alert.alert("Update error", updateResponse.message);
+    }
+    return updateResponse;
+  }
+}
 
 interface EditProfilePictureProps {
   user: User,
-  formUser: User,
-  setformUser: Dispatch<any>
+  formData: User,
+  setFormData: Dispatch<any>
 }
 
 /**
@@ -32,61 +143,36 @@ const EditProfile = () => {
   const router = useRouter();
   
   const [loading, setLoading] = useState(false);
-  const [formUser, setformUser] = useState<User>({
+  const [formData, setFormData] = useState<User>({
     name: null,
-    phoneNumber: null,
     image: null,
     bio: null,
-    address: null
+    address: null,
+    phone: null,
   })
 
   useEffect(() => {
     if (user) {
-      setformUser({
+      setFormData({
         name: user.name,
-        phone: user.phone,
         image: user.image,
+        bio: user.bio,
         address: user.address,
-        bio: user.bio
+        phone: user.phone,
       })
     }
   }, [user])
 
-  /**
-   * This function handles submitting updated user data.
-   * 
-   * It checks for any missing fields and alerts the user before returning.
-   * 
-   * Otherwise it sets the state as loading and updates the user in the database.
-   * If the response is successful, it sets the global state of the user.
-   */
   async function onSubmit() {
-    let { name, phone, address, bio, image} = formUser;
-    if (!name || !phone || !address || !bio) {
-      Alert.alert('Incomplete profile', "Please fill all fields");
-      return;
-    }
-    setLoading(true);
-
-    if (image) {
-      let imageResponse = await uploadFile('profiles', image, true);
-      if (!imageResponse.success) {
-        user.image = null;
-      } 
-    }
-    const response = await updateUser(user.id, formUser); 
-    if (response.success) {
-      setUserData({...user, ...formUser});
-      setLoading(false);
-      router.back();
-      return;
-    } 
-    if (response.message) {
-      Alert.alert("Update error", response.message);
-    }
-    setLoading(false);
+    await EditProfileUtil.onSubmit(
+      formData, 
+      setLoading, 
+      router,
+      user,
+      setUserData
+    );
   }
-  
+
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
@@ -95,8 +181,8 @@ const EditProfile = () => {
           <View style={styles.form}>
             <EditProfilePicture 
               user={user} 
-              setformUser={setformUser} 
-              formUser={formUser}
+              setFormData={setFormData} 
+              formData={formData}
               />  
             <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}
               >Please fill your profile details
@@ -104,27 +190,27 @@ const EditProfile = () => {
             <Input 
               icon={<Icon name="user" />}
               placeholder='Enter your username'
-              value={formUser.name}
-              onChangeText={(value: string) => setformUser({ ...formUser, name: value })}
+              value={formData.name}
+              onChangeText={(value: string) => setFormData({ ...formData, name: value })}
               />
             <Input 
               icon={<Icon name="phone" />}
               placeholder='Enter your phone number'
-              value={formUser.phone}
-              onChangeText={(value: string) => setformUser({ ...formUser, phone: value })}
+              value={formData.phone}
+              onChangeText={(value: string) => setFormData({ ...formData, phone: value })}
               />
             <Input 
               icon={<Icon name="location" />}
               placeholder='Enter your address'
-              value={formUser.address}
-              onChangeText={(value: string) => setformUser({ ...formUser, address: value })}
+              value={formData.address}
+              onChangeText={(value: string) => setFormData({ ...formData, address: value })}
               />
             <Input 
               placeholder='Enter your bio'
-              value={formUser.bio}
+              value={formData.bio}
               multiline={true}
               containerStyle={styles.bio}
-              onChangeText={(value: string) => setformUser({ ...formUser, bio: value })}
+              onChangeText={(value: string) => setFormData({ ...formData, bio: value })}
               />
             <Button 
               title="Update" 
@@ -145,21 +231,25 @@ export default EditProfile;
  */
 const EditProfilePicture: React.FC<EditProfilePictureProps> = ({
   user,
-  formUser,
-  setformUser
+  formData,
+  setFormData
 }) => {
   async function onPickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.5,
+      quality: 1,
     });
     if (!result.canceled) {
-      setformUser({...user, image: result.assets[0].uri});
+      setFormData({...user, image: result.assets[0].uri});
+      
+      if (debugging) {
+        console.log("editProfile::EditProfilePicture formData: " + JSON.stringify(formData, null, 2));
+      }
     } 
   }
-  let imageSource = (formUser.image)? formUser.image :getUserImageSource(user?.image);
+  let imageSource = (formData.image)? formData.image :getUserImageSource(user?.image);
   return (
     <View style={styles.avatarContainer}>
       <Image 

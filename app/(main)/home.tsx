@@ -6,7 +6,7 @@ import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
-import { supabase } from '@/lib/Supabase'
+import { supabase, supabaseUrl } from '@/lib/Supabase'
 import { fetchPosts } from '@/services/postService'
 import { getUserData } from '@/services/userService'
 import { Post, User } from '@/types/supabase'
@@ -14,6 +14,8 @@ import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Image } from 'expo-image'
+import { getSupabaseFileUrl } from '@/services/imageService'
 
 interface HomeHeaderProps {
   user: User
@@ -82,6 +84,7 @@ const Home = () => {
    * If the request for getting the user fails, it sets the user as null.
    */
   async function setUser(newPost: any) {
+    console.log("Home::handlePostEvents::setUser new post detected");
     const userResponse = await getUserData(newPost.user_id);
     newPost.user = userResponse.success? userResponse.data: {};
   }
@@ -90,6 +93,10 @@ const Home = () => {
     <ScreenWrapper bg="white">
       <View style={styles.container}>
         <HomeHeader user={user} />
+        <Avatar 
+          size={hp(4.5)}
+          uri={"uploads/profiles/1732332874913.png"}
+          />
         <FlatList
           data={posts}
           showsVerticalScrollIndicator={false}
