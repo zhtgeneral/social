@@ -11,6 +11,8 @@ import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
 import Avatar from './Avatar';
 
+const debugging = false;
+
 interface PostCardProps {
   item: Post,
   currentUser: User,
@@ -54,9 +56,14 @@ export default PostCard;
 const PostCardHeader: React.FC<PostCardHeaderProps> = ({
   item
 }) => {
-  // console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
+  if (debugging) {
+    console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
+  }
+
   const createdAt = moment(item?.created_at).format('MMM D');  
-  function openPostDetails() {}
+
+  function openPostDetails() {} // TODO
+
   return (
     <View style={styles.header}>
       <View style={styles.userInfo}> 

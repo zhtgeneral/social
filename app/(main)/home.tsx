@@ -6,7 +6,7 @@ import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
-import { supabase, supabaseUrl } from '@/lib/Supabase'
+import { supabase } from '@/lib/Supabase'
 import { fetchPosts } from '@/services/postService'
 import { getUserData } from '@/services/userService'
 import { Post, User } from '@/types/supabase'
@@ -14,14 +14,13 @@ import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
-import { Image } from 'expo-image'
-import { getSupabaseFileUrl } from '@/services/imageService'
+
+var limit = 10;
+const debugging = true;
 
 interface HomeHeaderProps {
   user: User
 }
-
-var limit = 10;
 
 /**
  * This page handles `/home`.
@@ -60,7 +59,11 @@ const Home = () => {
     } else {
       Alert.alert("Posts error", result.message);
     }
-    console.log("fetched limit: " + limit);
+
+    if (debugging) {
+      console.log("fetched limit: " + limit);
+    }
+
     limit += 10;
   }
 
@@ -69,12 +72,12 @@ const Home = () => {
    * 
    * It is called whenever supabase channels detects an INSERT event.
    * 
-   * It fills the user for the new post.
+   * It fills the user for the new post and brings the new post on top of the feed.
    */
   async function handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
     if (payload.eventType == "INSERT" && payload.new?.id) {
       const newPost = {...payload.new};
-      setUser(newPost);
+      await setUserForPost(newPost);
       setPosts((previousPosts) => [newPost, ...previousPosts]);
     } 
   }
@@ -83,20 +86,27 @@ const Home = () => {
    * 
    * If the request for getting the user fails, it sets the user as null.
    */
-  async function setUser(newPost: any) {
-    console.log("Home::handlePostEvents::setUser new post detected");
+  async function setUserForPost(newPost: any) {
+    if (debugging) {
+      console.log("Home::setUserForPost new post detected: " + JSON.stringify(newPost, null, 2));
+    }
+
     const userResponse = await getUserData(newPost.user_id);
+
+    if (debugging) {
+      console.log("Home::setUserForPost user data for the new post: " + JSON.stringify(userResponse, null, 2));
+    }
     newPost.user = userResponse.success? userResponse.data: {};
+
+    if (debugging) {
+      console.log("Home::setUserForPost new post with user: " + JSON.stringify(newPost, null, 2));
+    }
   }
 
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
         <HomeHeader user={user} />
-        <Avatar 
-          size={hp(4.5)}
-          uri={"uploads/profiles/1732332874913.png"}
-          />
         <FlatList
           data={posts}
           showsVerticalScrollIndicator={false}

@@ -1,4 +1,4 @@
-import React, { Dispatch, useEffect, useState } from 'react'
+import React from 'react'
 
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
@@ -12,12 +12,12 @@ import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
+import { CustomResponse } from '@/services'
 import { getUserImageSource, uploadFile } from '@/services/imageService'
 import { updateUser } from '@/services/userService'
 import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { Router, useRouter } from 'expo-router'
-import { CustomResponse } from '@/services'
 
 const debugging = false;
 
@@ -132,7 +132,7 @@ class EditProfileUtil {
 interface EditProfilePictureProps {
   user: User,
   formData: User,
-  setFormData: Dispatch<any>
+  setFormData: React.Dispatch<any>
 }
 
 /**
@@ -142,8 +142,8 @@ const EditProfile = () => {
   const { user, setUserData } = useAuth();
   const router = useRouter();
   
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<User>({
+  const [loading, setLoading] = React.useState(false);
+  const [formData, setFormData] = React.useState<User>({
     name: null,
     image: null,
     bio: null,
@@ -151,7 +151,7 @@ const EditProfile = () => {
     phone: null,
   })
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (user) {
       setFormData({
         name: user.name,

@@ -72,10 +72,12 @@ const NewPost = () => {
       Alert.alert("Invalid post", "Please choose a message or an image.");
       return;
     }
-    setLoading(true);
     const data: UpsertPostData = formatPostData(file, bodyRef.current, user?.id);
+    
+    setLoading(true);
     const response = await createOrUpdatePost(data);
     setLoading(false);
+
     if (response.success) {
       setFile(null);
       bodyRef.current = "";
