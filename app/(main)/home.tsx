@@ -15,8 +15,9 @@ import { useRouter } from 'expo-router'
 import React from 'react'
 import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
 
-var limit = 10;
-const debugging = false;
+var numPosts = 3;
+var amount = 3;
+const debugging = true;
 
 interface HomeHeaderProps {
   user: User
@@ -35,6 +36,7 @@ const Home = () => {
   const { user } = useAuth();
 
   const [posts, setPosts] = React.useState<Post[]>([]);
+  const [hasMore, setHasMore] = React.useState(true);
 
   /**
    * This hook makes the home page responsive to any changes to uploaded posts
@@ -45,26 +47,31 @@ const Home = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'posts'}, handlePostEvents)
       .subscribe();
 
-    getPosts();
-
     return () => {
       supabase.removeChannel(postChannel);
     }
   }, []);
 
   async function getPosts() {
-    const result = await fetchPosts();
+    if (!hasMore) {
+      return;
+    }
+      
+    const result = await fetchPosts(numPosts);
     if (result.success) {
+      if (posts.length === result.data.length) {
+        setHasMore(false);
+      }
       setPosts(result.data);
     } else {
       Alert.alert("Posts error", result.message);
     }
 
     if (debugging) {
-      console.log("fetched limit: " + limit);
+      console.log("fetched limit: " + numPosts);
     }
 
-    limit += 10;
+    numPosts += amount;
   }
 
   /**
@@ -102,6 +109,12 @@ const Home = () => {
       console.log("Home::setUserForPost new post with user: " + JSON.stringify(newPost, null, 2));
     }
   }
+  function handleEnd() {
+    if (debugging) {
+      console.log("End reached");
+    }
+    getPosts();
+  }
 
   return (
     <ScreenWrapper bg="white">
@@ -120,11 +133,21 @@ const Home = () => {
               /> 
             )
           }
-          ListFooterComponent={(
-            <View style={{ marginVertical: !posts.length? 200: 30 }}>
-              <Loading />
-            </View>
-          )}
+          onEndReached={handleEnd}
+          onEndReachedThreshold={0}
+          ListFooterComponent={
+            hasMore? (
+              <View style={{ marginVertical: !posts.length? 200: 30 }}>
+                <Loading />
+              </View>
+            ) : (
+              <View style={{ marginVertical: 30 }}>
+                <Text style={styles.noPosts}>
+                  No more posts
+                </Text>
+              </View>
+            )
+          }
         />
       </View>
     </ScreenWrapper>
