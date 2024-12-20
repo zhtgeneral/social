@@ -1,12 +1,13 @@
 import Icon from '@/assets/icons';
 import { hp } from '@/helpers/common';
 import { getSupabaseFileUrl } from '@/services/imageService';
-import { Post, User } from '@/types/supabase';
+import { createPostLike, removePostLike } from '@/services/postService';
+import { Post, PostLike, User } from '@/types/supabase';
 import { ResizeMode, Video } from 'expo-av'; // TODO migrate to expo-video
 import { Image } from 'expo-image';
 import moment from 'moment';
 import React from 'react';
-import { LogBox, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, LogBox, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
 import Avatar from './Avatar';
@@ -24,6 +25,10 @@ interface PostCardHeaderProps {
 interface PostCardBodyProps {
   item: Post
 }
+interface PostCardFooterProps {
+  item: Post
+  currentUser: User
+}
 
 /* Ignore warning messages in client created by RenderHtml */
 LogBox.ignoreLogs([
@@ -37,11 +42,12 @@ const PostCard: React.FC<PostCardProps> = ({
   currentUser,
   hasShadow = true
 }) => {
+  console.log('PostCard:: post item: ' + JSON.stringify(item, null, 2));
   return (
     <View style={[styles.container, hasShadow && shadowStyle]}>
       <PostCardHeader item={item} />
       <PostCardBody item={item} />
-      <PostCardFooter />
+      <PostCardFooter item={item} currentUser={currentUser} />
     </View>
   )
 }
@@ -134,13 +140,55 @@ const PostCardBody: React.FC<PostCardBodyProps> = ({
 /**
  * This component renders icons for liking, commenting, and sharing the post.
  */
-const PostCardFooter = () => {
-  const liked = true;
-  const likes = [];
+const PostCardFooter: React.FC<PostCardFooterProps> = ({
+  item,
+  currentUser
+}) => {
+  const [likes, setLikes] = React.useState<PostLike[]>([]);
+  const liked = likes.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
+
+  React.useEffect(() => {
+    setLikes(item?.postLikes);
+  }, [])
+
+  async function onLike() {
+    if (liked) {
+      await removeLike();
+    } else {
+      await createLike();
+    }
+  }
+
+  async function removeLike() {
+    const updatedLikes: PostLike[] = likes.filter((like: PostLike) => like.user_id !== currentUser.id);
+    setLikes([...updatedLikes]);
+    const response = await removePostLike(currentUser.id, item.id);
+    if (!response.success) {
+      Alert.alert("Post like error", "Like could not be removed from post");
+    }
+    if (debugging) {
+      console.log('PostCardFooter::removeLike response: ' + JSON.stringify(response, null, 2));
+    }
+  }
+
+  async function createLike() {
+    const data: Post = {
+      user_id: currentUser?.id,
+      post_id: item?.id
+    }
+    setLikes([...likes, data]);
+    const response = await createPostLike(data);
+    if (!response.success) {
+      Alert.alert("Post like error", "This post could not be liked");
+    }
+    if (debugging) {
+      console.log('PostCardFooter::createLike response: ' + JSON.stringify(response, null, 2));
+    }
+  }
   return (
     <View style={styles.footer}>
       <View style={styles.footerButton}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onLike}>
           <Icon 
             name="heart" 
             size={24} 

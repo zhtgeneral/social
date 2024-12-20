@@ -2,6 +2,7 @@ import { supabase } from "@/lib/Supabase";
 import { uploadFile } from "./imageService";
 import { CustomResponse } from "./index";
 import { ImagePickerAsset } from "expo-image-picker";
+import { PostLike } from "@/types/supabase";
 
 export interface UpsertPostData {
   file: ImagePickerAsset | null,
@@ -74,7 +75,8 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
       .from('posts')
       .select(`
         *, 
-        user: users (id, name, image)
+        user: users (id, name, image),
+        postLikes (*)
       `)
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -92,6 +94,68 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
     }
   } catch (error: any) {
     console.log("getPost: get error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+/**
+ * This function inserts a postLike into Supabase.
+ */
+export async function createPostLike(postLike: PostLike): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('postLikes')
+      .insert(postLike)
+      .select()
+      .single();
+
+    if (error) {
+      console.log("createPostLike: insert error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("createPostLike: insert error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+/**
+ * This function removes a postLike from Supabase.
+ */
+export async function removePostLike(userId: string, postId: string): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('postLikes')
+      .delete()
+      .eq('user_id', userId)
+      .eq('post_id', postId)
+
+    if (error) {
+      console.log("deletePostLike: delete error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("deletePostLike: delete error: ", error.message);
     return {
       success: false,
       message: error.message
