@@ -13,7 +13,7 @@ import { theme } from '../constants/theme';
 import { stripHTMLTags } from '../helpers/common';
 import Avatar from './Avatar';
 
-const debugging = false;
+const debugging = true;
 
 interface PostCardProps {
   item: Post,
@@ -144,7 +144,7 @@ function PostCardFooter({
   currentUser
 }: PostCardFooterProps) {
   const [likes, setLikes] = React.useState<PostLike[]>([]);
-  const liked = likes.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
+  const liked = likes?.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
 
   React.useEffect(() => {
     setLikes(item?.postLikes);
@@ -210,7 +210,7 @@ function PostCardFooter({
             />
           </TouchableOpacity>
         <Text
-          >{likes.length}
+          >{(likes?.length)? likes.length: 0}
           </Text>
         </View>
       <View style={styles.footerButton}>

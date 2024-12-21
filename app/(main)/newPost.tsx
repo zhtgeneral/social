@@ -46,7 +46,7 @@ interface NewPostDisplayMediaProps {
  * It displays the text editor allowing the user to enter rich text.
  * It displays an input to add media with images or videos.
  */
-const NewPost = () => {
+export default function NewPost () {
   const { user } = useAuth();
 
   const bodyRef = React.useRef("");
@@ -73,7 +73,7 @@ const NewPost = () => {
       return;
     }
     const data: UpsertPostData = formatPostData(file, bodyRef.current, user?.id);
-    
+
     setLoading(true);
     const response = await createOrUpdatePost(data);
     setLoading(false);
@@ -139,10 +139,10 @@ const NewPost = () => {
  * 
  * It displays a close icon that closes the display media when pressed.
  */
-const NewPostDisplayMedia: React.FC<NewPostDisplayMediaProps> = ({
+function NewPostDisplayMedia({
   file, 
   setFile
-}) => {
+}: NewPostDisplayMediaProps) {
   function isLocalFile(file: ImagePickerAsset) {
     return typeof file === 'object';
   }
@@ -206,9 +206,9 @@ const NewPostDisplayMedia: React.FC<NewPostDisplayMediaProps> = ({
  * This component handles allowing the user to upload media.
  * It allows the user to upload 1 image or video.
  */
-const NewPostUploadMedia: React.FC<NewPostUploadMediaProps> = ({
+function NewPostUploadMedia({
   setFile
-}) => {
+}: NewPostUploadMediaProps) {
   /**
    * This function opens the user's image library and allows them to select
    * either an image or a video.
@@ -261,9 +261,9 @@ const NewPostUploadMedia: React.FC<NewPostUploadMediaProps> = ({
  * This component handles rendering the user.
  * It displays the user's name and profile picture.
  */
-const NewPostHeader: React.FC<NewPostHeaderProps> = ({
+function NewPostHeader({
   user
-}) => {
+}: NewPostHeaderProps) {
   return (
     <View style={styles.header}> 
       <Avatar 
@@ -282,8 +282,6 @@ const NewPostHeader: React.FC<NewPostHeaderProps> = ({
     </View>
   );
 }
-
-export default NewPost;
 
 const styles = StyleSheet.create({
   container: {

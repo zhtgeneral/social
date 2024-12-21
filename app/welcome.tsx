@@ -4,7 +4,6 @@ import { theme } from "@/constants/theme"
 import { hp, wp } from "@/helpers/common"
 import { useRouter } from "expo-router"
 import { StatusBar } from "expo-status-bar"
-import React from "react"
 import { Image, Pressable, StyleSheet, Text, View } from "react-native"
 
 /**
@@ -15,7 +14,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native"
  * 
  * When the get started button is pressed, it takes the user to `/signup`.
  */
-const Welcome = () => {
+export default function Welcome() {
   const router = useRouter();
   const welcomeImage = require('../assets/images/welcome.png');
   return (
@@ -48,7 +47,6 @@ const Welcome = () => {
     </ScreenWrapper>
   )
 }
-export default Welcome
 
 const styles = StyleSheet.create({
   container: {

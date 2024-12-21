@@ -4,19 +4,20 @@ import { CustomResponse } from '@/services/index';
 import { getUserData } from "@/services/userService";
 import { User } from "@supabase/supabase-js";
 import { Stack, useRouter } from 'expo-router';
-import { useEffect } from "react";
+import React from "react";
+
+const debugging = true;
 
 /**
  * This component provides app with Auth.
  */
-const _Layout = () => {
+export default function _Layout() {
   return (
     <AuthProvider>
       <MainLayout />
     </AuthProvider>
   )
 }
-export default _Layout;
 
 /**
  * This component sets the layout for the entire app.
@@ -30,13 +31,17 @@ export default _Layout;
  * 
  * @requires supabase needs to be setup
  */
-const MainLayout = () => {
+function MainLayout() {
   const { setAuth, setUserData } = useAuth();
   const router = useRouter();
-  useEffect(() => {
+
+  React.useEffect(() => {
     supabase.auth.onAuthStateChange((_event: any, session) => {
       if (session) {
-        console.log("session user in MainLayout: " + JSON.stringify(session?.user, null, 2));
+        if (debugging) {
+          console.log("session user in MainLayout: " + JSON.stringify(session?.user, null, 2));
+        }
+
         setAuth(session?.user);
         updateUserData(session?.user);
         router.replace('/home');
@@ -52,7 +57,9 @@ const MainLayout = () => {
     if (response.success) {
       setUserData({...response.data});
     }
-    console.log('got user data in MainLayout: ' + JSON.stringify(response,null,2));
+    if (debugging) {
+      console.log('got user data in MainLayout: ' + JSON.stringify(response,null,2));
+    }
   }
   return (
     <Stack 

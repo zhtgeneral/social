@@ -1,5 +1,4 @@
 import Loading from '@/components/Loading';
-import React from 'react';
 import { View } from 'react-native';
 
 /**
@@ -10,11 +9,10 @@ import { View } from 'react-native';
  * 
  * @requires _layout.tsx needs to send the user to locations other than here
  */
-const Index = () => {
+export default function Index() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Loading />
     </View>
   )
 }
-export default Index;

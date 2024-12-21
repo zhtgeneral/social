@@ -21,7 +21,7 @@ interface ProfileBannerProps {
 /**
  * This page handles `/profile`.
  */
-const Profile = () => {
+export default function Profile() {
   const { user } = useAuth();
   return (
     <ScreenWrapper bg="white" >
@@ -38,14 +38,12 @@ const Profile = () => {
   )
 }
 
-export default Profile;
-
 /**
  * This component displays the header of the profile.
  * 
  * It shows a back button and a logout button.
  */
-const ProfileHeader: React.FC = () => {
+function ProfileHeader() {
   async function onLogout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -84,9 +82,9 @@ const ProfileHeader: React.FC = () => {
  * If the user does not have any of the details, 
  * the section for that detail is hidden.
  */
-const ProfileBanner: React.FC<ProfileBannerProps> = ({
+function ProfileBanner({
   user
-}) => {
+}: ProfileBannerProps) {
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.info}>
@@ -126,9 +124,9 @@ const ProfileBanner: React.FC<ProfileBannerProps> = ({
  * 
  * It displays a button on the profile picture to edit profile details.
  */
-const ProfileMain: React.FC<ProfileMainProps> = ({
+function ProfileMain({
   user
-}) => {
+}: ProfileMainProps) {
   const router = useRouter();
   return (
     <View style={{ gap: 5 }}>

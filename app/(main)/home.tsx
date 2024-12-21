@@ -32,7 +32,7 @@ interface HomeHeaderProps {
  * 
  * @requires user needs to be logged in to get here.
  */
-const Home = () => {
+export default function Home () {
   const { user } = useAuth();
 
   const [posts, setPosts] = React.useState<Post[]>([]);
@@ -44,7 +44,7 @@ const Home = () => {
   React.useEffect(() => {
     const postChannel = supabase
       .channel('posts')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts'}, handlePostEvents)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts'}, HomeController.handlePostEvents)
       .subscribe();
 
     return () => {
@@ -52,68 +52,72 @@ const Home = () => {
     }
   }, []);
 
-  async function getPosts() {
-    if (!hasMore) {
-      return;
-    }
-      
-    const result = await fetchPosts(numPosts);
-    if (result.success) {
-      if (posts.length === result.data.length) {
-        setHasMore(false);
+  class HomeController {
+    /**
+     * This function gets more posts until no more posts can be gotten
+     */
+    public static async getPosts() {
+      if (!hasMore) {
+        return;
       }
-      setPosts(result.data);
-    } else {
-      Alert.alert("Posts error", result.message);
-    }
+        
+      const result = await fetchPosts(numPosts);
+      if (result.success) {
+        if (posts.length === result.data.length) {
+          setHasMore(false);
+        }
+        setPosts(result.data);
+      } else {
+        Alert.alert("Posts error", result.message);
+      }
 
-    if (debugging) {
-      console.log("fetched limit: " + numPosts);
-    }
+      if (debugging) {
+        console.log("fetched limit: " + numPosts);
+      }
 
-    numPosts += amount;
-  }
-
-  /**
-   * This callback function sets the posts on the home page.
-   * 
-   * It is called whenever supabase channels detects an INSERT event.
-   * 
-   * It fills the user for the new post and brings the new post on top of the feed.
-   */
-  async function handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
-    if (payload.eventType == "INSERT" && payload.new?.id) {
-      const newPost = {...payload.new};
-      await setUserForPost(newPost);
-      setPosts((previousPosts) => [newPost, ...previousPosts]);
-    } 
-  }
-  /**
-   * This function sets the user for the new post.
-   * 
-   * If the request for getting the user fails, it sets the user as null.
-   */
-  async function setUserForPost(newPost: any) {
-    if (debugging) {
-      console.log("Home::setUserForPost new post detected: " + JSON.stringify(newPost, null, 2));
+      numPosts += amount;
     }
-
-    const userResponse = await getUserData(newPost.user_id);
-
-    if (debugging) {
-      console.log("Home::setUserForPost user data for the new post: " + JSON.stringify(userResponse, null, 2));
+    public static handleEnd() {
+      if (debugging) {
+        console.log("End reached");
+      }
+      HomeController.getPosts();
     }
-    newPost.user = userResponse.success? userResponse.data: {};
+    /**
+     * This callback function sets the posts on the home page.
+     * 
+     * It is called whenever supabase channels detects an INSERT event.
+     * 
+     * It fills the user for the new post and brings the new post on top of the feed.
+     */
+    public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
+      if (payload.eventType == "INSERT" && payload.new?.id) {
+        const newPost = {...payload.new};
+        await HomeController.setUserForPost(newPost);
+        setPosts((previousPosts) => [newPost, ...previousPosts]);
+      } 
+    }
+    /**
+     * This function sets the user for the new post.
+     * 
+     * If the request for getting the user fails, it sets the user as null.
+     */
+    private static async setUserForPost(newPost: any) {
+      if (debugging) {
+        console.log("Home::setUserForPost new post detected: " + JSON.stringify(newPost, null, 2));
+      }
 
-    if (debugging) {
-      console.log("Home::setUserForPost new post with user: " + JSON.stringify(newPost, null, 2));
+      const userResponse = await getUserData(newPost.user_id);
+
+      if (debugging) {
+        console.log("Home::setUserForPost user data for the new post: " + JSON.stringify(userResponse, null, 2));
+      }
+      newPost.user = userResponse.success? userResponse.data: {};
+
+      if (debugging) {
+        console.log("Home::setUserForPost new post with user: " + JSON.stringify(newPost, null, 2));
+      }
     }
-  }
-  function handleEnd() {
-    if (debugging) {
-      console.log("End reached");
-    }
-    getPosts();
   }
 
   return (
@@ -133,7 +137,7 @@ const Home = () => {
               /> 
             )
           }
-          onEndReached={handleEnd}
+          onEndReached={HomeController.handleEnd}
           onEndReachedThreshold={0}
           ListFooterComponent={
             hasMore? (
@@ -154,17 +158,15 @@ const Home = () => {
   )
 }
 
-export default Home;
-
 /**
  * This component displays the header with actions for viewing liked posts,
  * adding posts, and updating user info.
  * 
  * It displays the brand name.
  */
-const HomeHeader: React.FC<HomeHeaderProps> = ({
+function HomeHeader({
   user
-}) => {
+}: HomeHeaderProps) {
   const router = useRouter();
   return (
     <View style={styles.header}>

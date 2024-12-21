@@ -25,7 +25,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
  * 
  * @requires supabase.auth needs to be listening to `onAuthStateChange`
  */
-const Login: React.FC = () => {
+export default function Login() {
   const router = useRouter();
 
   const emailRef = React.useRef("");
@@ -101,8 +101,6 @@ const Login: React.FC = () => {
     </ScreenWrapper>
   );
 }
-
-export default Login;
 
 const styles = StyleSheet.create({
   container: {

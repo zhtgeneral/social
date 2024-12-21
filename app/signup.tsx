@@ -25,7 +25,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
  * 
  * @requires supabase.auth needs to be listening to `onAuthStateChange`
  */
-const SignUp: React.FC = () => {
+export default function SignUp() {
   const router = useRouter();
 
   const nameRef = React.useRef("");
@@ -110,8 +110,6 @@ const SignUp: React.FC = () => {
     </ScreenWrapper>
   );
 }
-
-export default SignUp;
 
 const styles = StyleSheet.create({
   container: {
