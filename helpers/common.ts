@@ -14,3 +14,7 @@ export function hp(percentage: number) {
 export function wp(percentage: number) {
   return (percentage * deviceWidth) / 100;
 }
+
+export function stripHTMLTags(html: string): string {
+  return html.replace(/<[^>]*>/gm, "");
+}

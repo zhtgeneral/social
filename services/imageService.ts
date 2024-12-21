@@ -6,7 +6,7 @@ import { CustomResponse } from "./index";
 /**
  * This function gets the file URI in the form `{supabaseUrl}/storage/v1/object/public/{filePath}`
  */
-export function getSupabaseFileUrl(filePath: string) {
+export function getSupabaseFileUrl(filePath: string): string {
   if (filePath) {
     return `${supabaseUrl}/storage/v1/object/public/${filePath}`;
   }
@@ -76,4 +76,24 @@ export async function uploadFile(
  */
 function getFilePath(folderName: string, isImage: boolean): string {
   return `/${folderName}/${(new Date).getTime()}${isImage? '.png' : '.mp4'}`
+}
+
+/**
+ * This function downloads the file into the url.
+ */
+export async function downloadFile(url: string): Promise<string | undefined> {
+  try {
+    const { uri }  = await FileSystem.downloadAsync(url, getLocalFilePath(url))
+    return uri;
+  } catch (error: any) {
+    return undefined;
+  }
+}
+
+/**
+ * This function gets the local pathname of a file's path by searching in documents.
+ */
+function getLocalFilePath(filePath: string) {
+  const fileName = filePath.split('/').pop();
+  return `${FileSystem.documentDirectory}${fileName}`;
 }

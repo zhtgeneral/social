@@ -1,16 +1,17 @@
 import Icon from '@/assets/icons';
 import { hp } from '@/helpers/common';
-import { getSupabaseFileUrl } from '@/services/imageService';
+import { downloadFile, getSupabaseFileUrl } from '@/services/imageService';
 import { createPostLike, removePostLike } from '@/services/postService';
 import { Post, PostLike, User } from '@/types/supabase';
 import { ResizeMode, Video } from 'expo-av'; // TODO migrate to expo-video
 import { Image } from 'expo-image';
 import moment from 'moment';
 import React from 'react';
-import { Alert, LogBox, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, LogBox, Share, ShareContent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
 import Avatar from './Avatar';
+import { stripHTMLTags } from '../helpers/common';
 
 const debugging = false;
 
@@ -151,44 +152,58 @@ const PostCardFooter: React.FC<PostCardFooterProps> = ({
     setLikes(item?.postLikes);
   }, [])
 
-  async function onLike() {
-    if (liked) {
-      await removeLike();
-    } else {
-      await createLike();
+  /**
+   * This class controls the view by exposing the API for `onShare` and `onLike`
+   */
+  class PostCardFooterController {
+    public static async onShare() {
+      const content: ShareContent = { 
+        message: stripHTMLTags(item?.body)
+      }
+      if (item?.file) {
+        const url = await downloadFile(getSupabaseFileUrl(item?.file));
+        content.url = url;
+      }
+      Share.share(content);
+    }
+    public static async onLike() {
+      if (liked) {
+        await PostCardFooterController.removeLike();
+      } else {
+        await PostCardFooterController.createLike();
+      }
+    }
+    private static async removeLike() {
+      const updatedLikes: PostLike[] = likes.filter((like: PostLike) => like.user_id !== currentUser.id);
+      setLikes([...updatedLikes]);
+      const response = await removePostLike(currentUser.id, item.id);
+      if (!response.success) {
+        Alert.alert("Post like error", "Like could not be removed from post");
+      }
+      if (debugging) {
+        console.log('PostCardFooter::removeLike response: ' + JSON.stringify(response, null, 2));
+      }
+    }
+    private static async createLike() {
+      const data: Post = {
+        user_id: currentUser?.id,
+        post_id: item?.id
+      }
+      setLikes([...likes, data]);
+      const response = await createPostLike(data);
+      if (!response.success) {
+        Alert.alert("Post like error", "This post could not be liked");
+      }
+      if (debugging) {
+        console.log('PostCardFooter::createLike response: ' + JSON.stringify(response, null, 2));
+      }
     }
   }
 
-  async function removeLike() {
-    const updatedLikes: PostLike[] = likes.filter((like: PostLike) => like.user_id !== currentUser.id);
-    setLikes([...updatedLikes]);
-    const response = await removePostLike(currentUser.id, item.id);
-    if (!response.success) {
-      Alert.alert("Post like error", "Like could not be removed from post");
-    }
-    if (debugging) {
-      console.log('PostCardFooter::removeLike response: ' + JSON.stringify(response, null, 2));
-    }
-  }
-
-  async function createLike() {
-    const data: Post = {
-      user_id: currentUser?.id,
-      post_id: item?.id
-    }
-    setLikes([...likes, data]);
-    const response = await createPostLike(data);
-    if (!response.success) {
-      Alert.alert("Post like error", "This post could not be liked");
-    }
-    if (debugging) {
-      console.log('PostCardFooter::createLike response: ' + JSON.stringify(response, null, 2));
-    }
-  }
   return (
     <View style={styles.footer}>
       <View style={styles.footerButton}>
-        <TouchableOpacity onPress={onLike}>
+        <TouchableOpacity onPress={PostCardFooterController.onLike}>
           <Icon 
             name="heart" 
             size={24} 
@@ -211,7 +226,7 @@ const PostCardFooter: React.FC<PostCardFooterProps> = ({
           <Text>0</Text>
         </View>
       <View style={styles.footerButton}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={PostCardFooterController.onShare}>
           <Icon 
             name="share" 
             size={24} 
