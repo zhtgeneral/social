@@ -1,6 +1,5 @@
 import { theme } from '@/constants/theme';
 import { hp } from '@/helpers/common';
-import React from 'react';
 import { Falsy, RegisteredStyle, StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 
 interface InputProps extends TextInputProps {
@@ -12,12 +11,12 @@ interface InputProps extends TextInputProps {
 /**
  * This component is a custom text input.
  */
-const Input: React.FC<InputProps> = ({
+export default function Input({
   containerStyle = "",
   icon,
   inputRef,
   ...props
-}) => {
+}: InputProps) {
   return (
     <View style={[styles.container, containerStyle]}>
       {icon? icon: null}
@@ -30,8 +29,6 @@ const Input: React.FC<InputProps> = ({
     </View>
   );
 }
-
-export default Input;
 
 const styles = StyleSheet.create({
   container: {

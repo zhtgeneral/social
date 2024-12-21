@@ -1,5 +1,4 @@
 import { theme } from '@/constants/theme'
-import React from 'react'
 import { ActivityIndicator, ActivityIndicatorProps, StyleSheet, View } from 'react-native'
 
 interface LoadingProps {
@@ -10,10 +9,10 @@ interface LoadingProps {
 /**
  * This component renders a custom loading spinner animation.
  */
-const Loading: React.FC<LoadingProps> = ({
+export default function Loading({
   size = "large",
   color = theme.colors.primary
-}) => {
+}: LoadingProps) {
   return (
     <View style={styles.activity}>
       <ActivityIndicator 
@@ -23,8 +22,6 @@ const Loading: React.FC<LoadingProps> = ({
     </View>
   )
 }
-
-export default Loading
 
 const styles = StyleSheet.create({
   activity: { 

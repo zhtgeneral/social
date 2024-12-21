@@ -1,5 +1,4 @@
 import { theme } from '@/constants/theme'
-import React from 'react'
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 
@@ -14,10 +13,10 @@ interface RichTextEditorProps {
  * When the editor is pressed, it doesn't close the keyboard.
  * @requires parent needs to handle keyboard close events.
  */
-const RichTextEditor: React.FC<RichTextEditorProps> = ({
+export default function RichTextEditor({
   editorRef,
   onChange
-}) => {
+}: RichTextEditorProps) {
   return (
     <TouchableWithoutFeedback >
       <View style={{ minHeight: 285 }}>
@@ -55,8 +54,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     </TouchableWithoutFeedback>
   )
 }
-
-export default RichTextEditor;
 
 const styles = StyleSheet.create({
   richBar: {

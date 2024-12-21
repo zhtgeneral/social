@@ -10,8 +10,8 @@ import React from 'react';
 import { Alert, LogBox, Share, ShareContent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
-import Avatar from './Avatar';
 import { stripHTMLTags } from '../helpers/common';
+import Avatar from './Avatar';
 
 const debugging = false;
 
@@ -38,11 +38,11 @@ LogBox.ignoreLogs([
   'TRenderEngineProvider: Support for defaultProps'
 ]);
 
-const PostCard: React.FC<PostCardProps> = ({
+export default function PostCard ({
   item,
   currentUser,
   hasShadow = true
-}) => {
+}: PostCardProps) {
   console.log('PostCard:: post item: ' + JSON.stringify(item, null, 2));
   return (
     <View style={[styles.container, hasShadow && shadowStyle]}>
@@ -53,16 +53,14 @@ const PostCard: React.FC<PostCardProps> = ({
   )
 }
 
-export default PostCard;
-
 /**
  * This component renders the post card's header.
  * 
  * It displays OP's avatar, the date of the post, and an options button.
  */
-const PostCardHeader: React.FC<PostCardHeaderProps> = ({
+function PostCardHeader ({
   item
-}) => {
+}: PostCardHeaderProps) {
   if (debugging) {
     console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
   }
@@ -103,9 +101,9 @@ const PostCardHeader: React.FC<PostCardHeaderProps> = ({
  * 
  * It displays the image or video of the post if specified.
  */
-const PostCardBody: React.FC<PostCardBodyProps> = ({
+function PostCardBody ({
   item
-}) => {
+}: PostCardBodyProps) {
   return (
     <View style={styles.content}>
       <View style={styles.postBody}> 
@@ -141,10 +139,10 @@ const PostCardBody: React.FC<PostCardBodyProps> = ({
 /**
  * This component renders icons for liking, commenting, and sharing the post.
  */
-const PostCardFooter: React.FC<PostCardFooterProps> = ({
+function PostCardFooter({
   item,
   currentUser
-}) => {
+}: PostCardFooterProps) {
   const [likes, setLikes] = React.useState<PostLike[]>([]);
   const liked = likes.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
 

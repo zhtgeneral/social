@@ -1,6 +1,5 @@
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
-import React from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Loading from './Loading'
 
@@ -16,14 +15,14 @@ interface ButtonProps {
 /**
  * This component is a reusable button with custom style.
  */
-const Button: React.FC<ButtonProps> = ({
+export default function Button({
   buttonStyle = '',
   textStyle = '',
   title = '',
   onPress = () => {},
   loading = false,
   hasShadow = true
-}) => {
+}: ButtonProps) {
   const shadowStyle = {
     shadowColor: theme.colors.dark,
     shadowOffset: { width: 0, height: 10 },
@@ -47,8 +46,6 @@ const Button: React.FC<ButtonProps> = ({
     </Pressable>
   )
 }
-
-export default Button;
 
 const styles = StyleSheet.create({
   button: {

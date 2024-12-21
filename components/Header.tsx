@@ -1,7 +1,6 @@
 import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
 import { useRouter } from 'expo-router'
-import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import BackButton from './BackButton'
 
@@ -14,11 +13,11 @@ interface HeaderProps {
 /**
  * This component renders a Header with custom format and a back button
  */
-const Header: React.FC<HeaderProps> = ({
+export default function Header({
   title = "",
   showBackButton = true,
   mb = 15
-}) => {
+}: HeaderProps) {
   const router = useRouter();
   return (
     <View style={[styles.container, { marginBottom: mb }]} >
@@ -31,8 +30,6 @@ const Header: React.FC<HeaderProps> = ({
     </View>
   )
 }
-
-export default Header
 
 const styles = StyleSheet.create({
   container: {

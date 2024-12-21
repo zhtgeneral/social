@@ -1,7 +1,6 @@
 import Icon from '@/assets/icons';
 import { theme } from '@/constants/theme';
 import { Router } from 'expo-router';
-import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
 interface BackButtonProps {
@@ -14,10 +13,10 @@ interface BackButtonProps {
  * 
  * It takes the user to the previous page when pressed.
  */
-const BackButton: React.FC<BackButtonProps> = ({
+export default function BackButton({
   size = 26,
   router
-}) => {
+}: BackButtonProps){
   return (
     <Pressable onPress={() => router.back()} style={styles.button}>
       <Icon 
@@ -29,8 +28,6 @@ const BackButton: React.FC<BackButtonProps> = ({
     </Pressable>
   );
 }
-
-export default BackButton;
 
 const styles = StyleSheet.create({
   button: {

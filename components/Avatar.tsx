@@ -2,7 +2,6 @@ import { theme } from '@/constants/theme'
 import { hp } from '@/helpers/common'
 import { getUserImageSource } from '@/services/imageService'
 import { Image } from 'expo-image'
-import React from 'react'
 import { StyleSheet } from 'react-native'
 
 
@@ -19,12 +18,12 @@ interface AvatarProps {
  * It takes in uri which is a string in the format of `/uploads/<location>/id.ext` or `""`
  * where the first format is the shortened Supabase storage path.
  */
-const Avatar: React.FC<AvatarProps> = ({
+export default function Avatar({
   uri,
   size = hp(4.5),
   rounded = theme.radius.md,
   style = {}
-}) => {
+}: AvatarProps) {
   return (
     <Image 
       source={getUserImageSource(uri)}  
@@ -33,8 +32,6 @@ const Avatar: React.FC<AvatarProps> = ({
     />
   )
 }
-
-export default Avatar
 
 const styles = StyleSheet.create({
   avatar: {

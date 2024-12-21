@@ -1,4 +1,3 @@
-import React from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -11,10 +10,10 @@ interface ScreenWrapperProps {
  * This component adds padding from the top of the screen 
  * and sets the background color of the children.
  */
-const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
+export default function ScreenWrapper ({
   children,
   bg
-}) => {
+}: ScreenWrapperProps) {
   const { top } = useSafeAreaInsets();
   const paddingTop = (top > 0)? (top + 5): 30;
   return (
@@ -23,4 +22,3 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     </View>
   )
 }
-export default ScreenWrapper
