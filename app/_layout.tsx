@@ -36,7 +36,7 @@ function MainLayout() {
   const router = useRouter();
 
   React.useEffect(() => {
-    supabase.auth.onAuthStateChange((_event: any, session) => {
+    supabase.auth.onAuthStateChange((_, session) => {
       if (session) {
         if (debugging) {
           console.log("session user in MainLayout: " + JSON.stringify(session?.user, null, 2));

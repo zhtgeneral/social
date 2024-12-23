@@ -48,10 +48,10 @@ interface NewPostDisplayMediaProps {
  */
 export default function NewPost () {
   const { user } = useAuth();
+  const router = useRouter();
 
   const bodyRef = React.useRef("");
   const editorRef = React.useRef<RichEditor | null>(null);
-  const router = useRouter();
 
   const [loading, setLoading ] = React.useState(false);
   const [file, setFile] = React.useState<ImagePickerAsset | null>(null);

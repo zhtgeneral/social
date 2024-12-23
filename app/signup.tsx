@@ -9,7 +9,13 @@ import { supabase } from '@/lib/Supabase';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { 
+  Alert, 
+  Pressable, 
+  StyleSheet, 
+  Text, 
+  View
+} from 'react-native';
 
 /**
  * This page handles `/signup`.
@@ -31,32 +37,55 @@ export default function SignUp() {
   const nameRef = React.useRef("");
   const emailRef = React.useRef("");
   const passwordRef = React.useRef("");
+
   const [loading, setLoading] = React.useState(false);
 
-  async function onSubmit() {
-    const name = nameRef.current.trim();
-    const email = emailRef.current.trim();
-    const password = passwordRef.current;
-
-    if (!name || !email || !password) {
-      Alert.alert('Signup error', "Please fill in all fields");
-    }
-
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          name: name
-        }
+  class SignupController {
+    public static async onSubmit() {
+      let name: string
+      let email: string;
+      let password: string;
+      try {
+        const { validatedName, validatedEmail, validatedPassword } = SignupController.validateForm();
+        name = validatedName;
+        email = validatedEmail;
+        password = validatedPassword;
+      } catch (error: any) {
+        Alert.alert('Signup error', "Please fill in all fields");
+        return;
       }
-    })
-    if (error) {
-      Alert.alert("Signup error", error.message);
+  
+      setLoading(true);
+      const { error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            name: name
+          }
+        }
+      })
+      if (error) {
+        Alert.alert("Signup error", error.message);
+      }
+      setLoading(false);
     }
-    setLoading(false);
+    private static validateForm() {
+      const name = nameRef.current.trim();
+      const email = emailRef.current.trim();
+      const password = passwordRef.current;
+  
+      if (!name || !email || !password) {
+        throw new Error();
+      }
+      return {
+        validatedName: name,
+        validatedEmail: email,
+        validatedPassword: password,
+      }
+    }
   }
+  
   return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark" />
@@ -92,7 +121,7 @@ export default function SignUp() {
           <Button
             title="Sign up"
             loading={loading}
-            onPress={onSubmit}
+            onPress={SignupController.onSubmit}
             />
         </View>
         {/* Footer */}

@@ -9,7 +9,13 @@ import { supabase } from '@/lib/Supabase';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { 
+  Alert,
+  Pressable,
+  StyleSheet, 
+  Text, 
+  View 
+} from 'react-native';
 
 /**
  * This page handles `/login`.
@@ -30,25 +36,46 @@ export default function Login() {
 
   const emailRef = React.useRef("");
   const passwordRef= React.useRef("");
+
   const [loading, setLoading] = React.useState(false);
 
-  async function onSubmit() {
-    const email = emailRef.current.trim();
-    const password = passwordRef.current;
-
-    if (!email || !password) {
-      Alert.alert('Login error', "Please fill in all fields");
+  class LoginController {
+    public static async onSubmit() {
+      let email: string;
+      let password: string;
+      try {
+        const { validatedEmail, validatedPassword } = LoginController.validateForm();
+        email = validatedEmail;
+        password = validatedPassword;
+      } catch (error: any) {
+        Alert.alert('Login error', "Please fill in all fields");
+        return;
+      }
+  
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      })
+      if (error) {
+        Alert.alert("Login error", error.message);
+      }
+      setLoading(false);
+    }
+  
+    private static validateForm() {
+      const email = emailRef.current.trim();
+      const password = passwordRef.current;
+  
+      if (!email || !password) {
+        throw new Error();
+      }
+      return { 
+        validatedEmail: email, 
+        validatedPassword: password
+      }
     }
 
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
-    if (error) {
-      Alert.alert("Login error", error.message);
-    }
-    setLoading(false);
   }
   return (
     <ScreenWrapper bg="white">
@@ -84,7 +111,7 @@ export default function Login() {
             {/* TODO */}
             Forgot password?
           </Text>
-          <Button title="Login" loading={loading} onPress={onSubmit}/>
+          <Button title="Login" loading={loading} onPress={LoginController.onSubmit}/>
         </View>
         {/* Footer */}
         <View style={styles.footer}>

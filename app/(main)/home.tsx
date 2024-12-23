@@ -13,7 +13,15 @@ import { Post, User } from '@/types/supabase'
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { Alert, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native'
+import { 
+  Alert, 
+  FlatList, 
+  ListRenderItemInfo, 
+  Pressable, 
+  StyleSheet, 
+  Text, 
+  View 
+} from 'react-native'
 
 var numPosts = 3;
 var amount = 3;
@@ -129,14 +137,12 @@ export default function Home () {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listStyle}
           keyExtractor={(item: Post) => item.id.toString()}
-          renderItem={
-            ( info: ListRenderItemInfo<Post> ) => (
-              <PostCard 
-                item={info.item}
-                currentUser={user}
-              /> 
-            )
-          }
+          renderItem={(info: ListRenderItemInfo<Post>) => (
+            <PostCard 
+              item={info.item}
+              currentUser={user}
+            /> 
+          )}
           onEndReached={HomeController.handleEnd}
           onEndReachedThreshold={0}
           ListFooterComponent={

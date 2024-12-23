@@ -9,7 +9,14 @@ import { supabase } from '@/lib/Supabase';
 import { User } from '@/types/supabase';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { 
+  Alert, 
+  Pressable, 
+  StyleSheet, 
+  Text, 
+  TouchableOpacity, 
+  View
+} from 'react-native';
 
 interface ProfileMainProps {
   user: User

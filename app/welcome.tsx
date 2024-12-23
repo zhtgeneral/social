@@ -4,7 +4,13 @@ import { theme } from "@/constants/theme"
 import { hp, wp } from "@/helpers/common"
 import { useRouter } from "expo-router"
 import { StatusBar } from "expo-status-bar"
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
+import { 
+  Image, 
+  Pressable, 
+  StyleSheet, 
+  Text, 
+  View 
+} from "react-native"
 
 /**
  * This page handles `/welcome`.

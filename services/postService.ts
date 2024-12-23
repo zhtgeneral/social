@@ -10,7 +10,14 @@ export interface UpsertPostData {
   userId: string
 }
 
-export function formatPostData(file: ImagePickerAsset | null, body: string, userId: string): UpsertPostData {
+/**
+ * This function formats the data in a json format.
+ */
+export function formatPostData(
+  file: ImagePickerAsset | null, 
+  body: string, 
+  userId: string
+): UpsertPostData {
   return {
     file: file,
     body: body,
@@ -20,6 +27,10 @@ export function formatPostData(file: ImagePickerAsset | null, body: string, user
 
 /**
  * This function upserts a post into Supabase.
+ * 
+ * If there is a database error, it returns the error message.
+ * 
+ * Otherwise it returns the upserted data.
  */
 export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomResponse> {
   let { file, body, userId } = post;

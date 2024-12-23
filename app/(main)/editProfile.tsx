@@ -17,7 +17,7 @@ import { getUserImageSource, uploadFile } from '@/services/imageService'
 import { updateUser } from '@/services/userService'
 import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
-import { Router, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 
 const debugging = true;
 
@@ -30,6 +30,14 @@ interface EditProfilePictureProps {
 
 /**
  * This page handles `/editProfile`.
+ * 
+ * It displays the avatar, the input fields, and the save button.
+ * 
+ * When the inputs are changed, they change the form
+ * but don't save to database or global state.
+ * 
+ * Only when the save button is pressed, does the database and global state
+ * get changed.
  */
 export default function EditProfile() {
   const { user, setUserData } = useAuth();
@@ -78,7 +86,7 @@ export default function EditProfile() {
   
       setLoading(true);
       let updateResponse: CustomResponse = { success: false };
-      const imageDifferent = formData.image != user.image;
+      const imageDifferent = formData.image !== user.image;
   
       if (image && imageDifferent) {
         if (debugging) {
@@ -132,7 +140,11 @@ export default function EditProfile() {
       return updateResponse;
     }
     /**
-     * This function updates the user in the database and the user state.
+     * This function updates the user in the database.
+     * 
+     * If there is an update error in database, it alerts the user.
+     * 
+     * @requires layout needs to refetch user to get updated user.
      */
     private static async handleUpdateUser(formData: User, ): Promise<CustomResponse> {
       const updateResponse = await updateUser(user.id, formData); 
@@ -231,7 +243,7 @@ function EditProfilePicture({
       }
     } 
   }
-  let imageSource = (formData.image)? formData.image :getUserImageSource(user?.image);
+  let imageSource = (formData.image)? formData.image : getUserImageSource(user?.image);
   return (
     <View style={styles.avatarContainer}>
       <Image 

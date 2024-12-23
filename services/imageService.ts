@@ -28,7 +28,11 @@ export function getUserImageSource(imagePath: string | null) {
 
 
 /**
- * This function updates the user data to Supabase.
+ * This function updates the user data to Supabase under
+ * `/uploads/{folderName}/supabaseRandomID`.
+ * 
+ * If the upload fails, it returns the error message.
+ * Otherwise it returns the full path to the file in Supabase.
  */
 export async function uploadFile(
   folderName: string, 
