@@ -12,6 +12,7 @@ import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
 import { stripHTMLTags } from '../helpers/common';
 import Avatar from './Avatar';
+import Loading from './Loading';
 
 const debugging = true;
 
@@ -144,6 +145,8 @@ function PostCardFooter({
   currentUser
 }: PostCardFooterProps) {
   const [likes, setLikes] = React.useState<PostLike[]>([]);
+  const [loading, setLoading] = React.useState(false);
+
   const liked = likes?.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
 
   React.useEffect(() => {
@@ -159,7 +162,10 @@ function PostCardFooter({
         message: stripHTMLTags(item?.body)
       }
       if (item?.file) {
+        setLoading(true);
         const url = await downloadFile(getSupabaseFileUrl(item?.file));
+        setLoading(false);
+
         content.url = url;
       }
       Share.share(content);
@@ -215,22 +221,20 @@ function PostCardFooter({
         </View>
       <View style={styles.footerButton}>
         <TouchableOpacity>
-          <Icon 
-            name="comment" 
-            size={24} 
-            stroke={theme.colors.textLight} 
-            />
+          <Icon name="comment" size={24} stroke={theme.colors.textLight} />
           </TouchableOpacity>
           <Text>0</Text>
         </View>
       <View style={styles.footerButton}>
-        <TouchableOpacity onPress={PostCardFooterController.onShare}>
-          <Icon 
-            name="share" 
-            size={24} 
-            stroke={theme.colors.textLight} 
-            />
-          </TouchableOpacity>
+        {
+          loading? (
+            <Loading size="small" />
+          ) : (
+            <TouchableOpacity onPress={PostCardFooterController.onShare}>
+              <Icon name="share" size={24} stroke={theme.colors.textLight} />
+            </TouchableOpacity>
+          )
+        }
         </View>
     </View>
   );
