@@ -2,7 +2,7 @@ import { supabase } from "@/lib/Supabase";
 import { uploadFile } from "./imageService";
 import { CustomResponse } from "./index";
 import { ImagePickerAsset } from "expo-image-picker";
-import { PostLike } from "@/types/supabase";
+import { Comment, PostLike } from "@/types/supabase";
 
 export interface UpsertPostData {
   file: ImagePickerAsset | null,
@@ -87,7 +87,8 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
       .select(`
         *, 
         user: users (id, name, image),
-        postLikes (*)
+        postLikes (*),
+        comments (count)
       `)
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -167,6 +168,74 @@ export async function removePostLike(userId: string, postId: string): Promise<Cu
     }
   } catch (error: any) {
     console.log("deletePostLike: delete error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+/**
+ * This function gets post details from Supabase.
+ */
+export async function fetchPostDetails(postId: string): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select(`
+        *, 
+        user: users (id, name, image),
+        postLikes (*),
+        comments (*, user: users(id, name, image))
+      `)
+      .eq('id', postId)
+      .order("created_at", { ascending: false, referencedTable: 'comments'})
+      .single();
+
+    if (error) {
+      console.log("fetchPostDetails: get error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("fetchPostDetails: get error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+/**
+ * This function inserts a comment into Supabase.
+ */
+export async function createComment(comment: Comment): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('comments')
+      .insert(comment)
+      .select()
+      .single();
+
+    if (error) {
+      console.log("createComment: insert error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("createComment: insert error: ", error.message);
     return {
       success: false,
       message: error.message

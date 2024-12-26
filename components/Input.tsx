@@ -5,7 +5,7 @@ import { Falsy, RegisteredStyle, StyleSheet, TextInput, TextInputProps, View, Vi
 interface InputProps extends TextInputProps {
   containerStyle?: Falsy | ViewStyle | RegisteredStyle<ViewStyle>
   icon?: React.ReactNode,
-  inputRef?: string
+  inputRef?: React.RefObject<TextInput>
 }
 
 /**

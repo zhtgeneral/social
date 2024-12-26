@@ -7,29 +7,43 @@ import { ResizeMode, Video } from 'expo-av'; // TODO migrate to expo-video
 import { Image } from 'expo-image';
 import moment from 'moment';
 import React from 'react';
-import { Alert, LogBox, Share, ShareContent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { 
+  Alert,
+  LogBox, 
+  Share, 
+  ShareContent, 
+  StyleSheet, 
+  Text, 
+  TouchableOpacity, 
+  View 
+} from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
 import { stripHTMLTags } from '../helpers/common';
 import Avatar from './Avatar';
 import Loading from './Loading';
+import { useRouter } from 'expo-router';
 
-const debugging = true;
+const debugging = false;
 
 interface PostCardProps {
   item: Post,
   currentUser: User,
-  hasShadow?: boolean
+  hasShadow?: boolean,
+  showMoreActions?: boolean
 }
 interface PostCardHeaderProps {
-  item: Post
+  item: Post,
+  openPostDetails: () => void,
+  showMoreActions: boolean
 }
 interface PostCardBodyProps {
   item: Post
 }
 interface PostCardFooterProps {
   item: Post
-  currentUser: User
+  currentUser: User,
+  openPostDetails: () => void
 }
 
 /* Ignore warning messages in client created by RenderHtml */
@@ -39,17 +53,48 @@ LogBox.ignoreLogs([
   'TRenderEngineProvider: Support for defaultProps'
 ]);
 
-export default function PostCard ({
+/**
+ * This component renders a post card with a header, body, and footer.
+ * 
+ * If `showMoreActions` is specified, the user can click the 3 dots or the comments
+ * button to open post details.
+ * 
+ * @required `item` is a Post with the attribtues `comments: [{ count: x }]`
+ */
+export default function PostCard({
   item,
   currentUser,
-  hasShadow = true
+  hasShadow = true,
+  showMoreActions = true
 }: PostCardProps) {
-  console.log('PostCard:: post item: ' + JSON.stringify(item, null, 2));
+  if (debugging) {
+    console.log('PostCard:: post item: ' + JSON.stringify(item, null, 2));
+  }
+  const router = useRouter();
+  function openPostDetails() {
+    if (!showMoreActions) {
+      return;
+    }
+    router.push({
+      pathname: '/postDetails',
+      params: {
+        postId: item?.id
+      }
+    })
+  }
   return (
     <View style={[styles.container, hasShadow && shadowStyle]}>
-      <PostCardHeader item={item} />
+      <PostCardHeader 
+        item={item} 
+        openPostDetails={openPostDetails} 
+        showMoreActions={showMoreActions} 
+        />
       <PostCardBody item={item} />
-      <PostCardFooter item={item} currentUser={currentUser} />
+      <PostCardFooter 
+        item={item} 
+        currentUser={currentUser} 
+        openPostDetails={openPostDetails}
+        />
     </View>
   )
 }
@@ -58,17 +103,19 @@ export default function PostCard ({
  * This component renders the post card's header.
  * 
  * It displays OP's avatar, the date of the post, and an options button.
+ * 
+ * If `showMoreActions` is disabled, it will hide the 3 dots icon.
  */
-function PostCardHeader ({
-  item
+function PostCardHeader({
+  item,
+  openPostDetails,
+  showMoreActions
 }: PostCardHeaderProps) {
   if (debugging) {
     console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
   }
 
   const createdAt = moment(item?.created_at).format('MMM D');  
-
-  function openPostDetails() {} // TODO
 
   return (
     <View style={styles.header}>
@@ -83,15 +130,19 @@ function PostCardHeader ({
           <Text style={styles.postTime}>{createdAt}</Text>
           </View>
       </View>
-
-      <TouchableOpacity onPress={openPostDetails}>
-        <Icon 
-          name="threeDotsHorizontal" 
-          size={hp(3.4)}
-          strokeWidth={1}
-          stroke={theme.colors.text}
-        />
-      </TouchableOpacity>
+      {
+        showMoreActions && (
+          <TouchableOpacity onPress={openPostDetails}>
+            <Icon 
+              name="threeDotsHorizontal" 
+              size={hp(3.4)}
+              strokeWidth={1}
+              stroke={theme.colors.text}
+            />
+          </TouchableOpacity>
+        )
+      }
+      
     </View>
   );
 }
@@ -139,15 +190,20 @@ function PostCardBody ({
 }
 /**
  * This component renders icons for liking, commenting, and sharing the post.
+ * 
+ * If `showMoreActions` is disabled, it will disable actions for the comments icon.
  */
 function PostCardFooter({
   item,
-  currentUser
+  currentUser,
+  openPostDetails
 }: PostCardFooterProps) {
   const [likes, setLikes] = React.useState<PostLike[]>([]);
   const [loading, setLoading] = React.useState(false);
 
   const liked = likes?.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
+  const numLikes = (likes?.length)? likes.length: 0;
+  const numComments = (item.comments)? item.comments[0].count : 0;
 
   React.useEffect(() => {
     setLikes(item?.postLikes);
@@ -215,15 +271,13 @@ function PostCardFooter({
             stroke={liked? theme.colors.rose: theme.colors.textLight} 
             />
           </TouchableOpacity>
-        <Text
-          >{(likes?.length)? likes.length: 0}
-          </Text>
+        <Text>{numLikes}</Text>
         </View>
       <View style={styles.footerButton}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={openPostDetails}>
           <Icon name="comment" size={24} stroke={theme.colors.textLight} />
-          </TouchableOpacity>
-          <Text>0</Text>
+          </TouchableOpacity> 
+          <Text>{numComments}</Text>
         </View>
       <View style={styles.footerButton}>
         {
