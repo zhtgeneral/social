@@ -203,7 +203,7 @@ function PostCardFooter({
 
   const liked = likes?.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
   const numLikes = (likes?.length)? likes.length: 0;
-  const numComments = (item.comments)? item.comments[0].count : 0;
+  const numComments = (item?.comments)? item.comments[0].count : 0;
 
   React.useEffect(() => {
     setLikes(item?.postLikes);

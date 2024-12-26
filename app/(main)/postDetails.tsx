@@ -1,4 +1,12 @@
-import { StyleSheet, View, ScrollView, TextInput, TouchableOpacity, Alert, Text } from 'react-native'
+import { 
+  StyleSheet,
+  View, 
+  ScrollView, 
+  TextInput, 
+  TouchableOpacity, 
+  Alert, 
+  Text 
+} from 'react-native'
 import React from 'react'
 import { useLocalSearchParams } from 'expo-router';
 import { Post } from '@/types/supabase';
@@ -13,21 +21,21 @@ import Icon from '@/assets/icons';
 
 const debugging = true;
 
-/**
- * This component renders the details of a post.
- * 
- * It shows a post card and a comments area.
- * 
- * The comments area has an input to add comment and displays all the comments.
- * 
- * If the postId doesn't correspond to a post, it shows "Post not found." and nothing else.
- */
-export default function PostDetails() {
-  const { user } = useAuth();
-  const { postId } = useLocalSearchParams<{postId: string}>();
+interface PostDetailsProps {
+  init: boolean,
+  loading: boolean,
+  formattedPost: Post,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+}
 
-  const inputRef = React.useRef<TextInput>(null);
-  const commentRef = React.useRef("");
+/**
+ * This page handles `/postDetails/:postId`.
+ * 
+ * It renders the post details by supplying the component with inputs.
+ * This improves testability of the rendered component.
+ */
+export default function _PostDetailsController() {
+  const { postId } = useLocalSearchParams<{postId: string}>();
 
   const [init, setInit] = React.useState(false);
   const [post, setPost] = React.useState<Post | null>(null);
@@ -53,6 +61,41 @@ export default function PostDetails() {
     }
   }
 
+  return (
+    <PostDetails 
+      init={init}
+      loading={loading}
+      formattedPost={formattedPost}      
+      setLoading={setLoading}
+    />
+  )
+}
+
+/**
+ * This component renders the details of a post.
+ * 
+ * If `init` is false, it shows a loading indicator and nothing else.
+ * 
+ * If `formattedPost` is null, it shows "Post not found." and nothing else.
+ * 
+ * Otherwise it shows a post card and a comments area.
+ * 
+ * The comments area has an input to add comment and displays all the comments.
+ * 
+ * If `loading` is true, the share button renders a loading icon and cannot be interacted with.
+ */
+function PostDetails({
+  init,
+  loading,
+  formattedPost,  
+  setLoading
+}: PostDetailsProps) {
+  const { user } = useAuth();
+  const { postId } = useLocalSearchParams<{postId: string}>();
+
+  const inputRef = React.useRef<TextInput>(null);
+  const commentRef = React.useRef("");
+
   async function onNewComment() {
     if (!commentRef.current) {
       return;
@@ -62,6 +105,7 @@ export default function PostDetails() {
       post_id: postId,
       text: commentRef.current
     }
+
     setLoading(true);
     const response = await createComment(data);
     setLoading(false);
@@ -74,9 +118,8 @@ export default function PostDetails() {
       Alert.alert("Comment error", response.message);
     }
     if (debugging) {
-      console.log("postDetails::onNewComment got comment: " + JSON.stringify(response, null, 2));
+      console.log("PostDetails::onNewComment got comment: " + JSON.stringify(response, null, 2));
     }
-
   }
 
   if (!init) {
@@ -86,7 +129,7 @@ export default function PostDetails() {
       </View>
     )
   }
-  if (!post) {
+  if (!formattedPost) {
     return (
       <View style={[styles.center, { justifyContent: 'flex-start', marginTop: 100 }]}>
         <Text style={styles.notFound}>Post not found.</Text>
@@ -106,11 +149,7 @@ export default function PostDetails() {
           <Input 
             placeholder="Type comment..."
             placeholderTextColor={theme.colors.textLight}
-            containerStyle={{ 
-              flex: 1, 
-              height: hp(6.2), 
-              borderRadius: theme.radius.xl 
-            }}
+            containerStyle={styles.input}
             inputRef={inputRef}
             onChangeText={(comment: string) => commentRef.current = comment}
           />
@@ -141,6 +180,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10
+  },
+  input: { 
+    flex: 1, 
+    height: hp(6.2), 
+    borderRadius: theme.radius.xl 
   },
   list: {
     paddingHorizontal: wp(4)
