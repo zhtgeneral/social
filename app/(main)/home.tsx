@@ -23,9 +23,16 @@ import {
   View 
 } from 'react-native'
 
+const debugging = true;
+
 var numPosts = 3;
 var amount = 3;
-const debugging = true;
+
+interface HomeProps {
+  posts: Post[],
+  hasMore: boolean,
+  handleEnd: () => void
+}
 
 interface HomeHeaderProps {
   user: User
@@ -34,15 +41,10 @@ interface HomeHeaderProps {
 /**
  * This page handles `/home`.
  * 
- * It renders the home header and all the posts.
- * 
- * It loads posts in chunks of `limit` and loads posts in real time from supabase.
- * 
- * @requires user needs to be logged in to get here.
+ * It renders the post details by supplying the component with inputs.
+ * This improves testability of the rendered component.
  */
-export default function Home () {
-  const { user } = useAuth();
-
+export default function _HomeController() {
   const [posts, setPosts] = React.useState<Post[]>([]);
   const [hasMore, setHasMore] = React.useState(true);
 
@@ -129,6 +131,48 @@ export default function Home () {
   }
 
   return (
+    <HomeView 
+      posts={posts}
+      hasMore={hasMore}
+      handleEnd={HomeController.handleEnd} 
+    />
+  )
+}
+
+/**
+ * This component renders the home header and all the posts.
+ * 
+ * It loads posts in chunks of `limit` and loads posts in real time from supabase.
+ * 
+ * @requires user needs to be logged in to get here.
+ * @testing use mocks for post and hasMore and keep handleEnd empty
+ */
+function HomeView({
+  posts,
+  hasMore,
+  handleEnd
+}: HomeProps) {
+  const { user } = useAuth();
+
+  function renderItem(info: ListRenderItemInfo<Post>) {
+    return <PostCard item={info.item} currentUser={user}/> 
+  }
+  function listFooter() {
+    if (hasMore) {
+      return (
+        <View style={{ marginVertical: !posts?.length? 200: 50 }}>
+          <Loading />
+        </View>
+      )
+    } else {
+      return (
+        <View style={{ marginVertical: 30 }}>
+          <Text style={styles.noPosts}>No more posts</Text>
+        </View>
+      )
+    }
+  }
+  return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
         <HomeHeader user={user} />
@@ -137,27 +181,10 @@ export default function Home () {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listStyle}
           keyExtractor={(item: Post) => item.id.toString()}
-          renderItem={(info: ListRenderItemInfo<Post>) => (
-            <PostCard 
-              item={info.item}
-              currentUser={user}
-            /> 
-          )}
-          onEndReached={HomeController.handleEnd}
+          renderItem={renderItem}
+          onEndReached={handleEnd}
           onEndReachedThreshold={0}
-          ListFooterComponent={
-            hasMore? (
-              <View style={{ marginVertical: !posts.length? 200: 30 }}>
-                <Loading />
-              </View>
-            ) : (
-              <View style={{ marginVertical: 30 }}>
-                <Text style={styles.noPosts}>
-                  No more posts
-                </Text>
-              </View>
-            )
-          }
+          ListFooterComponent={listFooter}
         />
       </View>
     </ScreenWrapper>

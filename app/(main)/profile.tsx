@@ -75,10 +75,7 @@ function ProfileHeader() {
     <View>
       <Header title="profile" mb={30} />
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Icon 
-          name="logout" 
-          stroke={theme.colors.rose} 
-          />
+        <Icon name="logout" stroke={theme.colors.rose} />
       </TouchableOpacity>
     </View>
   );
@@ -86,8 +83,13 @@ function ProfileHeader() {
 /**
  * This component renders the details of the user.
  * 
- * If the user does not have any of the details, 
- * the section for that detail is hidden.
+ * It displays the field for the email and the value.
+ *  
+ * If the user has fields for `phone`, it displays the field for phone and the value.
+ * 
+ * If the user has fields for `bio`, it displays the field for bio and the value.
+ * 
+ * @testing use a mock user.
  */
 function ProfileBanner({
   user
@@ -95,34 +97,20 @@ function ProfileBanner({
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.info}>
-        <Icon 
-          name="mail" 
-          size={20} 
-          color={theme.colors.textLight} 
-          /> 
-        <Text style={styles.infoText}
-          >{user && user.email}
-          </Text>
+        <Icon name="mail" size={20} color={theme.colors.textLight} /> 
+        <Text style={styles.infoText}>{user?.email}</Text>
         </View>
-      {user && user.phone && (
+      {user?.phone && (
         <View style={styles.info}>
-          <Icon 
-            name="phone" 
-            size={20} 
-            color={theme.colors.textLight} 
-            /> 
-          <Text style={styles.infoText}
-            >{user.phone}
-            </Text>
-        </View>
-      )}
-      {user && user.bio && (
+          <Icon name="phone" size={20} color={theme.colors.textLight} /> 
+          <Text style={styles.infoText}>{user.phone}</Text>
+          </View>
+        )}
+      {user?.bio && (
         <View style={styles.info}>
-          <Text style={styles.infoText}
-            >About me: {user.bio}
-            </Text>
-        </View>
-      )}
+          <Text style={styles.infoText}>About me: {user.bio}</Text>
+          </View>
+        )}
     </View>
   );
 }
@@ -138,29 +126,14 @@ function ProfileMain({
   return (
     <View style={{ gap: 5 }}>
       <View style={styles.avatarContainer} >
-        <Avatar 
-          uri={user?.image} 
-          size={hp(12)} 
-          rounded={theme.radius.xxl * 1.4}
-          />
-        <Pressable 
-          style={styles.editIcon} 
-          onPress={() => router.push('/editProfile')} 
-          >
-          <Icon 
-            name="edit" 
-            strokeWidth={2.5} 
-            size={20} 
-            />
+        <Avatar uri={user?.image} size={hp(12)} rounded={theme.radius.xxl * 1.4} />
+        <Pressable style={styles.editIcon} onPress={() => router.push('/editProfile')} >
+          <Icon name="edit" strokeWidth={2.5} size={20} />
           </Pressable>
         </View>
       <View style={{ alignItems: 'center', gap: 4 }}> 
-        <Text style={styles.userName} 
-          >{user && user.name}
-          </Text>
-        <Text style={styles.infoText} 
-          >{user && user.address}
-          </Text>
+        <Text style={styles.userName}>{user && user.name}</Text>
+        <Text style={styles.infoText}>{user && user.address}</Text>
         </View>
     </View>
   );

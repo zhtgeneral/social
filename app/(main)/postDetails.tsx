@@ -62,7 +62,7 @@ export default function _PostDetailsController() {
   }
 
   return (
-    <PostDetails 
+    <PostDetailsView 
       init={init}
       loading={loading}
       formattedPost={formattedPost}      
@@ -84,7 +84,7 @@ export default function _PostDetailsController() {
  * 
  * If `loading` is true, the share button renders a loading icon and cannot be interacted with.
  */
-function PostDetails({
+function PostDetailsView({
   init,
   loading,
   formattedPost,  

@@ -46,7 +46,7 @@ interface NewPostDisplayMediaProps {
  * It displays the text editor allowing the user to enter rich text.
  * It displays an input to add media with images or videos.
  */
-export default function NewPost () {
+export default function NewPost() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -138,6 +138,8 @@ export default function NewPost () {
  * For videos, it displays the video player that loops the video.
  * 
  * It displays a close icon that closes the display media when pressed.
+ * 
+ * @testing use a mock file
  */
 function NewPostDisplayMedia({
   file, 
@@ -233,24 +235,13 @@ function NewPostUploadMedia({
   }
   return (
     <View style={styles.media}>
-      <Text style={styles.addImageText}
-        >Add to your post
-        </Text>
+      <Text style={styles.addImageText}>Add to your post</Text>
       <View style={styles.mediaIcons}>
         <TouchableOpacity onPress={() => onPick(true)}>
-          <Icon 
-            name='image' 
-            size={30} 
-            stroke={theme.colors.dark} 
-            />
+          <Icon name='image' size={30} stroke={theme.colors.dark} />
           </TouchableOpacity>
         <TouchableOpacity onPress={() => onPick(false)}>
-          <Icon 
-            name='video' 
-            size={35} 
-            strokeWidth={1.7}
-            stroke={theme.colors.dark} 
-            />
+          <Icon name='video' size={35} strokeWidth={1.7} stroke={theme.colors.dark} />
           </TouchableOpacity>
       </View>
     </View>
@@ -266,18 +257,10 @@ function NewPostHeader({
 }: NewPostHeaderProps) {
   return (
     <View style={styles.header}> 
-      <Avatar 
-        uri={user.image}
-        size={hp(6.6)}
-        rounded={theme.radius.xl}
-        />
+      <Avatar uri={user.image} size={hp(6.6)} rounded={theme.radius.xl} />
       <View style={{ gap: 2 }}> 
-        <Text style={styles.username}
-          >{user && user.name}
-          </Text>
-        <Text style={styles.publicText}
-          >public
-          </Text>
+        <Text style={styles.username}>{user?.name}</Text>
+        <Text style={styles.publicText}>public</Text>
         </View>
     </View>
   );
