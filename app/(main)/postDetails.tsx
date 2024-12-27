@@ -31,7 +31,7 @@ interface PostDetailsProps {
 /**
  * This page handles `/postDetails/:postId`.
  * 
- * It renders the post details by supplying the component with inputs.
+ * It renders the post details by supplying the view component with parameters.
  * This improves testability of the rendered component.
  */
 export default function _PostDetailsController() {
