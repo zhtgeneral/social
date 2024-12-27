@@ -9,8 +9,8 @@ import {
 } from 'react-native'
 import React from 'react'
 import { useLocalSearchParams } from 'expo-router';
-import { Post } from '@/types/supabase';
-import { createComment, fetchPostDetails } from '@/services/postService';
+import { Comment, Post } from '@/types/supabase';
+import { createComment, fetchPostDetails, removeComment } from '@/services/postService';
 import { hp, wp } from '@/helpers/common';
 import { theme } from '@/constants/theme';
 import PostCard from '@/components/PostCard';
@@ -18,6 +18,7 @@ import { useAuth } from '@/context/AuthContext';
 import Loading from '@/components/Loading';
 import Input from '@/components/Input';
 import Icon from '@/assets/icons';
+import CommentItem from '@/components/CommentItem';
 
 const debugging = true;
 
@@ -26,6 +27,7 @@ interface PostDetailsProps {
   loading: boolean,
   formattedPost: Post,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setPost: React.Dispatch<Post>
 }
 
 /**
@@ -40,11 +42,6 @@ export default function _PostDetailsController() {
   const [init, setInit] = React.useState(false);
   const [post, setPost] = React.useState<Post | null>(null);
   const [loading, setLoading] = React.useState(false);
-
-  const formattedPost = {
-    ...post, 
-    comments: [{ count: post?.comments?.length}]
-  }
 
   React.useEffect(() => {
     getPostDetails();
@@ -61,12 +58,16 @@ export default function _PostDetailsController() {
     }
   }
 
+  if (!init) {
+    return null;
+  }
   return (
     <PostDetailsView 
       init={init}
       loading={loading}
-      formattedPost={formattedPost}      
+      formattedPost={post}      
       setLoading={setLoading}
+      setPost={setPost}
     />
   )
 }
@@ -88,7 +89,8 @@ function PostDetailsView({
   init,
   loading,
   formattedPost,  
-  setLoading
+  setLoading,
+  setPost
 }: PostDetailsProps) {
   const { user } = useAuth();
   const { postId } = useLocalSearchParams<{postId: string}>();
@@ -121,6 +123,23 @@ function PostDetailsView({
       console.log("PostDetails::onNewComment got comment: " + JSON.stringify(response, null, 2));
     }
   }
+  async function onDeleteComment(comment: Comment) {
+    const response = await removeComment(comment?.id);
+    if (response.success) {
+      setPost((prev: Post) => {
+        const updatedPost = {...prev};
+        updatedPost.comments = updatedPost.comments.filter((c: Comment) => c.id !== comment.id);
+        return updatedPost;
+      });
+    }
+    if (debugging) {
+      console.log("PostDetailsView::onDeleteComment: delete reponse: " + JSON.stringify(response, null, 2));
+    }
+  }
+
+  if (debugging) {
+    console.log("PostDetails::PostDetailsView formatted post: " + JSON.stringify(formattedPost, null, 2));
+  }
 
   if (!init) {
     return (
@@ -142,6 +161,7 @@ function PostDetailsView({
         <PostCard 
           item={formattedPost} 
           currentUser={user} 
+          numComments={formattedPost?.comments?.length}
           hasShadow={false} 
           showMoreActions={false}
           />
@@ -165,6 +185,29 @@ function PostDetailsView({
             )
           }
         </View>
+        <View style={{ marginVertical: 15, gap: 18 }}>
+        {
+          formattedPost?.comments?.map((comment: Comment) => {
+            /** can delete is true if the user is the owner of the post or the comment */
+            const canDelete = user?.id === formattedPost?.user_id || comment?.user_id === user?.id;
+            return (
+              <CommentItem 
+                key={comment?.id?.toString()} 
+                item={comment} 
+                canDelete={canDelete}
+                onDelete={onDeleteComment}
+              />
+            )
+          })
+        }
+        {
+          (formattedPost?.comments?.length === 0) && (
+            <Text style={{ color: theme.colors.text, marginLeft: 5 }}>
+              Be the first to comment!
+            </Text>
+          )
+        }
+      </View>
       </ScrollView>
     </View>
   )

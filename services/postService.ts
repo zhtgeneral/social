@@ -156,7 +156,7 @@ export async function removePostLike(userId: string, postId: string): Promise<Cu
       .eq('post_id', postId)
 
     if (error) {
-      console.log("deletePostLike: delete error: ", error.message);  
+      console.log("removeComment: delete error: ", error.message);  
       return {
         success: false,
         message: error.message
@@ -167,7 +167,7 @@ export async function removePostLike(userId: string, postId: string): Promise<Cu
       data: data
     }
   } catch (error: any) {
-    console.log("deletePostLike: delete error: ", error.message);
+    console.log("removeComment: delete error: ", error.message);
     return {
       success: false,
       message: error.message
@@ -236,6 +236,36 @@ export async function createComment(comment: Comment): Promise<CustomResponse> {
     }
   } catch (error: any) {
     console.log("createComment: insert error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+/**
+ * This function removes a postLike from Supabase.
+ */
+export async function removeComment(commentId: string): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('comments')
+      .delete()
+      .eq('id', commentId);
+
+    if (error) {
+      console.log("removeComment: delete error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("removeComment: delete error: ", error.message);
     return {
       success: false,
       message: error.message

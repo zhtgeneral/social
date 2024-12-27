@@ -155,7 +155,13 @@ function HomeView({
   const { user } = useAuth();
 
   function renderItem(info: ListRenderItemInfo<Post>) {
-    return <PostCard item={info.item} currentUser={user}/> 
+    return (
+      <PostCard 
+        item={info.item} 
+        currentUser={user}
+        numComments={info.item?.comments[0]?.count}
+      /> 
+    )
   }
   function listFooter() {
     if (hasMore) {

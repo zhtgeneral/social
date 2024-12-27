@@ -29,6 +29,7 @@ const debugging = false;
 interface PostCardProps {
   item: Post,
   currentUser: User,
+  numComments: number,
   hasShadow?: boolean,
   showMoreActions?: boolean
 }
@@ -43,6 +44,7 @@ interface PostCardBodyProps {
 interface PostCardFooterProps {
   item: Post
   currentUser: User,
+  numComments: number,
   openPostDetails: () => void
 }
 
@@ -58,12 +60,11 @@ LogBox.ignoreLogs([
  * 
  * If `showMoreActions` is specified, the user can click the 3 dots or the comments
  * button to open post details.
- * 
- * @required `item` is a Post with the attribtues `comments: [{ count: x }]`
  */
 export default function PostCard({
   item,
   currentUser,
+  numComments,
   hasShadow = true,
   showMoreActions = true
 }: PostCardProps) {
@@ -93,6 +94,7 @@ export default function PostCard({
       <PostCardFooter 
         item={item} 
         currentUser={currentUser} 
+        numComments={numComments}
         openPostDetails={openPostDetails}
         />
     </View>
@@ -196,14 +198,14 @@ function PostCardBody ({
 function PostCardFooter({
   item,
   currentUser,
+  numComments,
   openPostDetails
 }: PostCardFooterProps) {
   const [likes, setLikes] = React.useState<PostLike[]>([]);
   const [loading, setLoading] = React.useState(false);
 
-  const liked = likes?.filter((like: PostLike) => like.user_id === currentUser.id)[0]? true: false;
+  const liked = likes?.filter((like: PostLike) => like.user_id === currentUser?.id)[0]? true: false;
   const numLikes = (likes?.length)? likes.length: 0;
-  const numComments = (item?.comments)? item.comments[0].count : 0;
 
   React.useEffect(() => {
     setLikes(item?.postLikes);
