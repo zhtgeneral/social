@@ -1,24 +1,27 @@
-import { 
-  StyleSheet,
-  View, 
-  ScrollView, 
-  TextInput, 
-  TouchableOpacity, 
-  Alert, 
-  Text 
-} from 'react-native'
-import React from 'react'
-import { useLocalSearchParams } from 'expo-router';
-import { Comment, Post } from '@/types/supabase';
-import { createComment, fetchPostDetails, removeComment } from '@/services/postService';
-import { hp, wp } from '@/helpers/common';
-import { theme } from '@/constants/theme';
-import PostCard from '@/components/PostCard';
-import { useAuth } from '@/context/AuthContext';
-import Loading from '@/components/Loading';
-import Input from '@/components/Input';
 import Icon from '@/assets/icons';
 import CommentItem from '@/components/CommentItem';
+import Input from '@/components/Input';
+import Loading from '@/components/Loading';
+import PostCard from '@/components/PostCard';
+import { theme } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
+import { hp, wp } from '@/helpers/common';
+import { supabase } from '@/lib/Supabase';
+import { createComment, fetchPostDetails, removeComment } from '@/services/postService';
+import { getUserData } from '@/services/userService';
+import { Comment, Post } from '@/types/supabase';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 const debugging = true;
 
@@ -43,18 +46,75 @@ export default function _PostDetailsController() {
   const [post, setPost] = React.useState<Post | null>(null);
   const [loading, setLoading] = React.useState(false);
 
+  /**
+   * This hook makes the post details page responsive to uploaded comments on a post.
+   * 
+   * Removing comments is already responsive with PostDetailsView::onDeleteComment.
+   */
   React.useEffect(() => {
-    getPostDetails();
-  }, [])
+    const commentsChannel = supabase
+      .channel('comments')
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'comments',
+        filter: `post_id=eq.${postId}`
+      }, PostDetailsController.handlePostEvents)
+      .subscribe();
 
-  async function getPostDetails() {
-    const response = await fetchPostDetails(postId);
-    if (response.success) {
-      setPost(response.data);
+      PostDetailsController.getPostDetails();
+
+    return () => {
+      supabase.removeChannel(commentsChannel);
     }
-    setInit(true);
-    if (debugging) {
-      console.log("postDetails::getPostDetails post details: " + JSON.stringify(response, null, 2));
+  }, []);
+
+  class PostDetailsController {
+    public static async getPostDetails() {
+      const response = await fetchPostDetails(postId);
+      if (response.success) {
+        setPost(response.data);
+      }
+      setInit(true);
+      if (debugging) {
+        console.log("postDetails::getPostDetails post details: " + JSON.stringify(response, null, 2));
+      }
+    }
+    /**
+     * This callback function sets the comments on a post details page.
+     * 
+     * It is called whenever supabase channels detects an INSERT event on the comments table.
+     * 
+     * It fills the user for the new cmment and brings the new post on top of the feed.
+     */
+    public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Comment>) {
+      if (payload.new) {
+        const newComment = {...payload.new};
+        await PostDetailsController.setUserForComment(newComment);
+        setPost((prevPost: Post) => {
+          return {
+            ...prevPost,
+            comments: [newComment, ...prevPost.comments]
+          }
+        });
+      }
+    }
+    /**
+     * This function sets the user for the new comment.
+     * 
+     * If the request for getting the user fails, it sets the user as null.
+     */
+    private static async setUserForComment(newComment: Comment) {
+      if (debugging) {
+        console.log("PostDetails::setUserForComment new comment detected: " + JSON.stringify(newComment, null, 2));
+      }
+
+      const userResponse = await getUserData(newComment.user_id);
+      newComment.user = userResponse.success? userResponse.data: {};
+
+      if (debugging) {
+        console.log("PostDetails::setUserForComment new comment with user: " + JSON.stringify(newComment, null, 2));
+      }
     }
   }
 
