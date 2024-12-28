@@ -71,27 +71,36 @@ export default function _HomeController() {
      * This function fills in the user and comments count for a post.
      */
     public static async formatNewPost(newPost: Post): Promise<Post> {
-      const formattedPost = {...newPost.new};
-      await PostDataFormatter.setUserForPost(formattedPost);
-      PostDataFormatter.setCommentsForPost(formattedPost);
-      return formattedPost;
+      const userAssignedPost = await PostDataFormatter.assignUserForPost(newPost);
+      const commentsAssignedPost = PostDataFormatter.setCommentsForPost(userAssignedPost);
+      return commentsAssignedPost;
     }
     /**
      * @requries newPost is newly added into Supabase and foreign key relation to user is valid.
      */
-    private static async setUserForPost(newPost: Post) {
+    private static async assignUserForPost(newPost: Post) {
+      const userAssignedPost = {...newPost};
       const userResponse = await getUserData(newPost.user_id);
-      newPost.user = userResponse.success? userResponse.data: {};
+
+      if (userResponse.success) {
+        userAssignedPost.user = userResponse.data;
+      } else {
+        userAssignedPost.user = {}
+      }
       
       if (debugging) {        
-        console.log("Home::setUserForPost new post detected with user: " + JSON.stringify(newPost, null, 2));
+        console.log("Home::assignUserForPost new post detected with user: " + JSON.stringify(newPost, null, 2));
       }
+
+      return userAssignedPost;
     }
     /**
      * @requires newPost is newly added into Supabase and has 0 comments.
      */
     private static setCommentsForPost(newPost: Post) {
-      newPost.comments = [{ count: 0 }];
+      const commentsAssignedPost = {...newPost};
+      commentsAssignedPost.comments = [{ count: 0 }];
+      return commentsAssignedPost;
     }
   }
 
