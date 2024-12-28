@@ -84,13 +84,9 @@ export default function Login() {
         <BackButton router={router} />
         {/* Header */}
         <View>
-          <Text style={styles.welcomeText}>
-            Hey,
-          </Text>
-          <Text style={styles.welcomeText}>
-            Welcome back
-          </Text>
-        </View>
+          <Text style={styles.welcomeText}>Hey,</Text>
+          <Text style={styles.welcomeText}>Welcome back</Text>
+          </View>
         {/* Form */}
         <View style={styles.form}>
           <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
@@ -99,30 +95,22 @@ export default function Login() {
           <Input 
             icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
             placeholder='Enter your email'
-            onChangeText={(value: string) => { emailRef.current = value }}
-          />
+            onChangeText={(value: string) => { emailRef.current = value }} />
           <Input 
             icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
             placeholder='Enter your password'
             secureTextEntry
-            onChangeText={(value: string) => { passwordRef.current = value }}
-          />
-          <Text style={styles.forgotPassword}>
-            {/* TODO */}
-            Forgot password?
-          </Text>
+            onChangeText={(value: string) => { passwordRef.current = value }} />
+          {/* TODO */}
+          <Text style={styles.forgotPassword}>Forgot password?</Text>
           <Button title="Login" loading={loading} onPress={LoginController.onSubmit}/>
-        </View>
+          </View>
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Don't have an account?
-          </Text>
+          <Text style={styles.footerText}>Don't have an account?</Text>
           <Pressable onPress={() => router.push('/signup')}>
-            <Text style={[styles.footerText, styles.footerLink]}>
-              Sign up
-            </Text>
-          </Pressable>
+            <Text style={[styles.footerText, styles.footerLink]}>Sign up</Text>
+            </Pressable>
         </View>
       </View>
     </ScreenWrapper>

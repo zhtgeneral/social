@@ -37,21 +37,21 @@ export default function CommentItem({
     <View style={styles.container}> 
       <Avatar uri={item?.user?.image} />
       <View style={styles.content}>
-       <View style={styles.subcontent}>
-        <View style={styles.nameContainer}>
-          <Text style={styles.text}>{item?.user?.name}</Text>
-          <Text>•</Text>
-          <Text style={[styles.text, { color: theme.colors.textLight }]}>{createdAt}</Text>
+        <View style={styles.subcontent}>
+          <View style={styles.nameContainer}>
+            <Text style={styles.text}>{item?.user?.name}</Text>
+            <Text>•</Text>
+            <Text style={[styles.text, { color: theme.colors.textLight }]}>{createdAt}</Text>
+            </View>
+          {canDelete && (
+            <TouchableOpacity onPress={handleDelete}>
+              <Icon name="delete" size={20} stroke={theme.colors.rose} />
+            </TouchableOpacity>
+          )}
+            </View>
+          <Text style={[styles.text, { fontWeight: 'normal' }]}>{item?.text}</Text>
         </View>
-        {canDelete && (
-          <TouchableOpacity onPress={handleDelete}>
-            <Icon name="delete" size={20} stroke={theme.colors.rose} />
-          </TouchableOpacity>
-        )}
-       </View>
-       <Text style={[styles.text, { fontWeight: 'normal' }]}>{item?.text}</Text>
       </View>
-    </View>
   );
 }
 

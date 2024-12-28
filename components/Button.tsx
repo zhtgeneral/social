@@ -40,10 +40,8 @@ export default function Button({
   }
   return (
     <Pressable onPress={onPress} style={[styles.button, buttonStyle, hasShadow && shadowStyle]}>
-      <Text style={[styles.text, textStyle]}>
-        {title}
-      </Text>
-    </Pressable>
+      <Text style={[styles.text, textStyle]}>{title}</Text>
+      </Pressable>
   )
 }
 

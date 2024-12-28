@@ -17,8 +17,7 @@ export default function Loading({
     <View style={styles.activity}>
       <ActivityIndicator 
         size={size} 
-        color={color}
-      />
+        color={color} />
     </View>
   )
 }

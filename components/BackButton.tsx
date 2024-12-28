@@ -23,9 +23,8 @@ export default function BackButton({
         name="arrowLeft" 
         strokeWidth={2.5}
         size={size}
-        color={theme.colors.text}
-      />
-    </Pressable>
+        color={theme.colors.text}/>
+      </Pressable>
   );
 }
 

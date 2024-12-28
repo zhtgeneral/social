@@ -30,8 +30,7 @@ export default function Welcome() {
         <Image 
           style={styles.welcomeImage} 
           source={welcomeImage}
-          resizeMode="contain"
-          />
+          resizeMode="contain" />
         <View style={{ gap: 20 }}>
           <Text style={styles.title}>Unlinkedout</Text>
           <Text style={styles.punchline}>Punchline</Text>
@@ -40,8 +39,7 @@ export default function Welcome() {
           <Button 
             title='Get Started'
             buttonStyle={{ marginhorizontal: wp(3) }}
-            onPress={() => router.push('/signup')}
-            />
+            onPress={() => router.push('/signup')} />
           <View style={styles.buttonTextContainer}>
             <Text style={[styles.loginText]}>Already have an account?</Text>
             <Pressable onPress={() => router.push('/login')}>
@@ -50,7 +48,7 @@ export default function Welcome() {
             </View>
           </View>
         </View>
-    </ScreenWrapper>
+      </ScreenWrapper>
   )
 }
 

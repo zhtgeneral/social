@@ -107,22 +107,18 @@ export default function NewPost() {
             <View style={styles.body} >
               <RichTextEditor 
                 editorRef={editorRef}
-                onChange={(body: string) => bodyRef.current = body}
-                />
+                onChange={(body: string) => bodyRef.current = body} />
               <NewPostDisplayMedia 
                 file={file} 
-                setFile={setFile}
-                />
+                setFile={setFile} />
               <NewPostUploadMedia 
-                setFile={setFile} 
-                />
+                setFile={setFile} />
               <Button 
                 buttonStyle={{ height: hp(6.2)}}
                 title="Create post"
                 loading={loading}
                 hasShadow={false}
-                onPress={onSubmit}
-                />
+                onPress={onSubmit} />
             </View>
           </ScrollView>
         </Pressable>
@@ -190,15 +186,10 @@ function NewPostDisplayMedia({
         <Image 
           source={{ uri: getFileUri(file) }}
           contentFit='cover'
-          style={{ flex: 1 }}
-          />
+          style={{ flex: 1 }} />
       )}
       <Pressable style={styles.closeIcon} onPress={() => setFile(null)}>
-        <Icon 
-          name="delete" 
-          size={20} 
-          stroke="white" 
-          />
+        <Icon name="delete" size={20} stroke="white" />
       </Pressable>
     </View>
   );

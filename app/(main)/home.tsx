@@ -164,8 +164,7 @@ export default function _HomeController() {
     <HomeView 
       posts={posts}
       hasMorePosts={hasMorePosts}
-      handleEnd={HomeController.handleEnd} 
-    />
+      handleEnd={HomeController.handleEnd} />
   )
 }
 
@@ -190,8 +189,7 @@ function HomeView({
     return (
       <PostCard 
         item={post} 
-        currentUser={user}
-      /> 
+        currentUser={user} /> 
     )
   }
   function listFooter() {
@@ -221,8 +219,7 @@ function HomeView({
           renderItem={renderItem}
           onEndReached={handleEnd}
           onEndReachedThreshold={0}
-          ListFooterComponent={listFooter}
-        />
+          ListFooterComponent={listFooter} />
       </View>
     </ScreenWrapper>
   )
@@ -247,24 +244,21 @@ function HomeHeader({
             name="heart" 
             size={hp(3.2)} 
             strokeWidth={2} 
-            stroke={theme.colors.text}
-            />
+            stroke={theme.colors.text} />
           </Pressable>
         <Pressable onPress={() => router.push('/newPost')}>
           <Icon 
             name="plus" 
             size={hp(3.2)} 
             strokeWidth={2} 
-            stroke={theme.colors.text} 
-            />
+            stroke={theme.colors.text} />
           </Pressable>
         <Pressable onPress={() => router.push('/profile')}>
           <Avatar 
             uri={user?.image} 
             size={hp(4.3)}
             rounded={theme.radius.sm}
-            style={{ borderWidth: 2 }}
-            />
+            style={{ borderWidth: 2 }} />
           </Pressable>
         </View>
     </View>

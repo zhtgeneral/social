@@ -178,41 +178,35 @@ export default function EditProfile() {
             <EditProfilePicture 
               user={user} 
               setFormData={setFormData} 
-              formData={formData}
-              />  
-            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}
-              >Please fill your profile details
+              formData={formData} />  
+            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
+              Please fill your profile details
               </Text>
             <Input 
               icon={<Icon name="user" />}
               placeholder='Enter your username'
               value={formData.name}
-              onChangeText={(value: string) => setFormData({ ...formData, name: value })}
-              />
+              onChangeText={(value: string) => setFormData({ ...formData, name: value })} />
             <Input 
               icon={<Icon name="phone" />}
               placeholder='Enter your phone number'
               value={formData.phone}
-              onChangeText={(value: string) => setFormData({ ...formData, phone: value })}
-              />
+              onChangeText={(value: string) => setFormData({ ...formData, phone: value })} />
             <Input 
               icon={<Icon name="location" />}
               placeholder='Enter your address'
               value={formData.address}
-              onChangeText={(value: string) => setFormData({ ...formData, address: value })}
-              />
+              onChangeText={(value: string) => setFormData({ ...formData, address: value })} />
             <Input 
               placeholder='Enter your bio'
               value={formData.bio}
               multiline={true}
               containerStyle={styles.bio}
-              onChangeText={(value: string) => setFormData({ ...formData, bio: value })}
-              />
+              onChangeText={(value: string) => setFormData({ ...formData, bio: value })} />
             <Button 
               title="Update" 
               loading={loading} 
-              onPress={EditProfileController.onSubmit}
-              />
+              onPress={EditProfileController.onSubmit} />
           </View>
         </ScrollView>
       </View>
@@ -248,14 +242,12 @@ function EditProfilePicture({
     <View style={styles.avatarContainer}>
       <Image 
         source={imageSource} 
-        style={styles.avatar} 
-        />
+        style={styles.avatar} />
       <Pressable style={styles.cameraIcon} onPress={onPickImage}>
         <Icon 
           name="camera" 
           size={20} 
-          strokeWidth={2.5} 
-          />
+          strokeWidth={2.5} />
         </Pressable>
     </View>
   );

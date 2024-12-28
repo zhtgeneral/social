@@ -37,8 +37,7 @@ export default function RichTextEditor({
           flatContainerStyle={styles.flatStyle}
           selectedIconTint={theme.colors.primaryDark}
           editor={editorRef}
-          disabled={false}
-          />
+          disabled={false} />
         <RichEditor 
           ref={editorRef}
           containerStyle={styles.rich}
@@ -48,8 +47,7 @@ export default function RichTextEditor({
           autoCorrect={false}
           useContainer={true}
           scrollEnabled={false}
-          initialFocus={true}
-          />
+          initialFocus={true} />
       </View>
     </TouchableWithoutFeedback>
   )

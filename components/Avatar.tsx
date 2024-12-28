@@ -28,8 +28,7 @@ export default function Avatar({
     <Image 
       source={getUserImageSource(uri)}  
       transition={100}
-      style={[styles.avatar, style, { height: size, width: size, borderRadius: rounded }]}
-    />
+      style={[styles.avatar, style, { height: size, width: size, borderRadius: rounded }]} />
   )
 }
 

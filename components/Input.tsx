@@ -24,8 +24,7 @@ export default function Input({
         style={{ flex: 1 }}
         placeholderTextColor={theme.colors.textLight}
         ref={inputRef}
-        {...props}
-      />
+        {...props} />
     </View>
   );
 }

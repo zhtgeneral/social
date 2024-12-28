@@ -136,8 +136,7 @@ export default function _PostDetailsController() {
       loading={loading}
       formattedPost={post}      
       setLoading={setLoading}
-      setPost={setPost}
-    />
+      setPost={setPost} />
   )
 }
 
@@ -227,16 +226,14 @@ function PostDetailsView({
           item={formattedPost} 
           currentUser={user} 
           hasShadow={false} 
-          detailedMode={true}
-          />
+          detailedMode={true} />
         <View style={styles.inputContainer}>
           <Input 
             placeholder="Type comment..."
             placeholderTextColor={theme.colors.textLight}
             containerStyle={styles.input}
             inputRef={inputRef}
-            onChangeText={(comment: string) => commentRef.current = comment}
-          />
+            onChangeText={(comment: string) => commentRef.current = comment} />
           {
             loading? (
               <View style={styles.loading}>
@@ -248,7 +245,7 @@ function PostDetailsView({
               </TouchableOpacity>
             )
           }
-        </View>
+          </View>
         <View style={{ marginVertical: 15, gap: 18 }}>
         {
           formattedPost?.comments?.map((comment: Comment) => {
@@ -259,8 +256,7 @@ function PostDetailsView({
                 key={comment?.id?.toString()} 
                 item={comment} 
                 canDelete={canDelete}
-                onDelete={onDeleteComment}
-              />
+                onDelete={onDeleteComment} />
             )
           })
         }
@@ -271,9 +267,9 @@ function PostDetailsView({
             </Text>
           )
         }
+          </View>
+        </ScrollView>
       </View>
-      </ScrollView>
-    </View>
   )
 }
 
