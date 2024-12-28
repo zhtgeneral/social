@@ -66,14 +66,14 @@ export default function _HomeController() {
     }
   }, []);
 
-  class FormatPostData {
+  class PostDataFormatter {
     /**
      * This function fills in the user and comments count for a post.
      */
     public static async formatNewPost(newPost: Post): Promise<Post> {
       const formattedPost = {...newPost.new};
-      await FormatPostData.setUserForPost(formattedPost);
-      FormatPostData.setCommentsForPost(formattedPost);
+      await PostDataFormatter.setUserForPost(formattedPost);
+      PostDataFormatter.setCommentsForPost(formattedPost);
       return formattedPost;
     }
     /**
@@ -136,7 +136,7 @@ export default function _HomeController() {
      */
     public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
       if (HomeController.validateNewEvent(payload)) {
-        const formattedPost = await FormatPostData.formatNewPost(payload.new);
+        const formattedPost = await PostDataFormatter.formatNewPost(payload.new);
         setPosts((previousPosts) => [formattedPost, ...previousPosts]);
       } 
     }
