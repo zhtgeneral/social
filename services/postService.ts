@@ -76,9 +76,10 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
   }
 }
 
-
 /**
- * This function upserts a post into Supabase.
+ * This function fetches posts from Supabase with the user, postLikes, and comments count.
+ * 
+ * @purpose use this when fetching posts in main page.
  */
 export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
   try {
@@ -105,7 +106,7 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
       data: data
     }
   } catch (error: any) {
-    console.log("getPost: get error: ", error.message);
+    console.log("fetchPosts: get error: ", error.message);
     return {
       success: false,
       message: error.message
@@ -176,7 +177,9 @@ export async function removePostLike(userId: string, postId: string): Promise<Cu
 }
 
 /**
- * This function gets post details from Supabase.
+ * This function gets post details from Supabase including user, postLikes, and comments array.
+ * 
+ * @purpose use this when fetching comments of a post.
  */
 export async function fetchPostDetails(postId: string): Promise<CustomResponse> {
   try {

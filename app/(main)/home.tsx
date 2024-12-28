@@ -13,14 +13,14 @@ import { Post, User } from '@/types/supabase'
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { 
-  Alert, 
-  FlatList, 
-  ListRenderItemInfo, 
-  Pressable, 
-  StyleSheet, 
-  Text, 
-  View 
+import {
+  Alert,
+  FlatList,
+  ListRenderItemInfo,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native'
 
 const debugging = true;
@@ -30,7 +30,7 @@ var amount = 3;
 
 interface HomeProps {
   posts: Post[],
-  hasMore: boolean,
+  hasMorePosts: boolean,
   handleEnd: () => void
 }
 
@@ -46,7 +46,7 @@ interface HomeHeaderProps {
  */
 export default function _HomeController() {
   const [posts, setPosts] = React.useState<Post[]>([]);
-  const [hasMore, setHasMore] = React.useState(true);
+  const [hasMorePosts, setHasMorePosts] = React.useState(true);
 
   /**
    * This hook makes the home page responsive to any changes to uploaded posts
@@ -54,7 +54,11 @@ export default function _HomeController() {
   React.useEffect(() => {
     const postChannel = supabase
       .channel('posts')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts'}, HomeController.handlePostEvents)
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'posts'
+      }, HomeController.handlePostEvents)
       .subscribe();
 
     return () => {
@@ -62,21 +66,50 @@ export default function _HomeController() {
     }
   }, []);
 
+  class FormatPostData {
+    /**
+     * This function fills in the user and comments count for a post.
+     */
+    public static async formatNewPost(newPost: Post): Promise<Post> {
+      const formattedPost = {...newPost.new};
+      await FormatPostData.setUserForPost(formattedPost);
+      FormatPostData.setCommentsForPost(formattedPost);
+      return formattedPost;
+    }
+    /**
+     * @requries newPost is newly added into Supabase and foreign key relation to user is valid.
+     */
+    private static async setUserForPost(newPost: Post) {
+      const userResponse = await getUserData(newPost.user_id);
+      newPost.user = userResponse.success? userResponse.data: {};
+      
+      if (debugging) {        
+        console.log("Home::setUserForPost new post detected with user: " + JSON.stringify(newPost, null, 2));
+      }
+    }
+    /**
+     * @requires newPost is newly added into Supabase and has 0 comments.
+     */
+    private static setCommentsForPost(newPost: Post) {
+      newPost.comments = [{ count: 0 }];
+    }
+  }
+
   class HomeController {
     /**
      * This function gets more posts until no more posts can be gotten
      */
-    public static async getPosts() {
-      if (!hasMore) {
+    public static async getMorePosts() {
+      if (!hasMorePosts) {
         return;
       }
         
       const result = await fetchPosts(numPosts);
       if (result.success) {
-        if (posts.length === result.data.length) {
-          setHasMore(false);
-        }
         setPosts(result.data);
+        if (HomeController.endReached(result.data)) {
+          HomeController.disableFuturePostFetch();
+        }
       } else {
         Alert.alert("Posts error", result.message);
       }
@@ -88,10 +121,11 @@ export default function _HomeController() {
       numPosts += amount;
     }
     public static handleEnd() {
+      HomeController.getMorePosts();
+
       if (debugging) {
-        console.log("End reached");
+        console.log("End of posts reached");
       }
-      HomeController.getPosts();
     }
     /**
      * This callback function sets the posts on the home page.
@@ -101,39 +135,26 @@ export default function _HomeController() {
      * It fills the user for the new post and brings the new post on top of the feed.
      */
     public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
-      if (payload.eventType == "INSERT" && payload.new?.id) {
-        const newPost = {...payload.new};
-        await HomeController.setUserForPost(newPost);
-        setPosts((previousPosts) => [newPost, ...previousPosts]);
+      if (HomeController.validateNewEvent(payload)) {
+        const formattedPost = await FormatPostData.formatNewPost(payload.new);
+        setPosts((previousPosts) => [formattedPost, ...previousPosts]);
       } 
     }
-    /**
-     * This function sets the user for the new post.
-     * 
-     * If the request for getting the user fails, it sets the user as null.
-     */
-    private static async setUserForPost(newPost: any) {
-      if (debugging) {
-        console.log("Home::setUserForPost new post detected: " + JSON.stringify(newPost, null, 2));
-      }
-
-      const userResponse = await getUserData(newPost.user_id);
-
-      if (debugging) {
-        console.log("Home::setUserForPost user data for the new post: " + JSON.stringify(userResponse, null, 2));
-      }
-      newPost.user = userResponse.success? userResponse.data: {};
-
-      if (debugging) {
-        console.log("Home::setUserForPost new post with user: " + JSON.stringify(newPost, null, 2));
-      }
+    private static endReached(data: Post[]) {
+      return posts.length === data.length;
+    }
+    private static disableFuturePostFetch() {
+      setHasMorePosts(false);
+    }
+    private static validateNewEvent(payload: RealtimePostgresChangesPayload<Post>) {
+      return payload.eventType == "INSERT" && payload.new?.id;
     }
   }
 
   return (
     <HomeView 
       posts={posts}
-      hasMore={hasMore}
+      hasMorePosts={hasMorePosts}
       handleEnd={HomeController.handleEnd} 
     />
   )
@@ -145,26 +166,27 @@ export default function _HomeController() {
  * It loads posts in chunks of `limit` and loads posts in real time from supabase.
  * 
  * @requires user needs to be logged in to get here.
- * @testing use mocks for post and hasMore and keep handleEnd empty
+ * @testing use mocks for post and hasMorePosts and keep handleEnd empty
  */
 function HomeView({
   posts,
-  hasMore,
+  hasMorePosts,
   handleEnd
 }: HomeProps) {
   const { user } = useAuth();
 
   function renderItem(info: ListRenderItemInfo<Post>) {
+    console.log("HomeView::renderItem:: rendered item: " + JSON.stringify(info, null, 2));
+    const post = info?.item;
     return (
       <PostCard 
-        item={info.item} 
+        item={post} 
         currentUser={user}
-        numComments={info.item?.comments[0]?.count}
       /> 
     )
   }
   function listFooter() {
-    if (hasMore) {
+    if (hasMorePosts) {
       return (
         <View style={{ marginVertical: !posts?.length? 200: 50 }}>
           <Loading />
@@ -186,7 +208,7 @@ function HomeView({
           data={posts}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listStyle}
-          keyExtractor={(item: Post) => item.id.toString()}
+          keyExtractor={(item: Post) => item?.id?.toString()}
           renderItem={renderItem}
           onEndReached={handleEnd}
           onEndReachedThreshold={0}

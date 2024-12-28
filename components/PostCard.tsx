@@ -5,33 +5,32 @@ import { createPostLike, removePostLike } from '@/services/postService';
 import { Post, PostLike, User } from '@/types/supabase';
 import { ResizeMode, Video } from 'expo-av'; // TODO migrate to expo-video
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import moment from 'moment';
 import React from 'react';
-import { 
+import {
   Alert,
-  LogBox, 
-  Share, 
-  ShareContent, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View 
+  LogBox,
+  Share,
+  ShareContent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { theme } from '../constants/theme';
 import { stripHTMLTags } from '../helpers/common';
 import Avatar from './Avatar';
 import Loading from './Loading';
-import { useRouter } from 'expo-router';
 
 const debugging = false;
 
 interface PostCardProps {
   item: Post,
   currentUser: User,
-  numComments: number,
   hasShadow?: boolean,
-  showMoreActions?: boolean
+  detailedMode?: boolean
 }
 interface PostCardHeaderProps {
   item: Post,
@@ -58,45 +57,54 @@ LogBox.ignoreLogs([
 /**
  * This component renders a post card with a header, body, and footer.
  * 
- * If `showMoreActions` is specified, the user can click the 3 dots or the comments
- * button to open post details.
+ * If `detailedMode` is true, the 3 dots and the comments button to open post details can't be open.
+ * 
+ * @param item if `detailedMode` is true, `item` is Post with `{comments: comments[]}`
+ * @param item if `detailedMode` is false, `item` is Post with `{comments: [{ count: number }]}`
  */
 export default function PostCard({
   item,
   currentUser,
-  numComments,
   hasShadow = true,
-  showMoreActions = true
+  detailedMode = false
 }: PostCardProps) {
-  if (debugging) {
-    console.log('PostCard:: post item: ' + JSON.stringify(item, null, 2));
-  }
   const router = useRouter();
+
+  const numComments = detailedMode? item?.comments?.length : item?.comments[0]?.count;
+
+  /**
+   * This function takes the user to `/postDetails/:postId`
+   * 
+   * @requires layout has a stack screen with `/postDetails`.
+   */
   function openPostDetails() {
-    if (!showMoreActions) {
-      return;
+    if (!detailedMode) {
+      router.push({
+        pathname: '/postDetails',
+        params: {
+          postId: item?.id
+        }
+      })
     }
-    router.push({
-      pathname: '/postDetails',
-      params: {
-        postId: item?.id
-      }
-    })
   }
+
+  if (debugging) {
+    console.log('PostCard post: ' + JSON.stringify(item, null, 2));
+  }
+  
   return (
     <View style={[styles.container, hasShadow && shadowStyle]}>
       <PostCardHeader 
         item={item} 
         openPostDetails={openPostDetails} 
-        showMoreActions={showMoreActions} 
-        />
-      <PostCardBody item={item} />
+        showMoreActions={!detailedMode} />
+      <PostCardBody 
+        item={item} />
       <PostCardFooter 
         item={item} 
         currentUser={currentUser} 
         numComments={numComments}
-        openPostDetails={openPostDetails}
-        />
+        openPostDetails={openPostDetails} />
     </View>
   )
 }
@@ -113,11 +121,11 @@ function PostCardHeader({
   openPostDetails,
   showMoreActions
 }: PostCardHeaderProps) {
+  const createdAt = moment(item?.created_at).format('MMM D');  
+
   if (debugging) {
     console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
   }
-
-  const createdAt = moment(item?.created_at).format('MMM D');  
 
   return (
     <View style={styles.header}>
@@ -125,8 +133,7 @@ function PostCardHeader({
         <Avatar 
           size={hp(4.5)}
           uri={item?.user?.image}
-          rounded={theme.radius.md}
-          />
+          rounded={theme.radius.md} />
         <View style={{ gap: 2 }}>
           <Text style={styles.username}>{item?.user?.name}</Text>
           <Text style={styles.postTime}>{createdAt}</Text>
@@ -139,8 +146,7 @@ function PostCardHeader({
               name="threeDotsHorizontal" 
               size={hp(3.4)}
               strokeWidth={1}
-              stroke={theme.colors.text}
-            />
+              stroke={theme.colors.text} />
           </TouchableOpacity>
         )
       }
@@ -166,16 +172,14 @@ function PostCardBody ({
           <RenderHtml 
             contentWidth={hp(100)}
             source={{ html: item?.body || ""}}
-            tagsStyles={tagStyles ?? {}}
-          />
+            tagsStyles={tagStyles ?? {}} />
         )}
         {item?.file && item?.file?.includes('postImages') && (
           <Image 
             source={getSupabaseFileUrl(item?.file)} 
             transition={100}
             style={styles.postMedia}
-            contentFit='cover'
-          />
+            contentFit='cover' />
         )}
         {item?.file && item?.file.includes('postVideos') && (
           <Video 
@@ -183,8 +187,7 @@ function PostCardBody ({
             source={{ uri: getSupabaseFileUrl(item?.file) }}
             useNativeControls={true}
             resizeMode={ResizeMode.COVER}
-            isLooping={true}
-          />
+            isLooping={true} />
         )}
       </View>
     </View>
@@ -211,9 +214,6 @@ function PostCardFooter({
     setLikes(item?.postLikes);
   }, [])
 
-  /**
-   * This class controls the view by exposing the API for `onShare` and `onLike`
-   */
   class PostCardFooterController {
     public static async onShare() {
       const content: ShareContent = { 
@@ -251,11 +251,13 @@ function PostCardFooter({
         user_id: currentUser?.id,
         post_id: item?.id
       }
-      setLikes([...likes, data]);
       const response = await createPostLike(data);
-      if (!response.success) {
+      if (response.success) {
+        setLikes([...likes, data]);
+      } else {
         Alert.alert("Post like error", "This post could not be liked");
       }
+
       if (debugging) {
         console.log('PostCardFooter::createLike response: ' + JSON.stringify(response, null, 2));
       }
@@ -270,8 +272,7 @@ function PostCardFooter({
             name="heart" 
             size={24} 
             fill={liked? theme.colors.rose: 'transparent'}
-            stroke={liked? theme.colors.rose: theme.colors.textLight} 
-            />
+            stroke={liked? theme.colors.rose: theme.colors.textLight} />
           </TouchableOpacity>
         <Text>{numLikes}</Text>
         </View>

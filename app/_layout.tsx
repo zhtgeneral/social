@@ -38,13 +38,13 @@ function MainLayout() {
   React.useEffect(() => {
     supabase.auth.onAuthStateChange((_, session) => {
       if (session) {
-        if (debugging) {
-          console.log("session user in MainLayout: " + JSON.stringify(session?.user, null, 2));
-        }
-
         setAuth(session?.user);
         updateUserData(session?.user);
         router.replace('/home');
+
+        if (debugging) {
+          console.log("MainLayout session user: " + JSON.stringify(session?.user, null, 2));
+        }
       } else {
         setAuth(null);
         router.replace('/welcome');
@@ -58,7 +58,7 @@ function MainLayout() {
       setUserData({...response.data});
     }
     if (debugging) {
-      console.log('got user data in MainLayout: ' + JSON.stringify(response,null,2));
+      console.log('MainLayout use data from database: ' + JSON.stringify(response,null,2));
     }
   }
   return (

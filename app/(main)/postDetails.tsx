@@ -62,58 +62,67 @@ export default function _PostDetailsController() {
       }, PostDetailsController.handlePostEvents)
       .subscribe();
 
-      PostDetailsController.getPostDetails();
+      PostDetailsController.initPostDetails();
 
     return () => {
       supabase.removeChannel(commentsChannel);
     }
   }, []);
 
+  class PostDetailsFormatter {
+    /**
+     * This function formats the post comment by getting the associated user.
+     */
+    public static async formatPostComment(newComment: Comment): Promise<Comment> {
+      return await PostDetailsFormatter.assignUserForComment(newComment);
+    }
+    /**
+     * @requries newComment is added into Supabase and foreign key relation to user is valid.     
+     */
+    private static async assignUserForComment(newComment: Comment) {
+      const userAssignedComment = {...newComment};
+      const userResponse = await getUserData(newComment.user_id);
+      
+      if (userResponse.success) {
+        userAssignedComment.user = userResponse.data;
+      } else {
+        userAssignedComment.user = {};
+      }
+
+      if (debugging) {
+        console.log("PostDetailsFormatter::assignUserForComment detected new comment with user: " + JSON.stringify(newComment, null, 2));
+      }
+      return userAssignedComment;
+    }
+  }
+
   class PostDetailsController {
-    public static async getPostDetails() {
+    public static async initPostDetails() {
       const response = await fetchPostDetails(postId);
       if (response.success) {
         setPost(response.data);
       }
       setInit(true);
       if (debugging) {
-        console.log("postDetails::getPostDetails post details: " + JSON.stringify(response, null, 2));
+        console.log("PostDetailsController::initPostDetails " + JSON.stringify(response, null, 2));
       }
     }
     /**
-     * This callback function sets the comments on a post details page.
+     * This handler sets the comments on a post details page.
      * 
-     * It is called whenever supabase channels detects an INSERT event on the comments table.
+     * It is called when supabase channels detects INSERT events on comments table for this post.
      * 
-     * It fills the user for the new cmment and brings the new post on top of the feed.
+     * It takes the new comment, formats it, and puts in front of the old comments.
      */
     public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Comment>) {
       if (payload.new) {
-        const newComment = {...payload.new};
-        await PostDetailsController.setUserForComment(newComment);
+        const formattedComment = await PostDetailsFormatter.formatPostComment(payload.new);
         setPost((prevPost: Post) => {
           return {
             ...prevPost,
-            comments: [newComment, ...prevPost.comments]
+            comments: [formattedComment, ...prevPost.comments]
           }
         });
-      }
-    }
-    /**
-     * This function sets the user for the new comment.
-     * 
-     * If the request for getting the user fails, it sets the user as null.
-     */
-    private static async setUserForComment(newComment: Comment) {
-      if (debugging) {
-        console.log("PostDetails::setUserForComment new comment detected: " + JSON.stringify(newComment, null, 2));
-      }
-
-      const userResponse = await getUserData(newComment.user_id);
-      newComment.user = userResponse.success? userResponse.data: {};
-
-      if (debugging) {
-        console.log("PostDetails::setUserForComment new comment with user: " + JSON.stringify(newComment, null, 2));
       }
     }
   }
@@ -197,10 +206,6 @@ function PostDetailsView({
     }
   }
 
-  if (debugging) {
-    console.log("PostDetails::PostDetailsView formatted post: " + JSON.stringify(formattedPost, null, 2));
-  }
-
   if (!init) {
     return (
       <View style={styles.center}>
@@ -221,9 +226,8 @@ function PostDetailsView({
         <PostCard 
           item={formattedPost} 
           currentUser={user} 
-          numComments={formattedPost?.comments?.length}
           hasShadow={false} 
-          showMoreActions={false}
+          detailedMode={true}
           />
         <View style={styles.inputContainer}>
           <Input 
