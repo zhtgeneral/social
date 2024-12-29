@@ -9,8 +9,8 @@ import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
 import { fetchPosts } from '@/services/postService'
 import { getUserData } from '@/services/userService'
-import { Post, User } from '@/types/supabase'
-import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
+import { Comment, Post, User } from '@/types/supabase'
+import { RealtimePostgresChangesPayload, RealtimePostgresDeletePayload } from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import {
@@ -45,6 +45,7 @@ interface HomeHeaderProps {
  * This improves testability of the rendered component.
  */
 export default function _HomeController() {
+  const { user } = useAuth();
   const [posts, setPosts] = React.useState<Post[]>([]);
   const [hasMorePosts, setHasMorePosts] = React.useState(true);
 
@@ -61,10 +62,34 @@ export default function _HomeController() {
       }, HomeController.handlePostEvents)
       .subscribe();
 
+    const commentChannelAdd = supabase 
+      .channel('comments_main_add')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'comments',
+        filter: `user_id=eq.${user?.id}`
+      }, HomeController.handleAddCommentEvents)
+      .subscribe();
+
+      const commentChannelDelete = supabase 
+      .channel('comments_main_delete')
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'comments',
+        filter: `user_id=eq.${user?.id}`
+      }, HomeController.handleDeleteCommentEvents)
+      .subscribe();
+
     return () => {
       supabase.removeChannel(postChannel);
+      supabase.removeChannel(commentChannelAdd);
+      supabase.removeChannel(commentChannelDelete);
     }
   }, []);
+
+  
 
   class PostDataFormatter {
     /**
@@ -136,6 +161,33 @@ export default function _HomeController() {
         console.log("End of posts reached");
       }
     }
+    public static async handleDeleteCommentEvents(payload: RealtimePostgresDeletePayload<Comment>) {
+      if (payload.old) {
+        const postId = payload.old.post_id;
+        setPosts((currentPosts: Post[]) =>
+          currentPosts.map((p: Post) => {
+            if (p.id === postId && p.comments[0].count > 0) {
+              return {...p, comments: [{ count: p.comments[0].count - 1 }] }
+            }
+            return p;
+          })
+        );
+      }
+    }
+    public static async handleAddCommentEvents(payload: RealtimePostgresChangesPayload<Comment>) {
+      if (payload.new) {
+        const postId = payload.new?.post_id;
+        setPosts((currentPosts: Post[]) => 
+          currentPosts.map((p: Post) => {
+            if (p.id === postId) {
+              return {...p, comments: [{ count: p.comments[0].count + 1 }] }
+            } else {
+              return p;
+            }
+          })
+        );
+      }
+    }
     /**
      * This callback function sets the posts on the home page.
      * 
@@ -147,8 +199,13 @@ export default function _HomeController() {
       if (HomeController.validateNewEvent(payload)) {
         const formattedPost = await PostDataFormatter.formatNewPost(payload.new);
         setPosts((previousPosts) => [formattedPost, ...previousPosts]);
+
+        if (debugging) {
+          console.log("HomeController::handlePostEvents new post: " + JSON.stringify(formattedPost, null, 2));
+        }
       } 
     }
+
     private static endReached(data: Post[]) {
       return posts.length === data.length;
     }
@@ -184,7 +241,7 @@ function HomeView({
   const { user } = useAuth();
 
   function renderItem(info: ListRenderItemInfo<Post>) {
-    console.log("HomeView::renderItem:: rendered item: " + JSON.stringify(info, null, 2));
+    // console.log("HomeView::renderItem:: rendered item: " + JSON.stringify(info, null, 2));
     const post = info?.item;
     return (
       <PostCard 

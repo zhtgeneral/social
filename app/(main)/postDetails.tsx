@@ -90,7 +90,7 @@ export default function _PostDetailsController() {
       }
 
       if (debugging) {
-        console.log("PostDetailsFormatter::assignUserForComment detected new comment with user: " + JSON.stringify(newComment, null, 2));
+        console.log("PostDetailsFormatter::assignUserForComment detected new comment with user: " + JSON.stringify(userAssignedComment, null, 2));
       }
       return userAssignedComment;
     }
@@ -104,7 +104,7 @@ export default function _PostDetailsController() {
       }
       setInit(true);
       if (debugging) {
-        console.log("PostDetailsController::initPostDetails " + JSON.stringify(response, null, 2));
+        // console.log("PostDetailsController::initPostDetails " + JSON.stringify(response, null, 2));
       }
     }
     /**

@@ -247,7 +247,7 @@ export async function createComment(comment: Comment): Promise<CustomResponse> {
 }
 
 /**
- * This function removes a postLike from Supabase.
+ * This function removes a comment from Supabase.
  */
 export async function removeComment(commentId: string): Promise<CustomResponse> {
   try {
