@@ -241,7 +241,7 @@ function HomeView({
   const { user } = useAuth();
 
   function renderItem(info: ListRenderItemInfo<Post>) {
-    // console.log("HomeView::renderItem:: rendered item: " + JSON.stringify(info, null, 2));
+    console.log("HomeView::renderItem:: rendered item: " + JSON.stringify(info, null, 2));
     const post = info?.item;
     return (
       <PostCard 

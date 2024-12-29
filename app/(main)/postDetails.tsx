@@ -104,7 +104,7 @@ export default function _PostDetailsController() {
       }
       setInit(true);
       if (debugging) {
-        // console.log("PostDetailsController::initPostDetails " + JSON.stringify(response, null, 2));
+        console.log("PostDetailsController::initPostDetails " + JSON.stringify(response, null, 2));
       }
     }
     /**
