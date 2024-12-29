@@ -203,8 +203,8 @@ export default function _HomeController() {
       else if (HomeController.validateDeleteEvent(payload)) {
         setPosts((previousPosts) => {
           const deletedId = payload.old?.id;
-          const updatedPost = previousPosts.filter((p: Post) => p.id !== deletedId);
-          return updatedPost;
+          const updatedPosts = previousPosts.filter((p: Post) => p.id !== deletedId);
+          return updatedPosts;
         })
       }
       if (debugging) {

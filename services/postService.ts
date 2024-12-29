@@ -77,7 +77,7 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
 }
 
 /**
- * This function removes a comment from Supabase.
+ * This function removes a post from Supabase.
  */
 export async function removePost(postId: string): Promise<CustomResponse> {
   try {
