@@ -196,14 +196,20 @@ export default function _HomeController() {
      * It fills the user for the new post and brings the new post on top of the feed.
      */
     public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
-      if (HomeController.validateNewEvent(payload)) {
+      if (HomeController.validateInsertEvent(payload)) {
         const formattedPost = await PostDataFormatter.formatNewPost(payload.new);
         setPosts((previousPosts) => [formattedPost, ...previousPosts]);
-
-        if (debugging) {
-          console.log("HomeController::handlePostEvents new post: " + JSON.stringify(formattedPost, null, 2));
-        }
       } 
+      else if (HomeController.validateDeleteEvent(payload)) {
+        setPosts((previousPosts) => {
+          const deletedId = payload.old?.id;
+          const updatedPost = previousPosts.filter((p: Post) => p.id !== deletedId);
+          return updatedPost;
+        })
+      }
+      if (debugging) {
+        console.log("HomeController::handlePostEvents " + JSON.stringify(payload, null, 2));
+      }
     }
 
     private static endReached(data: Post[]) {
@@ -212,8 +218,11 @@ export default function _HomeController() {
     private static disableFuturePostFetch() {
       setHasMorePosts(false);
     }
-    private static validateNewEvent(payload: RealtimePostgresChangesPayload<Post>) {
+    private static validateInsertEvent(payload: RealtimePostgresChangesPayload<Post>) {
       return payload.eventType == "INSERT" && payload.new?.id;
+    }
+    private static validateDeleteEvent(payload: RealtimePostgresChangesPayload<Post>) {
+      return payload.eventType == "DELETE" && payload.old?.id;
     }
   }
 

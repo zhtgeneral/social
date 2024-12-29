@@ -30,12 +30,18 @@ interface PostCardProps {
   item: Post,
   currentUser: User,
   hasShadow?: boolean,
-  detailedMode?: boolean
+  detailedMode?: boolean,
+  showDelete?: boolean,
+  onDelete?: (post: Post) => void;
+  onEdit?: (post: Post) => void;
 }
 interface PostCardHeaderProps {
   item: Post,
   openPostDetails: () => void,
-  showMoreActions: boolean
+  showMoreActions: boolean,
+  showDelete: boolean,
+  onEdit: (post: Post) => void,
+  onDelete: (post: Post) => void;
 }
 interface PostCardBodyProps {
   item: Post
@@ -66,7 +72,10 @@ export default function PostCard({
   item,
   currentUser,
   hasShadow = true,
-  detailedMode = false
+  detailedMode = false,
+  showDelete = false,
+  onDelete = (post: Post) => {},
+  onEdit = (post: Post) => {},
 }: PostCardProps) {
   const router = useRouter();
 
@@ -97,7 +106,10 @@ export default function PostCard({
       <PostCardHeader 
         item={item} 
         openPostDetails={openPostDetails} 
-        showMoreActions={!detailedMode} />
+        showMoreActions={!detailedMode} 
+        showDelete={showDelete && item.user_id === currentUser.id} 
+        onEdit={onEdit} 
+        onDelete={onDelete} />
       <PostCardBody 
         item={item} />
       <PostCardFooter 
@@ -119,9 +131,27 @@ export default function PostCard({
 function PostCardHeader({
   item,
   openPostDetails,
-  showMoreActions
+  showMoreActions,
+  showDelete,
+  onEdit,
+  onDelete
 }: PostCardHeaderProps) {
   const createdAt = moment(item?.created_at).format('MMM D');  
+
+  function confirmPostDelete() {
+    Alert.alert("Confirm delete", "Are you sure you want to delete this post?", [
+      {
+        text: 'Cancel',
+        onPress: () => console.log("post delete cancelled"),
+        style: 'cancel'
+      },
+      {
+        text: "Delete",
+        onPress: () => onDelete(item),
+        style: 'destructive'
+      }
+    ])
+  }
 
   if (debugging) {
     console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
@@ -148,6 +178,18 @@ function PostCardHeader({
               strokeWidth={1}
               stroke={theme.colors.text} />
           </TouchableOpacity>
+        )
+      }
+      {
+        showDelete && (
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={onEdit}>
+              <Icon name="edit" size={hp(3)} stroke={theme.colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={confirmPostDelete}>
+              <Icon name="delete" size={hp(3)} stroke={theme.colors.rose} />
+            </TouchableOpacity>
+          </View>
         )
       }
       
@@ -357,7 +399,8 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 18
+    gap: 18,
+    marginRight: 5
   },
   count: {
     color: theme.colors.text,

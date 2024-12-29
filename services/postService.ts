@@ -77,6 +77,36 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
 }
 
 /**
+ * This function removes a comment from Supabase.
+ */
+export async function removePost(postId: string): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', postId);
+
+    if (error) {
+      console.log("removePost: delete error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("removePost: delete error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
+/**
  * This function fetches posts from Supabase with the user, postLikes, and comments count.
  * 
  * @purpose use this when fetching posts in main page.

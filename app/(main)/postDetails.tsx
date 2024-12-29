@@ -7,11 +7,11 @@ import { theme } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { hp, wp } from '@/helpers/common';
 import { supabase } from '@/lib/Supabase';
-import { createComment, fetchPostDetails, removeComment } from '@/services/postService';
+import { createComment, fetchPostDetails, removeComment, removePost } from '@/services/postService';
 import { getUserData } from '@/services/userService';
 import { Comment, Post } from '@/types/supabase';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
   Alert,
@@ -204,6 +204,17 @@ function PostDetailsView({
       console.log("PostDetailsView::onDeleteComment: delete reponse: " + JSON.stringify(response, null, 2));
     }
   }
+  async function onDeletePost(post: Post) {
+    const response = await removePost(post?.id);
+    if (response.success) {
+      router.back();
+    } else {
+      Alert.alert("Delete error", response?.message);
+    }
+  }
+  async function onEditPost() {
+    console.log("edit");
+  }
 
   if (!init) {
     return (
@@ -226,7 +237,10 @@ function PostDetailsView({
           item={formattedPost} 
           currentUser={user} 
           hasShadow={false} 
-          detailedMode={true} />
+          detailedMode={true} 
+          showDelete={true}
+          onDelete={onDeletePost}
+          onEdit={onEditPost} />
         <View style={styles.inputContainer}>
           <Input 
             placeholder="Type comment..."
