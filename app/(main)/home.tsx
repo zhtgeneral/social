@@ -10,7 +10,12 @@ import { supabase } from '@/lib/Supabase'
 import { fetchPosts } from '@/services/postService'
 import { getUserData } from '@/services/userService'
 import { Comment, Post, User } from '@/types/supabase'
-import { RealtimePostgresChangesPayload, RealtimePostgresDeletePayload } from '@supabase/supabase-js'
+import { 
+  RealtimePostgresChangesPayload, 
+  RealtimePostgresDeletePayload, 
+  RealtimePostgresInsertPayload, 
+  RealtimePostgresUpdatePayload
+} from '@supabase/supabase-js'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import {
@@ -53,43 +58,62 @@ export default function _HomeController() {
    * This hook makes the home page responsive to any changes to uploaded posts
    */
   React.useEffect(() => {
-    const postChannel = supabase
-      .channel('posts')
+    const postChannelInsert = supabase
+      .channel('posts_home_insert')
       .on('postgres_changes', { 
-        event: '*', 
+        event: 'INSERT', 
         schema: 'public', 
         table: 'posts'
-      }, HomeController.handlePostEvents)
+      }, HomeControllerRealtime.handleInsertPostEvents)
       .subscribe();
 
-    const commentChannelAdd = supabase 
-      .channel('comments_main_add')
+    const postChannelUpdate = supabase
+      .channel('posts_home_update')
+      .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'posts'
+      }, HomeControllerRealtime.handleUpdatePostEvents)
+      .subscribe();
+
+    const postChannelDelete = supabase
+      .channel('posts_home_delete')
+      .on('postgres_changes', { 
+        event: 'DELETE', 
+        schema: 'public', 
+        table: 'posts'
+      }, HomeControllerRealtime.handleDeletePostEvents)
+      .subscribe();
+
+    const commentChannelInsert = supabase 
+      .channel('comments_home_insert')
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
         table: 'comments',
         filter: `user_id=eq.${user?.id}`
-      }, HomeController.handleAddCommentEvents)
+      }, HomeControllerRealtime.handleInsertCommentEvents)
       .subscribe();
 
       const commentChannelDelete = supabase 
-      .channel('comments_main_delete')
+      .channel('comments_home_delete')
       .on('postgres_changes', {
         event: 'DELETE',
         schema: 'public',
         table: 'comments',
         filter: `user_id=eq.${user?.id}`
-      }, HomeController.handleDeleteCommentEvents)
+      }, HomeControllerRealtime.handleDeleteCommentEvents)
       .subscribe();
 
     return () => {
-      supabase.removeChannel(postChannel);
-      supabase.removeChannel(commentChannelAdd);
+      supabase.removeChannel(postChannelInsert);
+      supabase.removeChannel(postChannelUpdate);
+      supabase.removeChannel(postChannelDelete);
+      supabase.removeChannel(commentChannelInsert);
       supabase.removeChannel(commentChannelDelete);
     }
   }, []);
 
-  
 
   class PostDataFormatter {
     /**
@@ -129,6 +153,94 @@ export default function _HomeController() {
     }
   }
 
+  class HomeControllerRealtime {
+    public static async handleDeleteCommentEvents(payload: RealtimePostgresDeletePayload<Comment>) {
+      if (payload.old) {
+        const postId = payload.old.post_id;
+        setPosts((currentPosts: Post[]) =>
+          currentPosts.map((p: Post) => {
+            if (p.id === postId && p.comments[0].count > 0) {
+              return {...p, comments: [{ count: p.comments[0].count - 1 }] }
+            }
+            return p;
+          })
+        );
+      }
+    }
+    public static async handleInsertCommentEvents(payload: RealtimePostgresInsertPayload<Comment>) {
+      if (payload.new) {
+        const postId = payload.new?.post_id;
+        setPosts((currentPosts: Post[]) => 
+          currentPosts.map((p: Post) => {
+            if (p.id === postId) {
+              return {...p, comments: [{ count: p.comments[0].count + 1 }] }
+            } else {
+              return p;
+            }
+          })
+        );
+      }
+    }
+    
+    /**
+     * This callback function sets the posts on the home page 
+     * when supabase channels detects an INSERT event on posts.
+     * 
+     * It fills the user for the new post and brings the new post on top of the feed.
+     */
+    public static async handleInsertPostEvents(payload: RealtimePostgresInsertPayload<Post>) {
+      if (HomeControllerRealtime.validateInsertEvent(payload)) {
+        const formattedPost = await PostDataFormatter.formatNewPost(payload.new);
+        setPosts((previousPosts) => [formattedPost, ...previousPosts]);
+      }
+    }
+    /**
+     * This callback function sets the posts on the home page 
+     * when supabase channels detects an UPDATE event on posts.
+     * 
+     * It fills the new content of a post and keeps its position in all posts.
+     */
+    public static async handleUpdatePostEvents(payload: RealtimePostgresUpdatePayload<Post>) {
+      if (HomeControllerRealtime.validateUpdateEvent(payload)) {
+        setPosts((previousPosts) => {
+          const updatedId = payload.new?.id;
+          return previousPosts.map((p: Post) => {
+            if (p.id === updatedId) {
+              p.body = payload.new.body;
+              p.file = payload.new.file;
+            }
+            return p;
+          });
+        })
+      }
+    }
+    /**
+     * This callback function sets the posts on the home page
+     * when supabase channels detects an DELETE event on posts.
+     * 
+     * It removes the old post while keeping the order of the remaining posts.
+     */
+    public static async handleDeletePostEvents(payload: RealtimePostgresDeletePayload<Post>) {
+      if (HomeControllerRealtime.validateDeleteEvent(payload)) {
+        setPosts((previousPosts) => {
+          const deletedId = payload.old?.id;
+          const updatedPosts = previousPosts.filter((p: Post) => p.id !== deletedId);
+          return updatedPosts;
+        })
+      }
+    }
+
+    private static validateInsertEvent(payload: RealtimePostgresInsertPayload<Post>) {
+      return payload.eventType === "INSERT" && payload.new?.id;
+    }
+    private static validateDeleteEvent(payload: RealtimePostgresDeletePayload<Post>) {
+      return payload.eventType === "DELETE" && payload.old?.id;
+    }
+    private static validateUpdateEvent(payload: RealtimePostgresUpdatePayload<Post>) {
+      return payload.eventType === "UPDATE" && (payload.old.id || payload.new.id);
+    }
+  }
+
   class HomeController {
     /**
      * This function gets more posts until no more posts can be gotten
@@ -161,83 +273,11 @@ export default function _HomeController() {
         console.log("End of posts reached");
       }
     }
-    public static async handleDeleteCommentEvents(payload: RealtimePostgresDeletePayload<Comment>) {
-      if (payload.old) {
-        const postId = payload.old.post_id;
-        setPosts((currentPosts: Post[]) =>
-          currentPosts.map((p: Post) => {
-            if (p.id === postId && p.comments[0].count > 0) {
-              return {...p, comments: [{ count: p.comments[0].count - 1 }] }
-            }
-            return p;
-          })
-        );
-      }
-    }
-    public static async handleAddCommentEvents(payload: RealtimePostgresChangesPayload<Comment>) {
-      if (payload.new) {
-        const postId = payload.new?.post_id;
-        setPosts((currentPosts: Post[]) => 
-          currentPosts.map((p: Post) => {
-            if (p.id === postId) {
-              return {...p, comments: [{ count: p.comments[0].count + 1 }] }
-            } else {
-              return p;
-            }
-          })
-        );
-      }
-    }
-    /**
-     * This callback function sets the posts on the home page.
-     * 
-     * It is called whenever supabase channels detects an INSERT event.
-     * 
-     * It fills the user for the new post and brings the new post on top of the feed.
-     */
-    public static async handlePostEvents(payload: RealtimePostgresChangesPayload<Post>) {
-      if (HomeController.validateInsertEvent(payload)) {
-        const formattedPost = await PostDataFormatter.formatNewPost(payload.new);
-        setPosts((previousPosts) => [formattedPost, ...previousPosts]);
-      } 
-      else if (HomeController.validateDeleteEvent(payload)) {
-        setPosts((previousPosts) => {
-          const deletedId = payload.old?.id;
-          const updatedPosts = previousPosts.filter((p: Post) => p.id !== deletedId);
-          return updatedPosts;
-        })
-      }
-      else if (HomeController.validateUpdateEvent(payload)) {
-        setPosts((previousPosts) => {
-          const updatedId = payload.new?.id;
-          return previousPosts.map((p: Post) => {
-            if (p.id === updatedId) {
-              p.body = payload.new.body;
-              p.file = payload.new.file;
-            }
-            return p;
-          });
-        })
-      }
-      if (debugging) {
-        console.log("HomeController::handlePostEvents " + JSON.stringify(payload, null, 2));
-      }
-    }
-
     private static endReached(data: Post[]) {
       return posts.length === data.length;
     }
     private static disableFuturePostFetch() {
       setHasMorePosts(false);
-    }
-    private static validateInsertEvent(payload: RealtimePostgresChangesPayload<Post>) {
-      return payload.eventType === "INSERT" && payload.new?.id;
-    }
-    private static validateDeleteEvent(payload: RealtimePostgresChangesPayload<Post>) {
-      return payload.eventType === "DELETE" && payload.old?.id;
-    }
-    private static validateUpdateEvent(payload: RealtimePostgresChangesPayload<Post>) {
-      return payload.eventType === "UPDATE" && (payload.old.id || payload.new.id);
     }
   }
 
