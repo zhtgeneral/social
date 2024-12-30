@@ -207,6 +207,18 @@ export default function _HomeController() {
           return updatedPosts;
         })
       }
+      else if (HomeController.validateUpdateEvent(payload)) {
+        setPosts((previousPosts) => {
+          const updatedId = payload.new?.id;
+          return previousPosts.map((p: Post) => {
+            if (p.id === updatedId) {
+              p.body = payload.new.body;
+              p.file = payload.new.file;
+            }
+            return p;
+          });
+        })
+      }
       if (debugging) {
         console.log("HomeController::handlePostEvents " + JSON.stringify(payload, null, 2));
       }
@@ -219,10 +231,13 @@ export default function _HomeController() {
       setHasMorePosts(false);
     }
     private static validateInsertEvent(payload: RealtimePostgresChangesPayload<Post>) {
-      return payload.eventType == "INSERT" && payload.new?.id;
+      return payload.eventType === "INSERT" && payload.new?.id;
     }
     private static validateDeleteEvent(payload: RealtimePostgresChangesPayload<Post>) {
-      return payload.eventType == "DELETE" && payload.old?.id;
+      return payload.eventType === "DELETE" && payload.old?.id;
+    }
+    private static validateUpdateEvent(payload: RealtimePostgresChangesPayload<Post>) {
+      return payload.eventType === "UPDATE" && (payload.old.id || payload.new.id);
     }
   }
 
@@ -250,7 +265,6 @@ function HomeView({
   const { user } = useAuth();
 
   function renderItem(info: ListRenderItemInfo<Post>) {
-    console.log("HomeView::renderItem:: rendered item: " + JSON.stringify(info, null, 2));
     const post = info?.item;
     return (
       <PostCard 

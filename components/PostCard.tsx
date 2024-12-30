@@ -183,7 +183,7 @@ function PostCardHeader({
       {
         showDelete && (
           <View style={styles.actions}>
-            <TouchableOpacity onPress={onEdit}>
+            <TouchableOpacity onPress={() => onEdit(item)}>
               <Icon name="edit" size={hp(3)} stroke={theme.colors.text} />
             </TouchableOpacity>
             <TouchableOpacity onPress={confirmPostDelete}>
@@ -216,14 +216,14 @@ function PostCardBody ({
             source={{ html: item?.body || ""}}
             tagsStyles={tagStyles ?? {}} />
         )}
-        {item?.file && item?.file?.includes('postImages') && (
+        {item?.file?.includes('postImages') && (
           <Image 
-            source={getSupabaseFileUrl(item?.file)} 
+            source={{ uri: getSupabaseFileUrl(item?.file) }} 
             transition={100}
             style={styles.postMedia}
             contentFit='cover' />
         )}
-        {item?.file && item?.file.includes('postVideos') && (
+        {item?.file?.includes('postVideos') && (
           <Video 
             style={[styles.postMedia, { height: hp(30) }]}
             source={{ uri: getSupabaseFileUrl(item?.file) }}

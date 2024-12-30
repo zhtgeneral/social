@@ -6,16 +6,16 @@ import RichTextEditor from '@/components/RichTextEditor'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
-import { hp, wp } from '@/helpers/common'
+import { getFileType, hp, wp } from '@/helpers/common'
 import { getSupabaseFileUrl } from '@/services/imageService'
-import { createOrUpdatePost, formatPostData, UpsertPostData } from '@/services/postService'
+import { createOrUpdatePost, UpsertPostData } from '@/services/postService'
 import { User } from '@/types/supabase'
 import { ResizeMode, Video } from 'expo-av'
 import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import { ImagePickerAsset } from 'expo-image-picker'
 import type { MediaType } from 'expo-image-picker/src/ImagePicker.types'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
 import {
   Alert,
@@ -49,12 +49,31 @@ interface NewPostDisplayMediaProps {
 export default function NewPost() {
   const { user } = useAuth();
   const router = useRouter();
+  const post = useLocalSearchParams();
 
   const bodyRef = React.useRef("");
   const editorRef = React.useRef<RichEditor | null>(null);
 
   const [loading, setLoading ] = React.useState(false);
-  const [file, setFile] = React.useState<ImagePickerAsset | null>(null);
+  const [file, setFile] = React.useState<ImagePickerAsset | null>(null);  
+  const [editorLoaded, setEditorLoaded] = React.useState(false);
+
+  let type = getFileType(post?.file?.slice(-3).toString());
+
+  React.useEffect(() => {
+    if (editorLoaded && post.id) {      
+      bodyRef.current = post.body.toString();           
+      editorRef.current?.setContentHTML(post.body.toString());
+      if (post.file) {
+        setFile({
+          width: 0,
+          height: 0,
+          uri: getSupabaseFileUrl(post.file as string),
+          type: type
+        });
+      }      
+    }
+  }, [editorLoaded]);
 
   /**
    * This function handles the user submitting new posts.
@@ -88,6 +107,24 @@ export default function NewPost() {
     }
   }
   /**
+   * This function formats the data in a json format.
+   */
+  function formatPostData(
+    file: ImagePickerAsset | null, 
+    body: string, 
+    userId: string
+  ): UpsertPostData {
+    let data: UpsertPostData = {
+      file: file,
+      body: body,
+      user_id: userId
+    }
+    if (post?.id) {
+      data.id = post.id as string
+    }
+    return data;
+  }
+  /**
    * This function makes the editor respond as expected 
    * by closing the keyboard when outside of the editor is pressed.
    */
@@ -97,17 +134,20 @@ export default function NewPost() {
     } 
   }
 
+  const title = post?.id? "Update post" : "Create post";
+
   return (
     <ScreenWrapper bg="white" >
       <View style={styles.container}>
         <Pressable onPress={handleKeyboard}>
-          <Header title="Create post" />
+          <Header title={title} />
           <ScrollView contentContainerStyle={{ gap: 15 }}>  
             <NewPostHeader user={user} />
             <View style={styles.body} >
               <RichTextEditor 
                 editorRef={editorRef}
-                onChange={(body: string) => bodyRef.current = body} />
+                onChange={(body: string) => bodyRef.current = body} 
+                setEditorLoaded={setEditorLoaded} />
               <NewPostDisplayMedia 
                 file={file} 
                 setFile={setFile} />
@@ -115,7 +155,7 @@ export default function NewPost() {
                 setFile={setFile} />
               <Button 
                 buttonStyle={{ height: hp(6.2)}}
-                title="Create post"
+                title={title}
                 loading={loading}
                 hasShadow={false}
                 onPress={onSubmit} />
@@ -141,50 +181,21 @@ function NewPostDisplayMedia({
   file, 
   setFile
 }: NewPostDisplayMediaProps) {
-  function isLocalFile(file: ImagePickerAsset) {
-    return typeof file === 'object';
-  }
-  function getFileType(file: ImagePickerAsset | null) {
-    if (!file) {
-      return null;
-    }
-    if (isLocalFile(file)) {
-      return file.type;
-    }
-  }
-  /**
-   * This function gets the file uri.
-   * 
-   * If there is no file, return empty string.
-   * If the file is a local file, return its uri.
-   * Otherwise return the supabase file uri.
-   */
-  function getFileUri(file: ImagePickerAsset | null): string {
-    if (!file) {
-      return "";
-    }
-    if (isLocalFile(file)) {
-      return file.uri;
-    }
-    return getSupabaseFileUrl(file.uri);
-  }
-
   if (!file) {
     return null;
   }
   return (
     <View style={styles.file}>
-      {getFileType(file) === 'video'? (
+      {file.type === 'video'? (
         <Video 
           style={{ flex: 1 }}
-          source={{ uri: getFileUri(file) }}
+          source={{ uri: file.uri }}
           useNativeControls={true}
           resizeMode={ResizeMode.COVER}
-          isLooping={true}
-          />
+          isLooping={true} />
       ): (
         <Image 
-          source={{ uri: getFileUri(file) }}
+          source={{ uri: file.uri }}
           contentFit='cover'
           style={{ flex: 1 }} />
       )}

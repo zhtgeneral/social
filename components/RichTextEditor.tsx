@@ -4,7 +4,8 @@ import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 
 interface RichTextEditorProps {
   editorRef: React.MutableRefObject<RichEditor | null>,
-  onChange: (body: string) => void
+  onChange: (body: string) => void,
+  setEditorLoaded: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -15,7 +16,8 @@ interface RichTextEditorProps {
  */
 export default function RichTextEditor({
   editorRef,
-  onChange
+  onChange,
+  setEditorLoaded
 }: RichTextEditorProps) {
   return (
     <TouchableWithoutFeedback >
@@ -47,6 +49,7 @@ export default function RichTextEditor({
           autoCorrect={false}
           useContainer={true}
           scrollEnabled={false}
+          onLoadEnd={() => setEditorLoaded(true)}
           initialFocus={true} />
       </View>
     </TouchableWithoutFeedback>

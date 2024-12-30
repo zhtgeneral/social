@@ -212,8 +212,9 @@ function PostDetailsView({
       Alert.alert("Delete error", response?.message);
     }
   }
-  async function onEditPost() {
-    console.log("edit");
+  async function onEditPost(post: Post) {
+    router.back();
+    router.push({ pathname: '/(main)/newPost', params: {...post}});
   }
 
   if (!init) {

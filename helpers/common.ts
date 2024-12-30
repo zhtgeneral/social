@@ -18,3 +18,16 @@ export function wp(percentage: number) {
 export function stripHTMLTags(html: string): string {
   return html.replace(/<[^>]*>/gm, "");
 }
+
+export function getFileType(ending: string): "video" | "image" | undefined {
+  switch (ending) {
+    case "mp4": {
+      return "video";
+    }
+    case "png":
+    case "jpg": {
+      return "image";
+    }
+    default: return undefined;
+  }
+}

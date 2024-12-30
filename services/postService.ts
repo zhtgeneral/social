@@ -4,25 +4,11 @@ import { CustomResponse } from "./index";
 import { ImagePickerAsset } from "expo-image-picker";
 import { Comment, PostLike } from "@/types/supabase";
 
-export interface UpsertPostData {
+export type UpsertPostData = {
   file: ImagePickerAsset | null,
   body: string,
-  userId: string
-}
-
-/**
- * This function formats the data in a json format.
- */
-export function formatPostData(
-  file: ImagePickerAsset | null, 
-  body: string, 
-  userId: string
-): UpsertPostData {
-  return {
-    file: file,
-    body: body,
-    userId: userId
-  }
+  user_id: string
+  id?: string
 }
 
 /**
@@ -33,7 +19,7 @@ export function formatPostData(
  * Otherwise it returns the upserted data.
  */
 export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomResponse> {
-  let { file, body, userId } = post;
+  let { file } = post;
   try {
     if (file && typeof post === 'object') {
       const isImage = file.type === 'image';
@@ -48,11 +34,12 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
 
     const { data, error } = await supabase
       .from('posts')
-      .upsert({
-        file: file,
-        body: body,
-        user_id: userId
-      })
+      // .upsert({
+      //   file: file,
+      //   body: body,
+      //   user_id: userId
+      // })
+      .upsert(post)
       .select()
       .single();
 
