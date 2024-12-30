@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getFileType, hp, wp } from '@/helpers/common'
 import { getSupabaseFileUrl } from '@/services/imageService'
 import { createOrUpdatePost, UpsertPostData } from '@/services/postService'
-import { User } from '@/types/supabase'
+import { Post, User } from '@/types/supabase'
 import { ResizeMode, Video } from 'expo-av'
 import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
@@ -28,6 +28,13 @@ import {
 } from 'react-native'
 import { RichEditor } from 'react-native-pell-rich-editor'
 
+interface NewPostViewProps {
+  post: Post,
+  loading: boolean,
+  file: ImagePickerAsset | null,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setFile: React.Dispatch<React.SetStateAction<ImagePicker.ImagePickerAsset | null>>
+}
 interface NewPostHeaderProps {
   user: User
 }
@@ -40,22 +47,43 @@ interface NewPostDisplayMediaProps {
 }
 
 /**
- * This page handles creating a post.
+ * This page handles creating and editing a post.
  * 
  * It displays the header.
  * It displays the text editor allowing the user to enter rich text.
  * It displays an input to add media with images or videos.
+ * 
+ * If this component is in editing mode, it requires post to be on the search params.
  */
-export default function NewPost() {
+export default function NewPostController() {
+  const post = useLocalSearchParams();
+
+  const [loading, setLoading] = React.useState(false);
+  const [file, setFile] = React.useState<ImagePickerAsset | null>(null);  
+  return (
+    <NewPostView 
+      post={post}
+      loading={loading}
+      file={file}
+      setLoading={setLoading}
+      setFile={setFile}
+      />
+  )
+}
+
+function NewPostView({
+  post,
+  loading,
+  file,
+  setLoading,
+  setFile
+}: NewPostViewProps) {
   const { user } = useAuth();
   const router = useRouter();
-  const post = useLocalSearchParams();
 
   const bodyRef = React.useRef("");
   const editorRef = React.useRef<RichEditor | null>(null);
 
-  const [loading, setLoading ] = React.useState(false);
-  const [file, setFile] = React.useState<ImagePickerAsset | null>(null);  
   const [editorLoaded, setEditorLoaded] = React.useState(false);
 
   let type = getFileType(post?.file?.slice(-3).toString());
