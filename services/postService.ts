@@ -93,7 +93,7 @@ export async function removePost(postId: string): Promise<CustomResponse> {
   }
 }
 
-export async function fetchPostsForUser(limit: number, userId: string): Promise<CustomResponse> {
+export async function fetchPostsForUser(limit: number = 10, userId: string): Promise<CustomResponse> {
   try {
     const { data, error } = await supabase
       .from('posts')
@@ -132,7 +132,7 @@ export async function fetchPostsForUser(limit: number, userId: string): Promise<
  * 
  * @purpose use this when fetching posts in main page.
  */
-export async function fetchPostsAll(limit: number): Promise<CustomResponse> {
+export async function fetchPostsAll(limit: number = 10): Promise<CustomResponse> {
   try {
     const { data, error } = await supabase
       .from('posts')
