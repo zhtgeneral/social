@@ -93,12 +93,46 @@ export async function removePost(postId: string): Promise<CustomResponse> {
   }
 }
 
+export async function fetchPostsForUser(limit: number, userId: string): Promise<CustomResponse> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select(`
+        *, 
+        user: users (id, name, image),
+        postLikes (*),
+        comments (count)
+      `)
+      .eq('user_id', userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.log("fetchPostsForUser: get error: ", error.message);  
+      return {
+        success: false,
+        message: error.message
+      }
+    } 
+    return {
+      success: true,
+      data: data
+    }
+  } catch (error: any) {
+    console.log("fetchPostsForUser: get error: ", error.message);
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+
 /**
- * This function fetches posts from Supabase with the user, postLikes, and comments count.
+ * This function fetches all posts from Supabase with the user, postLikes, and comments count.
  * 
  * @purpose use this when fetching posts in main page.
  */
-export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
+export async function fetchPostsAll(limit: number): Promise<CustomResponse> {
   try {
     const { data, error } = await supabase
       .from('posts')
@@ -112,7 +146,7 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
       .limit(limit);
 
     if (error) {
-      console.log("getPost: get error: ", error.message);  
+      console.log("fetchPostsAll: get error: ", error.message);  
       return {
         success: false,
         message: error.message
@@ -123,7 +157,7 @@ export async function fetchPosts(limit: number = 10): Promise<CustomResponse> {
       data: data
     }
   } catch (error: any) {
-    console.log("fetchPosts: get error: ", error.message);
+    console.log("fetchPostsAll: get error: ", error.message);
     return {
       success: false,
       message: error.message

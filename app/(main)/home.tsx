@@ -7,11 +7,10 @@ import { theme } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
-import { fetchPosts } from '@/services/postService'
+import { fetchPostsAll } from '@/services/postService'
 import { getUserData } from '@/services/userService'
 import { Comment, Post, User } from '@/types/supabase'
 import { 
-  RealtimePostgresChangesPayload, 
   RealtimePostgresDeletePayload, 
   RealtimePostgresInsertPayload, 
   RealtimePostgresUpdatePayload
@@ -59,7 +58,7 @@ export default function _HomeController() {
    */
   React.useEffect(() => {
     const postChannelInsert = supabase
-      .channel('posts_home_insert')
+      .channel(`posts_all_home_insert`)
       .on('postgres_changes', { 
         event: 'INSERT', 
         schema: 'public', 
@@ -68,7 +67,7 @@ export default function _HomeController() {
       .subscribe();
 
     const postChannelUpdate = supabase
-      .channel('posts_home_update')
+      .channel(`posts_all_home_update`)
       .on('postgres_changes', { 
         event: 'UPDATE', 
         schema: 'public', 
@@ -77,7 +76,7 @@ export default function _HomeController() {
       .subscribe();
 
     const postChannelDelete = supabase
-      .channel('posts_home_delete')
+      .channel(`posts_all_home_delete`)
       .on('postgres_changes', { 
         event: 'DELETE', 
         schema: 'public', 
@@ -86,7 +85,7 @@ export default function _HomeController() {
       .subscribe();
 
     const commentChannelInsert = supabase 
-      .channel('comments_home_insert')
+      .channel(`comments_${user?.id}_home_insert`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -96,7 +95,7 @@ export default function _HomeController() {
       .subscribe();
 
       const commentChannelDelete = supabase 
-      .channel('comments_home_delete')
+      .channel(`comments_${user?.id}_home_delete`)
       .on('postgres_changes', {
         event: 'DELETE',
         schema: 'public',
@@ -250,7 +249,7 @@ export default function _HomeController() {
         return;
       }
         
-      const result = await fetchPosts(numPosts);
+      const result = await fetchPostsAll(numPosts);
       if (result.success) {
         setPosts(result.data);
         if (HomeController.endReached(result.data)) {

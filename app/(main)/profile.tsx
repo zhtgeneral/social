@@ -1,16 +1,22 @@
 import Icon from '@/assets/icons';
 import Avatar from '@/components/Avatar';
 import Header from '@/components/Header';
+import Loading from '@/components/Loading';
+import PostCard from '@/components/PostCard';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { theme } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { hp, wp } from '@/helpers/common';
 import { supabase } from '@/lib/Supabase';
-import { User } from '@/types/supabase';
+import { fetchPostsForUser } from '@/services/postService';
+import {Comment, Post, User } from '@/types/supabase';
+import { RealtimePostgresDeletePayload, RealtimePostgresInsertPayload } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { 
   Alert, 
+  FlatList, 
+  ListRenderItemInfo, 
   Pressable, 
   StyleSheet, 
   Text, 
@@ -18,10 +24,17 @@ import {
   View
 } from 'react-native';
 
+const debugging = true;
+const amount = 3;
+var numPosts = amount;
+
 interface ProfileMainProps {
   user: User
 }
-interface ProfileBannerProps {
+interface ProfileHeaderProps {
+  user: User
+}
+interface ProfileInfoProps {
   user: User
 }
 
@@ -30,27 +43,172 @@ interface ProfileBannerProps {
  */
 export default function Profile() {
   const { user } = useAuth();
+  const [posts, setPosts] = React.useState<Post[]>([]);
+  const [hasMorePosts, setHasMorePosts] = React.useState(true);
+
+  React.useEffect(() => {
+    const commentChannelInsert = supabase 
+        .channel(`comments_${user?.id}_profile_insert`)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `user_id=eq.${user?.id}`
+        }, ProfileControllerRealtime.handleInsertCommentEvents)
+        .subscribe();
+  
+        const commentChannelDelete = supabase 
+        .channel(`comments_${user?.id}_profile_delete`)
+        .on('postgres_changes', {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'comments',
+          filter: `user_id=eq.${user?.id}`
+        }, ProfileControllerRealtime.handleDeleteCommentEvents)
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(commentChannelInsert);
+        supabase.removeChannel(commentChannelDelete);
+      }
+  }, [])
+
+  React.useEffect(() => {
+    ProfileController.getMorePosts();
+  }, [])
+
+  class ProfileControllerRealtime {
+    public static async handleDeleteCommentEvents(payload: RealtimePostgresDeletePayload<Comment>) {
+      if (payload.old) {
+        const postId = payload.old.post_id;
+        setPosts((currentPosts: Post[]) =>
+          currentPosts.map((p: Post) => {
+            if (p.id === postId && p.comments[0].count > 0) {
+              return {...p, comments: [{ count: p.comments[0].count - 1 }] }
+            }
+            return p;
+          })
+        );
+      }
+    }
+    public static async handleInsertCommentEvents(payload: RealtimePostgresInsertPayload<Comment>) {
+      if (payload.new) {
+        const postId = payload.new?.post_id;
+        setPosts((currentPosts: Post[]) => 
+          currentPosts.map((p: Post) => {
+            if (p.id === postId) {
+              return {...p, comments: [{ count: p.comments[0].count + 1 }] }
+            } else {
+              return p;
+            }
+          })
+        );
+      }
+    }
+  }
+
+  class ProfileController {
+    /**
+     * This function gets more posts until no more posts can be gotten
+     */
+    public static async getMorePosts() {
+      if (!hasMorePosts) {
+        return;
+      }
+        
+      const result = await fetchPostsForUser(numPosts, user?.id);
+      if (result.success) {
+        setPosts(result.data);
+        if (ProfileController.endReached(result.data)) {
+          ProfileController.disableFuturePostFetch();
+        }
+      } else {
+        Alert.alert("Posts error", result.message);
+      }
+
+      if (debugging) {
+        console.log("fetched limit: " + numPosts);
+      }
+
+      numPosts += amount;
+    }
+    public static handleEnd() {
+      ProfileController.getMorePosts();
+
+      if (debugging) {
+        console.log("End of posts reached");
+      }
+    }
+    private static endReached(data: Post[]) {
+      return posts.length === data.length;
+    }
+    private static disableFuturePostFetch() {
+      setHasMorePosts(false);
+    }
+  }
+
+  function renderItem(info: ListRenderItemInfo<Post>) {
+    const post = info?.item;
+    return (
+      <PostCard 
+        item={post} 
+        currentUser={user} /> 
+    )
+  }
+  function listFooter() {
+    if (hasMorePosts) {
+      return (
+        <View style={{ marginVertical: !posts?.length? 200: 50 }}>
+          <Loading />
+        </View>
+      )
+    } else {
+      return (
+        <View style={{ marginVertical: 30 }}>
+          <Text style={styles.noPosts}>No more posts</Text>
+        </View>
+      )
+    }
+  }
   return (
     <ScreenWrapper bg="white" >
-      <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: wp(4) }}>
-        <ProfileHeader />
-        <View style={styles.container} >
-          <View style={{ gap: 15 }}>
-            <ProfileMain user={user} />
-            <ProfileBanner user={user} />
-          </View>
-        </View>
-      </View>
+      <FlatList
+        data={posts}
+        ListHeaderComponent={<ProfileHeader user={user} />}
+        ListHeaderComponentStyle={{ marginBottom: 30 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listStyle}
+        keyExtractor={(item: Post) => item?.id?.toString()}
+        renderItem={renderItem}
+        onEndReached={ProfileController.handleEnd}
+        onEndReachedThreshold={0}
+        ListFooterComponent={listFooter} />
     </ScreenWrapper>
   )
 }
 
+function ProfileHeader({
+  user
+}: ProfileHeaderProps) {
+  return (
+    <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: wp(4) }}>
+      <ProfileNav />
+      <View style={styles.container} >
+        <View style={{ gap: 15 }}>
+          <ProfileMain user={user} />
+          <ProfileInfo user={user} />
+        </View>
+      </View>
+    </View>
+  )
+}
+
 /**
- * This component displays the header of the profile.
+ * This component displays the navigation bar of the profile.
  * 
  * It shows a back button and a logout button.
  */
-function ProfileHeader() {
+function ProfileNav() {
   async function onLogout() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -81,7 +239,7 @@ function ProfileHeader() {
   );
 }
 /**
- * This component renders the details of the user.
+ * This component renders the info of the user.
  * 
  * It displays the field for the email and the value.
  *  
@@ -91,9 +249,9 @@ function ProfileHeader() {
  * 
  * @testing use a mock user.
  */
-function ProfileBanner({
+function ProfileInfo({
   user
-}: ProfileBannerProps) {
+}: ProfileInfoProps) {
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.info}>
