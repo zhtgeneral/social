@@ -5,7 +5,7 @@ import { ImagePickerAsset } from "expo-image-picker";
 import { Comment, PostLike } from "@/types/supabase";
 
 export type UpsertPostData = {
-  file: ImagePickerAsset | null,
+  file: ImagePickerAsset | null | undefined,
   body: string,
   user_id: string
   id?: string
@@ -34,11 +34,6 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
 
     const { data, error } = await supabase
       .from('posts')
-      // .upsert({
-      //   file: file,
-      //   body: body,
-      //   user_id: userId
-      // })
       .upsert(post)
       .select()
       .single();

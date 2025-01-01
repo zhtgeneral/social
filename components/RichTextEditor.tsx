@@ -1,4 +1,5 @@
 import { theme } from '@/constants/theme'
+import React from 'react'
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor"
 

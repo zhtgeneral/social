@@ -7,9 +7,10 @@ import { theme } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { hp, wp } from '@/helpers/common';
 import { supabase } from '@/lib/Supabase';
+import { createNotification } from '@/services/notificationService';
 import { createComment, fetchPostDetails, removeComment, removePost } from '@/services/postService';
 import { getUserData } from '@/services/userService';
-import { Comment, Post } from '@/types/supabase';
+import { Comment, Notification, Post } from '@/types/supabase';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -207,6 +208,18 @@ function PostDetailsView({
   async function onDeletePost(post: Post) {
     const response = await removePost(post?.id);
     if (response.success) {
+      if (user.id !== post.userId) {
+        const notificationData: Notification = {
+          sender_id: user.id,
+          reciever_id: post.userId,
+          title: 'commented on your post',
+          data: JSON.stringify({
+            post_id: post.id,
+            comment_id: response?.data?.id
+          })
+        }
+        await createNotification(notificationData);
+      }
       router.back();
     } else {
       Alert.alert("Delete error", response?.message);
