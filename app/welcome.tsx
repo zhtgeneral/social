@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: hp(4),
     textAlign: 'center',
-    fontWeight: theme.fonts.extraBold as 800
+    fontWeight: theme.fonts.extraBold
   },
   punchline: {  
     textAlign: 'center',
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: { 
     color: theme.colors.primaryDark, 
-    fontWeight: theme.fonts.semibold as 600
+    fontWeight: theme.fonts.semibold
   }
 })
 

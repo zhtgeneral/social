@@ -91,7 +91,7 @@ export default function PostCard({
       router.push({
         pathname: '/postDetails',
         params: {
-          postId: item?.id
+          post_id: item?.id
         }
       })
     }
@@ -365,12 +365,12 @@ const styles = StyleSheet.create({
   username: {
     fontSize: hp(1.7),
     color: theme.colors.textDark,
-    fontWeight: theme.fonts.medium as 500
+    fontWeight: theme.fonts.medium
   },
   postTime: {
     fontSize: hp(1.4),
     color: theme.colors.textLight,
-    fontWeight: theme.fonts.medium as 500
+    fontWeight: theme.fonts.medium
   },
   content: {
     gap: 10

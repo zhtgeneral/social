@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: hp(4),
-    fontWeight: theme.fonts.bold as 700,
+    fontWeight: theme.fonts.bold,
     color: theme.colors.text
   },
   form: {
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     textAlign: 'right',
-    fontWeight: theme.fonts.semibold as 600,
+    fontWeight: theme.fonts.semibold,
     color: theme.colors.text
   },
   footer: {
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     color: theme.colors.primaryDark,
-    fontWeight: theme.fonts.semibold as 600
+    fontWeight: theme.fonts.semibold
   }
 })
 

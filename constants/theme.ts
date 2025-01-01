@@ -1,3 +1,5 @@
+type fontBoldness = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+
 export const theme = {
   colors: {
     primary: "#00C26F",
@@ -15,10 +17,10 @@ export const theme = {
     roseLight: "#F87171"
   },
   fonts: {
-    medium: 500,
-    semibold: 600,
-    bold: 700,
-    extraBold: 800
+    medium: 500 as fontBoldness,
+    semibold: 600 as fontBoldness,
+    bold: 700 as fontBoldness,
+    extraBold: 800 as fontBoldness
   },
   radius: {
     xs: 10,

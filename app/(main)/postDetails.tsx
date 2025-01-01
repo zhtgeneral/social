@@ -41,7 +41,7 @@ interface PostDetailsProps {
  * This improves testability of the rendered component.
  */
 export default function _PostDetailsController() {
-  const { postId } = useLocalSearchParams<{postId: string}>();
+  const { post_id: postId } = useLocalSearchParams<{post_id: string}>();
 
   const [init, setInit] = React.useState(false);
   const [post, setPost] = React.useState<Post | null>(null);
@@ -105,7 +105,7 @@ export default function _PostDetailsController() {
       }
       setInit(true);
       if (debugging) {
-        console.log("PostDetailsController::initPostDetails " + JSON.stringify(response, null, 2));
+        console.log("PostDetailsController::initPostDetails " + JSON.stringify(response.data, null, 2));
       }
     }
     /**
@@ -162,7 +162,13 @@ function PostDetailsView({
   setPost
 }: PostDetailsProps) {
   const { user } = useAuth();
-  const { postId } = useLocalSearchParams<{postId: string}>();
+  const { 
+    post_id: postId, 
+    comment_id: commentId 
+  } = useLocalSearchParams<{post_id: string, comment_id: string}>();
+
+  console.log("commentId: " + commentId);
+  console.log("postId: " + postId);
 
   const inputRef = React.useRef<TextInput>(null);
   const commentRef = React.useRef("");
@@ -182,7 +188,22 @@ function PostDetailsView({
     setLoading(false);
 
     if (response.success) {
-      // TODO send notification later
+      if (user.id !== formattedPost.user_id) {
+        const notificationData: Notification = {
+          sender_id: user.id,
+          reciever_id: formattedPost.user_id,
+          title: 'commented on your post',
+          data: JSON.stringify({
+            post_id: formattedPost.id,
+            comment_id: response?.data?.id
+          })
+        }
+        const notifcationResponse = await createNotification(notificationData);
+
+        if (debugging) {
+          console.log("notification response: " + JSON.stringify(notifcationResponse, null, 2))
+        }
+      }
       inputRef.current?.clear();
       commentRef.current = "";
     } else {
@@ -208,18 +229,6 @@ function PostDetailsView({
   async function onDeletePost(post: Post) {
     const response = await removePost(post?.id);
     if (response.success) {
-      if (user.id !== post.userId) {
-        const notificationData: Notification = {
-          sender_id: user.id,
-          reciever_id: post.userId,
-          title: 'commented on your post',
-          data: JSON.stringify({
-            post_id: post.id,
-            comment_id: response?.data?.id
-          })
-        }
-        await createNotification(notificationData);
-      }
       router.back();
     } else {
       Alert.alert("Delete error", response?.message);
@@ -276,15 +285,17 @@ function PostDetailsView({
           </View>
         <View style={{ marginVertical: 15, gap: 18 }}>
         {
-          formattedPost?.comments?.map((comment: Comment) => {
+          formattedPost?.comments?.map((c: Comment) => {
             /** can delete is true if the user is the owner of the post or the comment */
-            const canDelete = user?.id === formattedPost?.user_id || comment?.user_id === user?.id;
+            const canDelete = user?.id === formattedPost?.user_id || c?.user_id === user?.id;
+            const cid = c?.id?.toString();
             return (
               <CommentItem 
-                key={comment?.id?.toString()} 
-                item={comment} 
+                key={cid} 
+                item={c} 
                 canDelete={canDelete}
-                onDelete={onDeleteComment} />
+                onDelete={onDeleteComment} 
+                highlight={cid === commentId}/>
             )
           })
         }
@@ -338,7 +349,7 @@ const styles = StyleSheet.create({
   notFound: {
     fontSize: hp(2.5),
     color: theme.colors.text,
-    fontWeight: theme.fonts.medium as 500
+    fontWeight: theme.fonts.medium
   },
   loading: {
     height: hp(5.8),

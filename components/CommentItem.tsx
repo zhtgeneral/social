@@ -11,12 +11,14 @@ interface CommentItemProps {
   item: Comment,
   canDelete?: boolean,
   onDelete?: (comment: Comment) => void;
+  highlight?: boolean
 }
 
 export default function CommentItem({
   item,
   canDelete = false,
   onDelete = () => {},
+  highlight = false
 }: CommentItemProps) {
   const createdAt = moment(item?.created_at).format('MMM d');
   async function handleDelete() {
@@ -36,7 +38,7 @@ export default function CommentItem({
   return (
     <View style={styles.container}> 
       <Avatar uri={item?.user?.image} />
-      <View style={styles.content}>
+      <View style={[styles.content, highlight && styles.highlight]}>
         <View style={styles.subcontent}>
           <View style={styles.nameContainer}>
             <Text style={styles.text}>{item?.user?.name}</Text>
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: hp(1.6),
-    fontWeight: theme.fonts.medium as 500,
+    fontWeight: theme.fonts.medium,
     color: theme.colors.textDark
   }
 })

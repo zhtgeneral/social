@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: hp(2.5),
-    fontWeight: theme.fonts.semibold as 600,
+    fontWeight: theme.fonts.semibold,
     color: theme.colors.text,
     textAlign: 'center'
   },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: hp(2.2),
-    fontWeight: theme.fonts.semibold as 600,
+    fontWeight: theme.fonts.semibold,
     color: theme.colors.text
   },
   avatar: {
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   },
   publicText: {
     fontSize: hp(1.7),
-    fontWeight: theme.fonts.medium as 500,
+    fontWeight: theme.fonts.medium,
     color: theme.colors.textLight
   },
   media: {
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
   },
   addImageText: {
     fontSize: hp(1.9),
-    fontWeight: theme.fonts.semibold as 600,
+    fontWeight: theme.fonts.semibold,
     color: theme.colors.text
   },
   imageIcon: {

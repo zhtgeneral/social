@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: hp(3),
-    fontWeight: theme.fonts.medium as 500,
+    fontWeight: theme.fonts.medium,
     color: theme.colors.textDark
   },
   info: {
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: hp(1.6),
-    fontWeight: theme.fonts.medium as 500,
+    fontWeight: theme.fonts.medium,
     color: theme.colors.textLight
   },
   logoutButton: {

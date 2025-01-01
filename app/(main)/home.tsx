@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   title: {
     color: theme.colors.text,
     fontSize: hp(3.2),
-    fontWeight: theme.fonts.bold as 700
+    fontWeight: theme.fonts.bold
   },
   avatarImage: {
     height: hp(4.3),
@@ -437,6 +437,6 @@ const styles = StyleSheet.create({
   pillText: {
     color: "white",
     fontSize: hp(1.2),
-    fontWeight: theme.fonts.bold as 700
+    fontWeight: theme.fonts.bold
   }
 })

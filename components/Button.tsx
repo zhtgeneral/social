@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: hp(2.5),
     color: 'white',
-    fontWeight: theme.fonts.bold as 700
+    fontWeight: theme.fonts.bold
   }
 })
