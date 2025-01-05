@@ -9,7 +9,7 @@ import { hp, wp } from '@/helpers/common'
 import { supabase } from '@/lib/Supabase'
 import { fetchPostsAll } from '@/services/postService'
 import { getUserData } from '@/services/userService'
-import { Comment, Post, User } from '@/types/supabase'
+import { Comment, Notification, Post, User } from '@/types/supabase'
 import { 
   RealtimePostgresDeletePayload, 
   RealtimePostgresInsertPayload, 
@@ -35,11 +35,15 @@ var amount = 3;
 interface HomeProps {
   posts: Post[],
   hasMorePosts: boolean,
-  handleEnd: () => void
+  handleEnd: () => void,
+  numNotifications?: number
+  setNumNotification?: (value: number) => void;
 }
 
 interface HomeHeaderProps {
-  user: User
+  user: User,
+  numNotifications: number
+  setNumNotification: (value: number) => void;
 }
 
 /**
@@ -52,6 +56,7 @@ export default function _HomeController() {
   const { user } = useAuth();
   const [posts, setPosts] = React.useState<Post[]>([]);
   const [hasMorePosts, setHasMorePosts] = React.useState(true);
+  const [numNotifications, setNumNotifications] = React.useState(0);
 
   /**
    * This hook makes the home page responsive to any changes to uploaded posts
@@ -104,12 +109,23 @@ export default function _HomeController() {
       }, HomeControllerRealtime.handleDeleteCommentEvents)
       .subscribe();
 
+      const notificationChannelInsert = supabase
+      .channel(`notifications_${user?.id}_home_insert`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: `reciever_id=eq.${user?.id}`
+      }, HomeControllerRealtime.handleInsertNotificationEvent)
+      .subscribe();
+
     return () => {
       supabase.removeChannel(postChannelInsert);
       supabase.removeChannel(postChannelUpdate);
       supabase.removeChannel(postChannelDelete);
       supabase.removeChannel(commentChannelInsert);
       supabase.removeChannel(commentChannelDelete);
+      supabase.removeChannel(notificationChannelInsert);
     }
   }, []);
 
@@ -191,6 +207,12 @@ export default function _HomeController() {
             }
           })
         );
+      }
+    }
+    public static async handleInsertNotificationEvent(payload: RealtimePostgresInsertPayload<Notification>) {
+      if (HomeControllerRealtime.validateInsertEvent(payload)) {
+        console.log("got notification");
+        setNumNotifications(prev => prev + 1);
       }
     }
     
@@ -297,7 +319,10 @@ export default function _HomeController() {
     <HomeView 
       posts={posts}
       hasMorePosts={hasMorePosts}
-      handleEnd={HomeController.handleEnd} />
+      handleEnd={HomeController.handleEnd} 
+      numNotifications={numNotifications}
+      setNumNotification={(value: number) => setNumNotifications(value)}
+/>
   )
 }
 
@@ -314,7 +339,9 @@ export default function _HomeController() {
 function HomeView({
   posts,
   hasMorePosts,
-  handleEnd
+  handleEnd,
+  numNotifications = 0,
+  setNumNotification = (value: number) => {}
 }: HomeProps) {
   const { user } = useAuth();
 
@@ -344,7 +371,10 @@ function HomeView({
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
-        <HomeHeader user={user} />
+        <HomeHeader 
+          user={user} 
+          numNotifications={numNotifications} 
+          setNumNotification={setNumNotification}/>
         <FlatList
           data={posts}
           showsVerticalScrollIndicator={false}
@@ -366,19 +396,33 @@ function HomeView({
  * It displays the brand name.
  */
 function HomeHeader({
-  user
+  user,
+  numNotifications,
+  setNumNotification
 }: HomeHeaderProps) {
   const router = useRouter();
+
+  function onNotificationPress() {
+    setNumNotification(0);
+    router.push('/notifications');
+  }
   return (
     <View style={styles.header}>
       <Text style={styles.title}>Unlinkedout</Text>
       <View style={styles.icons}>
-        <Pressable onPress={() => router.push('/notifications')}>
+        <Pressable onPress={onNotificationPress}>
           <Icon 
             name="heart" 
             size={hp(3.2)} 
             strokeWidth={2} 
             stroke={theme.colors.text} />
+          {
+            numNotifications > 0 && (
+              <View style={styles.pill}>
+                <Text style={styles.pillText}>{numNotifications}</Text>
+              </View>
+            ) 
+          }
           </Pressable>
         <Pressable onPress={() => router.push('/newPost')}>
           <Icon 

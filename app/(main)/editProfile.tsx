@@ -18,7 +18,6 @@ import { updateUser } from '@/services/userService'
 import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
-import Avatar from '@/components/Avatar'
 
 const debugging = true;
 
