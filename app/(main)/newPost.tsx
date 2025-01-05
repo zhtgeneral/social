@@ -47,19 +47,20 @@ interface NewPostDisplayMediaProps {
 }
 
 /**
- * This page handles creating and editing a post.
+ * This page handles `/newPost`
  * 
- * It displays the header.
- * It displays the text editor allowing the user to enter rich text.
- * It displays an input to add media with images or videos.
- * 
- * If this component is in editing mode, it requires post to be on the search params.
+ * This component acts as the controller by supplying params into the view model for better testability.
  */
-export default function NewPostController() {
+export default function _NewPostController() {
   const post = useLocalSearchParams();
 
   const [loading, setLoading] = React.useState(false);
   const [file, setFile] = React.useState<ImagePickerAsset | null>(null);  
+
+  React.useEffect(() => {
+    console.log("_NewPostController:: current file: " + JSON.stringify(file, null, 2));
+  }, [file])
+
   return (
     <NewPostView 
       post={post}
@@ -71,6 +72,18 @@ export default function NewPostController() {
   )
 }
 
+/**
+ * This component allows creating and editing of posts.
+ * 
+ * It displays the header.
+ * It displays the text editor allowing the user to enter rich text.
+ * It displays an input to add media with images or videos.
+ * 
+ * If this component is in editing mode, it requires post to be on the search params.
+ * 
+ * @testing use mock post object instead of using params.
+ * 
+ */
 function NewPostView({
   post,
   loading,
@@ -88,6 +101,9 @@ function NewPostView({
 
   let type = getFileType(post?.file?.slice(-3).toString());
 
+  /**
+   * This hook prefills the fields with the post data during edit mode.
+   */
   React.useEffect(() => {
     if (editorLoaded && post.id) {      
       bodyRef.current = post.body.toString();           

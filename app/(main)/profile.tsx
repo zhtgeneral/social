@@ -252,21 +252,24 @@ function ProfileNav() {
 function ProfileInfo({
   user
 }: ProfileInfoProps) {
+  const email = user?.email;
+  const phone = user?.phone;
+  const bio = user?.bio;
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.info}>
         <Icon name="mail" size={20} color={theme.colors.textLight} /> 
-        <Text style={styles.infoText}>{user?.email}</Text>
+        <Text style={styles.infoText}>{email}</Text>
         </View>
-      {user?.phone && (
+      {phone && (
         <View style={styles.info}>
           <Icon name="phone" size={20} color={theme.colors.textLight} /> 
-          <Text style={styles.infoText}>{user.phone}</Text>
+          <Text style={styles.infoText}>{phone}</Text>
           </View>
         )}
-      {user?.bio && (
+      {bio && (
         <View style={styles.info}>
-          <Text style={styles.infoText}>About me: {user.bio}</Text>
+          <Text style={styles.infoText}>About me: {bio}</Text>
           </View>
         )}
     </View>

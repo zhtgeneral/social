@@ -24,7 +24,7 @@ import { stripHTMLTags } from '../helpers/common';
 import Avatar from './Avatar';
 import Loading from './Loading';
 
-const debugging = false;
+const debugging = true;
 
 interface PostCardProps {
   item: Post,
@@ -153,10 +153,6 @@ function PostCardHeader({
     ])
   }
 
-  if (debugging) {
-    console.log("PostCard::PostCardHeader got item: " + JSON.stringify(item, null, 2));
-  }
-
   return (
     <View style={styles.header}>
       <View style={styles.userInfo}> 
@@ -246,15 +242,11 @@ function PostCardFooter({
   numComments,
   openPostDetails
 }: PostCardFooterProps) {
-  const [likes, setLikes] = React.useState<PostLike[]>([]);
+  const [likes, setLikes] = React.useState<PostLike[]>(item?.postLikes);
   const [loading, setLoading] = React.useState(false);
 
-  const liked = likes?.filter((like: PostLike) => like.user_id === currentUser?.id)[0]? true: false;
-  const numLikes = (likes?.length)? likes.length: 0;
-
-  React.useEffect(() => {
-    setLikes(item?.postLikes);
-  }, [])
+  let liked = likes?.filter((l: PostLike) => l.user_id === currentUser?.id)[0]? true : false;
+  let numLikes = (likes?.length)? likes.length: 0;
 
   class PostCardFooterController {
     public static async onShare() {
@@ -295,7 +287,7 @@ function PostCardFooter({
       }
       const response = await createPostLike(data);
       if (response.success) {
-        setLikes([...likes, data]);
+        setLikes([...likes, response.data]);
       } else {
         Alert.alert("Post like error", "This post could not be liked");
       }

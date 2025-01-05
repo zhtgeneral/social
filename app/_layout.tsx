@@ -40,13 +40,14 @@ function MainLayout() {
       if (session) {
         setAuth(session?.user);
         updateUserData(session?.user);
-        router.replace('/home');
 
+        router.replace('/home');
         if (debugging) {
           console.log("MainLayout session user: " + JSON.stringify(session?.user, null, 2));
         }
       } else {
         setAuth(null);
+        
         router.replace('/welcome');
       }
     })    

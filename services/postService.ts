@@ -26,7 +26,7 @@ export async function createOrUpdatePost(post: UpsertPostData): Promise<CustomRe
       const folderName = isImage? 'postImages': 'postVideos';
       const fileResult = await uploadFile(folderName, file.uri, isImage);
       if (fileResult.success) {
-        file = fileResult.data;
+        post.file = fileResult.data;
       } else {
         return fileResult;
       }

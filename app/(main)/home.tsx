@@ -113,6 +113,10 @@ export default function _HomeController() {
     }
   }, []);
 
+  React.useEffect(() => {
+    console.log("HomeController new posts: " + JSON.stringify(posts, null, 2));
+  }, [posts]);
+
 
   class PostDataFormatter {
     /**
@@ -121,7 +125,8 @@ export default function _HomeController() {
     public static async formatNewPost(newPost: Post): Promise<Post> {
       const userAssignedPost = await PostDataFormatter.assignUserForPost(newPost);
       const commentsAssignedPost = PostDataFormatter.setCommentsForPost(userAssignedPost);
-      return commentsAssignedPost;
+      const postLikesAssignedPost = PostDataFormatter.setLikesForPost(commentsAssignedPost);
+      return postLikesAssignedPost;
     }
     /**
      * @requries newPost is newly added into Supabase and foreign key relation to user is valid.
@@ -149,6 +154,14 @@ export default function _HomeController() {
       const commentsAssignedPost = {...newPost};
       commentsAssignedPost.comments = [{ count: 0 }];
       return commentsAssignedPost;
+    }
+    /**
+     * @requires newPost is newly added into Supabase and has 0 likes.
+     */
+    private static async setLikesForPost(newPost: Post) {
+      const postLikesAssignedPost = {...newPost};
+      postLikesAssignedPost.postLikes = [];
+      return postLikesAssignedPost;
     }
   }
 
@@ -293,6 +306,8 @@ export default function _HomeController() {
  * 
  * It loads posts in chunks of `limit` and loads posts in real time from supabase.
  * 
+ * It shows comments added and deleted by current user in real time from supabase.
+ * 
  * @requires user needs to be logged in to get here.
  * @testing use mocks for post and hasMorePosts and keep handleEnd empty
  */
@@ -345,7 +360,7 @@ function HomeView({
 }
 
 /**
- * This component displays the header with actions for viewing liked posts,
+ * This component displays the header with actions for viewing notifications,
  * adding posts, and updating user info.
  * 
  * It displays the brand name.

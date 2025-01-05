@@ -12,7 +12,18 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 const increase = 3;
 const numNotifications = increase;
 
-export default function Notifications() {
+interface NotificationsViewProps {
+  notifications: Notification[]
+}
+
+/**
+ * This component handles `/notificiations`.
+ * 
+ * This component acts as a controller by passing params into the view model.
+ * 
+ * This improves the testability of the view component.
+ */
+export default function _NotificationsController() {
   const { user } = useAuth();
   
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
@@ -30,6 +41,19 @@ export default function Notifications() {
     }
   }
 
+  return <NotificationsView notifications={notifications} />;
+}
+
+/**
+ * It displays all the notifications.
+ * 
+ * If there are no notifications, it displays "Nothing to catch up on."
+ * 
+ * @testing pass in objects for notifications.
+ */
+function NotificationsView({
+  notifications
+}: NotificationsViewProps) {
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -39,8 +63,7 @@ export default function Notifications() {
             notifications.map((n: Notification) => (
               <NotificationItem 
                 key={n.id}
-                item={n}
-                />
+                item={n} />
             ))
           }
           {
@@ -51,7 +74,7 @@ export default function Notifications() {
         </ScrollView>
       </View>
     </ScreenWrapper>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

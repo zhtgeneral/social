@@ -17,23 +17,19 @@ import {
   View 
 } from 'react-native';
 
-/**
- * This page handles `/login`.
- * 
- * It shows a login form with 2 inputs and a login button.
- * 
- * When the form is submitted, 
- * it alerts the user of unfilled fields or possible errors.
- * 
- * Otherwise it triggers an auth change.
- * Because supabase is listening to this event in `_layout.tsx`,
- * the user will be redirected to `/home`.
- * 
- * @requires supabase.auth needs to be listening to `onAuthStateChange`
- */
-export default function Login() {
-  const router = useRouter();
+interface LoginViewProps {
+  loading: boolean
+  onSubmit: () => Promise<void>;
+  onPasswordChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+}
 
+/**
+ * This component handles `/login`.
+ * 
+ * It passes in params to make the view model testable.
+ */
+export default function _LoginController() {
   const emailRef = React.useRef("");
   const passwordRef= React.useRef("");
 
@@ -62,6 +58,14 @@ export default function Login() {
       }
       setLoading(false);
     }
+
+    public static onPasswordChange(value: string) {
+      passwordRef.current = value;
+    }
+
+    public static onEmailChange(value: string) {
+      emailRef.current = value;
+    }
   
     private static validateForm() {
       const email = emailRef.current.trim();
@@ -78,6 +82,39 @@ export default function Login() {
 
   }
   return (
+    <LoginView 
+      loading={loading} 
+      onEmailChange={LoginController.onEmailChange}
+      onPasswordChange={LoginController.onPasswordChange}
+      onSubmit={LoginController.onSubmit} />
+  );
+}
+
+/**
+ * This page handles `/login`.
+ * 
+ * It shows a login form with 2 inputs and a login button.
+ * 
+ * When the form is submitted, it alerts the user of unfilled fields or possible errors.
+ * 
+ * Otherwise it triggers an auth change.
+ * Because supabase is listening to this event in `_layout.tsx`,
+ * the user will be redirected to `/home`.
+ * 
+ * @requires supabase.auth needs to be listening to `onAuthStateChange`
+ * 
+ * @testing use empty function for onSubmit 
+ * @testing unique values for loading
+ * @testing make email, password and stubs for onPasswordChange, onEmailChange
+ */
+function LoginView({
+  loading,
+  onSubmit,
+  onPasswordChange,
+  onEmailChange,
+}: LoginViewProps) {
+  const router = useRouter();
+  return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark"/>
       <View style={styles.container}>
@@ -89,21 +126,19 @@ export default function Login() {
           </View>
         {/* Form */}
         <View style={styles.form}>
-          <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
-            Please login to continue
-          </Text>
+          <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>Please login to continue</Text>
           <Input 
             icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
             placeholder='Enter your email'
-            onChangeText={(value: string) => { emailRef.current = value }} />
+            onChangeText={(value: string) => onEmailChange(value)} />
           <Input 
             icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
             placeholder='Enter your password'
             secureTextEntry
-            onChangeText={(value: string) => { passwordRef.current = value }} />
+            onChangeText={(value: string) => onPasswordChange(value)} />
           {/* TODO */}
           <Text style={styles.forgotPassword}>Forgot password?</Text>
-          <Button title="Login" loading={loading} onPress={LoginController.onSubmit}/>
+          <Button title="Login" loading={loading} onPress={onSubmit}/>
           </View>
         {/* Footer */}
         <View style={styles.footer}>
@@ -114,7 +149,7 @@ export default function Login() {
         </View>
       </View>
     </ScreenWrapper>
-  );
+  )
 }
 
 const styles = StyleSheet.create({

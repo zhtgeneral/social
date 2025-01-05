@@ -18,28 +18,27 @@ import { updateUser } from '@/services/userService'
 import { User } from '@/types/supabase'
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
+import Avatar from '@/components/Avatar'
 
 const debugging = true;
 
+interface EditProfileViewProps {
+  loading: boolean
+  formData: User,
+  onSubmit: () => Promise<void>
+  updateFormData: (userData: any) => void;
+}
 
 interface EditProfilePictureProps {
   user: User,
   formData: User,
-  setFormData: React.Dispatch<any>
+  updateFormData: (userData: any) => void;
 }
 
 /**
- * This page handles `/editProfile`.
- * 
- * It displays the avatar, the input fields, and the save button.
- * 
- * When the inputs are changed, they change the form
- * but don't save to database or global state.
- * 
- * Only when the save button is pressed, does the database and global state
- * get changed.
+ * This component acts as a controller and passes params into the view model for better testability.
  */
-export default function EditProfile() {
+export default function _EditProfileController() {
   const { user, setUserData } = useAuth();
   const router = useRouter();
   
@@ -89,14 +88,8 @@ export default function EditProfile() {
       const imageDifferent = formData.image !== user.image;
   
       if (image && imageDifferent) {
-        if (debugging) {
-          console.log("EditProfileController::onSubmit: didn't expect this route (images should be the same)");
-        }
         updateResponse = await EditProfileController.handleUpdateImageAndUser(image, formData);
       } else {
-        if (debugging) {
-          console.log("EditProfileController::onSubmit: expected this route");
-        }
         updateResponse = await EditProfileController.handleUpdateUser(formData);
       }
       setLoading(false);
@@ -104,6 +97,9 @@ export default function EditProfile() {
       if (updateResponse.success) {
         router.back();
       }
+    }
+    public static updateFormData(userData: any) {
+      setFormData(userData);
     }
     /**
      * This function validates the updated data by throwing an error for empty inputs.
@@ -170,6 +166,39 @@ export default function EditProfile() {
   }
 
   return (
+    <EditProfileView 
+      loading={loading}
+      formData={formData}
+      onSubmit={EditProfileController.onSubmit}
+      updateFormData={EditProfileController.updateFormData} />
+  )
+}
+
+/**
+ * This page handles `/editProfile`.
+ * 
+ * It displays the avatar, the input fields, and the save button.
+ * 
+ * When the inputs are changed, they change the form
+ * but don't save to database or global state.
+ * 
+ * Only when the save button is pressed, does the database and global state get changed.
+ * 
+ * @requires user needs to be logged in
+ * 
+ * @testing make formData and updateFormData function
+ * @testing unique values for loading
+ * @testing empty onSubmit function
+ */
+function EditProfileView({
+  updateFormData,
+  formData,
+  loading,
+  onSubmit
+}: EditProfileViewProps) {
+  const { user } = useAuth();
+
+  return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }}>
@@ -177,42 +206,40 @@ export default function EditProfile() {
           <View style={styles.form}>
             <EditProfilePicture 
               user={user} 
-              setFormData={setFormData} 
+              updateFormData={updateFormData} 
               formData={formData} />  
-            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
-              Please fill your profile details
-              </Text>
+            <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>Please fill your profile details</Text>
             <Input 
               icon={<Icon name="user" />}
               placeholder='Enter your username'
               value={formData.name}
-              onChangeText={(value: string) => setFormData({ ...formData, name: value })} />
+              onChangeText={(value: string) => updateFormData({ ...formData, name: value })} />
             <Input 
               icon={<Icon name="phone" />}
               placeholder='Enter your phone number'
               value={formData.phone}
-              onChangeText={(value: string) => setFormData({ ...formData, phone: value })} />
+              onChangeText={(value: string) => updateFormData({ ...formData, phone: value })} />
             <Input 
               icon={<Icon name="location" />}
               placeholder='Enter your address'
               value={formData.address}
-              onChangeText={(value: string) => setFormData({ ...formData, address: value })} />
+              onChangeText={(value: string) => updateFormData({ ...formData, address: value })} />
             <Input 
               placeholder='Enter your bio'
               value={formData.bio}
               multiline={true}
               containerStyle={styles.bio}
-              onChangeText={(value: string) => setFormData({ ...formData, bio: value })} />
+              onChangeText={(value: string) => updateFormData({ ...formData, bio: value })} />
             <Button 
               title="Update" 
               loading={loading} 
-              onPress={EditProfileController.onSubmit} />
+              onPress={onSubmit} />
           </View>
         </ScrollView>
       </View>
     </ScreenWrapper>
   )
-}
+} 
 
 /**
  * This component displays the profile picture with a button to edit it.
@@ -220,8 +247,10 @@ export default function EditProfile() {
 function EditProfilePicture({
   user,
   formData,
-  setFormData
+  updateFormData
 }: EditProfilePictureProps) {
+  const [isLocalImage, setIsLocalImage] = React.useState(false);
+
   async function onPickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
@@ -230,14 +259,15 @@ function EditProfilePicture({
       quality: 1,
     });
     if (!result.canceled) {
-      setFormData({...user, image: result.assets[0].uri});
+      updateFormData({...user, image: result.assets[0].uri});
+      setIsLocalImage(true);
       
       if (debugging) {
         console.log("editProfile::EditProfilePicture formData: " + JSON.stringify(formData, null, 2));
       }
     } 
   }
-  let imageSource = (formData.image)? formData.image : getUserImageSource(user?.image);
+  let imageSource = (isLocalImage)? formData.image : getUserImageSource(user?.image);
   return (
     <View style={styles.avatarContainer}>
       <Image 

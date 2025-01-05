@@ -17,23 +17,18 @@ import {
   View
 } from 'react-native';
 
-/**
- * This page handles `/signup`.
- * 
- * It shows a form with 3 inputs and a sign up button.
- * 
- * When the form is submitted,
- * it alerts the user of any empty fields or possible errors.
- * 
- * Otherwise it triggers an auth change.
- * Because supabase is listening to this event in `_layout.tsx`,
- * the user will be redirected to `/home`.
- * 
- * @requires supabase.auth needs to be listening to `onAuthStateChange`
- */
-export default function SignUp() {
-  const router = useRouter();
+interface SignupViewProps {
+  onSubmit: () => Promise<void>
+  onNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  loading: boolean
+}
 
+/**
+ * This component passes params into the view model for better testability.
+ */
+export default function _SignupController() {
   const nameRef = React.useRef("");
   const emailRef = React.useRef("");
   const passwordRef = React.useRef("");
@@ -70,6 +65,15 @@ export default function SignUp() {
       }
       setLoading(false);
     }
+    public static onNameChange(value: string) {
+      nameRef.current = value;
+    }
+    public static onEmailChange(value: string) {
+      emailRef.current = value;
+    }
+    public static onPasswordChange(value: string) {
+      passwordRef.current = value;
+    }
     private static validateForm() {
       const name = nameRef.current.trim();
       const email = emailRef.current.trim();
@@ -86,6 +90,42 @@ export default function SignUp() {
     }
   }
   
+  return  (
+    <SignupView 
+      onSubmit={SignupController.onSubmit}
+      onNameChange={SignupController.onNameChange}
+      onEmailChange={SignupController.onEmailChange}
+      onPasswordChange={SignupController.onPasswordChange}
+      loading={loading}
+    />
+  )
+}
+
+/**
+ * This page handles `/signup`.
+ * 
+ * It shows a form with 3 inputs and a sign up button.
+ * 
+ * When the form is submitted, it alerts the user of any empty fields or possible errors.
+ * 
+ * Otherwise it triggers an auth change.
+ * Because supabase is listening to this event in `_layout.tsx`,
+ * the user will be redirected to `/home`.
+ * 
+ * @requires supabase.auth needs to be listening to `onAuthStateChange`
+ * 
+ * @testing use empty function for onSubmit
+ * @testing make name, email, password and create stubs for onNameChange, onEmailChange, onPasswordChange
+ * @testing unique values for loading variable
+ */
+function SignupView({
+  onSubmit,
+  onNameChange,
+  onEmailChange,
+  onPasswordChange,
+  loading
+}: SignupViewProps) {
+  const router = useRouter();
   return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark" />
@@ -103,20 +143,20 @@ export default function SignUp() {
           <Input
             icon={<Icon name="user" size={26} strokeWidth={1.6} />}
             placeholder='Enter your username'
-            onChangeText={(value: string) => { nameRef.current = value }} />
+            onChangeText={(value: string) => onNameChange(value)} />
           <Input
             icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
             placeholder='Enter your email'
-            onChangeText={(value: string) => { emailRef.current = value }} />
+            onChangeText={(value: string) => onEmailChange(value)} />
           <Input
             icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
             placeholder='Enter your password'
             secureTextEntry
-            onChangeText={(value: string) => { passwordRef.current = value }} />
+            onChangeText={(value: string) => onPasswordChange(value)} />
           <Button
             title="Sign up"
             loading={loading}
-            onPress={SignupController.onSubmit} />
+            onPress={onSubmit} />
         </View>
         {/* Footer */}
         <View style={styles.footer}>
@@ -127,7 +167,7 @@ export default function SignUp() {
           </View>
         </View>
       </ScreenWrapper>
-  );
+  )
 }
 
 const styles = StyleSheet.create({

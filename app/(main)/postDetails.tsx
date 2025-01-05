@@ -10,7 +10,7 @@ import { supabase } from '@/lib/Supabase';
 import { createNotification } from '@/services/notificationService';
 import { createComment, fetchPostDetails, removeComment, removePost } from '@/services/postService';
 import { getUserData } from '@/services/userService';
-import { Comment, Notification, Post } from '@/types/supabase';
+import { Comment, Notification, Post, User } from '@/types/supabase';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -34,11 +34,18 @@ interface PostDetailsProps {
   setPost: React.Dispatch<Post>
 }
 
+interface CommentsAreaProps {
+  comments: Comment[];
+  onDeleteComment:  (comment: Comment) => Promise<void>;
+  OpUserId: string,
+  userId: string
+}
+
 /**
  * This page handles `/postDetails/:postId`.
  * 
  * It renders the post details by supplying the view component with parameters.
- * This improves testability of the rendered component.
+ * This improves testability of the view model.
  */
 export default function _PostDetailsController() {
   const { post_id: postId } = useLocalSearchParams<{post_id: string}>();
@@ -284,31 +291,58 @@ function PostDetailsView({
           }
           </View>
         <View style={{ marginVertical: 15, gap: 18 }}>
-        {
-          formattedPost?.comments?.map((c: Comment) => {
-            /** can delete is true if the user is the owner of the post or the comment */
-            const canDelete = user?.id === formattedPost?.user_id || c?.user_id === user?.id;
-            const cid = c?.id?.toString();
-            return (
-              <CommentItem 
-                key={cid} 
-                item={c} 
-                canDelete={canDelete}
-                onDelete={onDeleteComment} 
-                highlight={cid === commentId}/>
-            )
-          })
-        }
-        {
-          (formattedPost?.comments?.length === 0) && (
-            <Text style={{ color: theme.colors.text, marginLeft: 5 }}>
-              Be the first to comment!
-            </Text>
-          )
-        }
+          <CommentsArea 
+            onDeleteComment={onDeleteComment}
+            OpUserId={formattedPost?.user_id}
+            comments={formattedPost?.comments}
+            userId={user?.id}
+            />
           </View>
         </ScrollView>
       </View>
+  )
+}
+
+/**
+ * This component renders the comments.
+ * 
+ * For each comment, if the id matches the comment_id on the params, it is highlighted.
+ * Otherwise it is displayed regularly.
+ * 
+ * If there are no comments, it shows "Be the first to comment!"
+ */
+function CommentsArea({
+  onDeleteComment,
+  userId,
+  OpUserId,
+  comments
+}: CommentsAreaProps) {
+  const { comment_id: commentId } = useLocalSearchParams<{comment_id: string}>();
+  return (
+    <>
+      {
+        comments?.map((c: Comment) => {
+          /** can delete is true if the user is the owner of the post or the comment */
+          const canDelete = (userId === OpUserId || c?.user_id === userId);
+          const cid = c?.id?.toString();
+          return (
+            <CommentItem 
+              key={cid} 
+              item={c} 
+              canDelete={canDelete}
+              onDelete={onDeleteComment} 
+              highlight={cid === commentId}/>
+          )
+        })
+      }
+      {
+        (comments?.length === 0) && (
+          <Text style={{ color: theme.colors.text, marginLeft: 5 }}>
+            Be the first to comment!
+          </Text>
+        )
+      }
+    </>
   )
 }
 
