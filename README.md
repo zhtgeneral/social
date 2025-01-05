@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+# Social media app
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+### What it does
 
-## Get started
+The mobile app allows users to create, like, share, and comment on posts and create personal profiles.
 
-1. Install dependencies
+The UI is styled for mobile devices and works in realtime.
 
-   ```bash
-   npm install
-   ```
+### How to recreate
 
-2. Start the app
+##### Third party steps
 
-   ```bash
-    npx expo start
-   ```
+Expo, React Native
 
-In the output, you'll find options to open the app in a
+- `npx create-expo-app@latest`
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Run app:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- run `npx expo start`
+- IOS on separate device:
+  - Download ExpoGO  
+  - Scan QR code
+- Virtual Android device:
+  - Download Android studio
+  - Add `C:\Users\<user>\AppData\Local\Android\Sdk\platform-tools` and `C:\Users\<user>\AppData\Local\Android\Sdk\emulator` to PATH env variable (restart required)
+  - Run with command `a` after expo has started
+- Web:
+  - TODO error. It says window not defined.
 
-## Get a fresh project
+Supabase:
 
-When you're ready, run:
+- Create project on Supabase dashboard
+- Setup database:
+  - `npm install supabase`
+  - `npx supabase login`
+  - `npx supabase init`
+  - Create schema and relations on Supabase dashboard
+  - `npx supabase gen types --lang=typescript --project-id "<project id>" --schema public > database.types.ts` ([example](/types/database.types.ts), [example](/types/supabase.d.ts))
 
-```bash
-npm run reset-project
-```
+- create Supabase instance
+  - `npm install @supabase/supabase-js`
+  - Copy and paste `supabase url` and `anon key` into environment variables
+  - setup auth ([example](/lib/Supabase.ts))
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- setup Auth:
+  - create global context for auth state, user state, and set function ([example](/context/AuthContext.tsx))
+  
 
-## Learn more
+##### The rest of the implementation
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Create loading states ([example](/components/Loading.tsx), [example](/app/index.tsx))
+- Create icons using online svgs ([example](/assets/icons/index.tsx), [example](/assets/icons/Heart.tsx))
+- Create backend services ([example](/services/imageService.ts), [example](/services/userService.ts))
+- Create realtime channels:
+  - Use supabase's `channel` `on` `subscribe` in a use effect hooks ([example](/app/(main)/home.tsx))
+  - Create handlers for payloads
+- Use MVP State management:
+  - Use controller component for handling states ([example](/app/(main)/postDetails.tsx))
+  - Use view component for handling view
+  - Use backend for handling model
+- Use `react-native-pell-rich-editor` for rich text editor
+- Use `expo-av` for videos (deprecated but works)
+- Use `moment` to format dates
+- Create custom theme ([example](/constants/theme.ts))
