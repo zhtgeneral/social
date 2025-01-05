@@ -44,6 +44,8 @@ Supabase:
 
 - setup Auth:
   - create global context for auth state, user state, and set function ([example](/context/AuthContext.tsx))
+
+- setup RLS for tables allowing all for authenticated (leave out RLS if reading deleted data in app is needed)
   
 
 ##### The rest of the implementation
