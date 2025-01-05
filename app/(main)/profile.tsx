@@ -43,8 +43,13 @@ interface ProfileInfoProps {
  */
 export default function Profile() {
   const { user } = useAuth();
+
   const [posts, setPosts] = React.useState<Post[]>([]);
   const [hasMorePosts, setHasMorePosts] = React.useState(true);
+
+  React.useEffect(() => {
+    ProfileController.getMorePosts();
+  }, [])
 
   React.useEffect(() => {
     const commentChannelInsert = supabase 
@@ -67,18 +72,27 @@ export default function Profile() {
         }, ProfileControllerRealtime.handleDeleteCommentEvents)
         .subscribe();
 
+      const postChannelDelete = supabase 
+      .channel(`posts_${user?.id}_profile_delete`)
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'posts',
+        filter: `user_id=eq.${user?.id}`
+      }, ProfileControllerRealtime.handleDeletePostEvents)
+      .subscribe();
+
+      // TODO this page needs to be responsive to likes being added and removed
+
       return () => {
         supabase.removeChannel(commentChannelInsert);
         supabase.removeChannel(commentChannelDelete);
+        supabase.removeChannel(postChannelDelete);
       }
   }, [])
 
-  React.useEffect(() => {
-    ProfileController.getMorePosts();
-  }, [])
-
   class ProfileControllerRealtime {
-    public static async handleDeleteCommentEvents(payload: RealtimePostgresDeletePayload<Comment>) {
+    public static handleDeleteCommentEvents(payload: RealtimePostgresDeletePayload<Comment>) {
       if (payload.old) {
         const postId = payload.old.post_id;
         setPosts((currentPosts: Post[]) =>
@@ -91,7 +105,7 @@ export default function Profile() {
         );
       }
     }
-    public static async handleInsertCommentEvents(payload: RealtimePostgresInsertPayload<Comment>) {
+    public static handleInsertCommentEvents(payload: RealtimePostgresInsertPayload<Comment>) {
       if (payload.new) {
         const postId = payload.new?.post_id;
         setPosts((currentPosts: Post[]) => 
@@ -104,6 +118,17 @@ export default function Profile() {
           })
         );
       }
+    }
+    public static handleDeletePostEvents(payload: RealtimePostgresDeletePayload<Post>) {
+      console.log("payload " + JSON.stringify(payload, null, 2))
+      // if (payload.old) {
+        console.log("deleted post realtime");
+        setPosts((previousPosts) => {
+          const deletedId = payload.old?.id;
+          const updatedPosts = previousPosts.filter((p: Post) => p.id !== deletedId);
+          return updatedPosts;
+        })
+      // }
     }
   }
 

@@ -211,7 +211,6 @@ export default function _HomeController() {
     }
     public static async handleInsertNotificationEvent(payload: RealtimePostgresInsertPayload<Notification>) {
       if (HomeControllerRealtime.validateInsertEvent(payload)) {
-        console.log("got notification");
         setNumNotifications(prev => prev + 1);
       }
     }
@@ -403,8 +402,11 @@ function HomeHeader({
   const router = useRouter();
 
   function onNotificationPress() {
-    setNumNotification(0);
+    markNotificationsRead();
     router.push('/notifications');
+  }
+  function markNotificationsRead() {
+    setNumNotification(0);
   }
   return (
     <View style={styles.header}>

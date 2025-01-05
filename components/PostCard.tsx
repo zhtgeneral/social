@@ -24,7 +24,7 @@ import { stripHTMLTags } from '../helpers/common';
 import Avatar from './Avatar';
 import Loading from './Loading';
 
-const debugging = true;
+const debugging = false;
 
 interface PostCardProps {
   item: Post,
