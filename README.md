@@ -25,7 +25,8 @@ Run app:
   - Add `C:\Users\<user>\AppData\Local\Android\Sdk\platform-tools` and `C:\Users\<user>\AppData\Local\Android\Sdk\emulator` to PATH env variable (restart required)
   - Run with command `a` after expo has started
 - Web:
-  - TODO error. It says window not defined.
+  - Set `"output": "single"` instead of `"output": "static"` in app.json ([example](/app.json))
+  - Run with command `w` after expo has started
 
 Supabase:
 
@@ -47,6 +48,22 @@ Supabase:
 
 - setup RLS for tables allowing all for authenticated (leave out RLS if reading deleted data in app is needed)
   
+Storybook:
+
+- `npx storybook@next init` to init
+- `npm install @storybook/react` to install dependencies
+- Create `metro.config.js`  (copy from this project `npx create-expo-app --template expo-template-storybook AwesomeStorybook`):
+  - Set `enabled` to check the `EXPO_PUBLIC_STORYBOOK_ENABLED` environment variable
+  - Set `onDisabledRemoveStorybook` to true ([example](/metro.config.js))
+- In app's default entry point, check if  `EXPO_PUBLIC_STORYBOOK_ENABLED` is true:
+  - If true, set the app entry point to Storybook's default export and call `registerRootComponent` on the entry point
+  - Otherwise export default the entry point and expo router automatically registers it as root component ([example](/app/index.tsx))
+- Create script to run visual unit tests in storybook:
+  - first `npm install cross-env`
+  - add `"storybook": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED='true' expo start"` in `package.json` under `"scripts"`
+- Create unit tests in `./.storybook` with file names as `*.stories.tsx`:
+  - Create meta object with the default values for the component's props
+  - Export objects for different variants of the component
 
 ##### The rest of the implementation
 

@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "storybook": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED='true' expo start",
+    "storybook-generate": "sb-rn-get-stories"
   },
   "jest": {
     "preset": "jest-expo"
@@ -20,6 +21,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@rneui/themed": "^4.0.0-rc.8",
+    "@storybook/react": "^8.5.0",
     "@supabase/supabase-js": "^2.47.10",
     "base64-arraybuffer": "^1.0.2",
     "expo": "^52.0.23",
@@ -56,10 +58,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@gorhom/bottom-sheet": "^5.0.6",
+    "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-community/slider": "^4.5.5",
+    "@storybook/addon-ondevice-actions": "^8.4.4",
+    "@storybook/addon-ondevice-controls": "^8.4.4",
+    "@storybook/react-native": "^8.4.4",
     "@types/jest": "^29.5.14",
     "@types/react": "~18.3.12",
     "@types/react-native": "^0.73.0",
     "@types/react-test-renderer": "^18.3.1",
+    "babel-loader": "^8.4.1",
     "eslint-plugin-import": "^2.31.0",
     "jest": "^29.7.0",
     "jest-expo": "~52.0.2",
