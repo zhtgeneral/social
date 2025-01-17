@@ -18,6 +18,8 @@ import {
 } from 'react-native';
 
 interface LoginViewProps {
+  email: string,
+  password: string,
   loading: boolean
   onSubmit: () => Promise<void>;
   onPasswordChange: (value: string) => void;
@@ -83,6 +85,8 @@ export default function _LoginController() {
   }
   return (
     <LoginView 
+      email={emailRef.current}
+      password={passwordRef.current}
       loading={loading} 
       onEmailChange={LoginController.onEmailChange}
       onPasswordChange={LoginController.onPasswordChange}
@@ -107,7 +111,9 @@ export default function _LoginController() {
  * @testing unique values for loading
  * @testing make email, password and stubs for onPasswordChange, onEmailChange
  */
-function LoginView({
+export function LoginView({
+  email,
+  password,
   loading,
   onSubmit,
   onPasswordChange,
@@ -130,9 +136,11 @@ function LoginView({
           <Input 
             icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
             placeholder='Enter your email'
+            value={email}
             onChangeText={(value: string) => onEmailChange(value)} />
           <Input 
             icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
+            value={password}
             placeholder='Enter your password'
             secureTextEntry
             onChangeText={(value: string) => onPasswordChange(value)} />

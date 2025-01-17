@@ -17,7 +17,10 @@ import {
   View
 } from 'react-native';
 
-interface SignupViewProps {
+export interface SignupViewProps {
+  name: string,
+  email: string,
+  password: string,
   onSubmit: () => Promise<void>
   onNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
@@ -92,6 +95,9 @@ export default function _SignupController() {
   
   return  (
     <SignupView 
+      name={nameRef.current}
+      email={emailRef.current}
+      password={passwordRef.current}
       onSubmit={SignupController.onSubmit}
       onNameChange={SignupController.onNameChange}
       onEmailChange={SignupController.onEmailChange}
@@ -118,7 +124,10 @@ export default function _SignupController() {
  * @testing make name, email, password and create stubs for onNameChange, onEmailChange, onPasswordChange
  * @testing unique values for loading variable
  */
-function SignupView({
+export function SignupView({
+  name,
+  email,
+  password,
   onSubmit,
   onNameChange,
   onEmailChange,
@@ -142,13 +151,16 @@ function SignupView({
             </Text>
           <Input
             icon={<Icon name="user" size={26} strokeWidth={1.6} />}
+            value={name}
             placeholder='Enter your username'
             onChangeText={(value: string) => onNameChange(value)} />
           <Input
+            value={email}
             icon={<Icon name="mail" size={26} strokeWidth={1.6} />}
             placeholder='Enter your email'
             onChangeText={(value: string) => onEmailChange(value)} />
           <Input
+            value={password}
             icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
             placeholder='Enter your password'
             secureTextEntry

@@ -29,6 +29,7 @@ import {
 import { RichEditor } from 'react-native-pell-rich-editor'
 
 interface NewPostViewProps {
+  user: User,
   post: Post,
   loading: boolean,
   file: ImagePickerAsset | null,
@@ -52,6 +53,7 @@ interface NewPostDisplayMediaProps {
  * This component acts as the controller by supplying params into the view model for better testability.
  */
 export default function _NewPostController() {
+  const { user } = useAuth();
   const post = useLocalSearchParams();
 
   const [loading, setLoading] = React.useState(false);
@@ -63,6 +65,7 @@ export default function _NewPostController() {
 
   return (
     <NewPostView 
+      user={user}
       post={post}
       loading={loading}
       file={file}
@@ -84,14 +87,14 @@ export default function _NewPostController() {
  * @testing use mock post object instead of using params.
  * 
  */
-function NewPostView({
+export function NewPostView({
+  user,
   post,
   loading,
   file,
   setLoading,
   setFile
 }: NewPostViewProps) {
-  const { user } = useAuth();
   const router = useRouter();
 
   const bodyRef = React.useRef("");

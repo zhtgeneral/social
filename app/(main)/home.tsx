@@ -32,7 +32,8 @@ const debugging = true;
 var numPosts = 3;
 var amount = 3;
 
-interface HomeProps {
+interface HomeViewProps {
+  user: User,
   posts: Post[],
   hasMorePosts: boolean,
   handleEnd: () => void,
@@ -316,6 +317,7 @@ export default function _HomeController() {
 
   return (
     <HomeView 
+      user={user}
       posts={posts}
       hasMorePosts={hasMorePosts}
       handleEnd={HomeController.handleEnd} 
@@ -335,15 +337,14 @@ export default function _HomeController() {
  * @requires user needs to be logged in to get here.
  * @testing use mocks for post and hasMorePosts and keep handleEnd empty
  */
-function HomeView({
+export function HomeView({
+  user,
   posts,
   hasMorePosts,
   handleEnd,
   numNotifications = 0,
   setNumNotification = (value: number) => {}
-}: HomeProps) {
-  const { user } = useAuth();
-
+}: HomeViewProps) {
   function renderItem(info: ListRenderItemInfo<Post>) {
     const post = info?.item;
     return (

@@ -27,6 +27,7 @@ import {
 const debugging = true;
 
 interface PostDetailsProps {
+  user: User,
   init: boolean,
   loading: boolean,
   formattedPost: Post,
@@ -48,6 +49,7 @@ interface CommentsAreaProps {
  * This improves testability of the view model.
  */
 export default function _PostDetailsController() {
+  const { user } = useAuth();
   const { post_id: postId } = useLocalSearchParams<{post_id: string}>();
 
   const [init, setInit] = React.useState(false);
@@ -140,6 +142,7 @@ export default function _PostDetailsController() {
   }
   return (
     <PostDetailsView 
+      user={user}
       init={init}
       loading={loading}
       formattedPost={post}      
@@ -161,14 +164,14 @@ export default function _PostDetailsController() {
  * 
  * If `loading` is true, the share button renders a loading icon and cannot be interacted with.
  */
-function PostDetailsView({
+export function PostDetailsView({
+  user,
   init,
   loading,
   formattedPost,  
   setLoading,
   setPost
 }: PostDetailsProps) {
-  const { user } = useAuth();
   const { 
     post_id: postId, 
     comment_id: commentId 

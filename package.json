@@ -24,6 +24,7 @@
     "@storybook/react": "^8.5.0",
     "@supabase/supabase-js": "^2.47.10",
     "base64-arraybuffer": "^1.0.2",
+    "cross-env": "^7.0.3",
     "expo": "^52.0.23",
     "expo-av": "~15.0.1",
     "expo-blur": "~14.0.1",

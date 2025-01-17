@@ -28,6 +28,12 @@ const debugging = true;
 const amount = 3;
 var numPosts = amount;
 
+interface ProfileViewProps {
+  user: User,
+  posts: Post[],
+  hasMorePosts: boolean,
+  handleEnd: () => void
+}
 interface ProfileMainProps {
   user: User
 }
@@ -171,15 +177,22 @@ export default function Profile() {
       setHasMorePosts(false);
     }
   }
+  return (
+    <ProfileView 
+      user={user}
+      posts={posts}
+      hasMorePosts={hasMorePosts}
+      handleEnd={ProfileController.handleEnd}
+    />
+  )
+}
 
-  function renderItem(info: ListRenderItemInfo<Post>) {
-    const post = info?.item;
-    return (
-      <PostCard 
-        item={post} 
-        currentUser={user} /> 
-    )
-  }
+export function ProfileView({
+  user,
+  posts,
+  hasMorePosts,
+  handleEnd
+}: ProfileViewProps) {
   function listFooter() {
     if (hasMorePosts) {
       return (
@@ -195,6 +208,14 @@ export default function Profile() {
       )
     }
   }
+  function renderItem(info: ListRenderItemInfo<Post>) {
+    const post = info?.item;
+    return (
+      <PostCard 
+        item={post} 
+        currentUser={user} /> 
+    )
+  }
   return (
     <ScreenWrapper bg="white" >
       <FlatList
@@ -205,7 +226,7 @@ export default function Profile() {
         contentContainerStyle={styles.listStyle}
         keyExtractor={(item: Post) => item?.id?.toString()}
         renderItem={renderItem}
-        onEndReached={ProfileController.handleEnd}
+        onEndReached={handleEnd}
         onEndReachedThreshold={0}
         ListFooterComponent={listFooter} />
     </ScreenWrapper>

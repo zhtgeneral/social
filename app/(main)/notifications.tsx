@@ -51,11 +51,11 @@ export default function _NotificationsController() {
  * 
  * @testing pass in objects for notifications.
  */
-function NotificationsView({
+export function NotificationsView({
   notifications
 }: NotificationsViewProps) {
   return (
-    <ScreenWrapper>
+    <ScreenWrapper bg='white'>
       <View style={styles.container}>
         <Header title="Notifications" />
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.listStyle}>

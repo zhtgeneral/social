@@ -22,6 +22,7 @@ import { useRouter } from 'expo-router'
 const debugging = true;
 
 interface EditProfileViewProps {
+  user: User,
   loading: boolean
   formData: User,
   onSubmit: () => Promise<void>
@@ -166,6 +167,7 @@ export default function _EditProfileController() {
 
   return (
     <EditProfileView 
+      user={user}
       loading={loading}
       formData={formData}
       onSubmit={EditProfileController.onSubmit}
@@ -189,14 +191,13 @@ export default function _EditProfileController() {
  * @testing unique values for loading
  * @testing empty onSubmit function
  */
-function EditProfileView({
+export function EditProfileView({
+  user,
   updateFormData,
   formData,
   loading,
   onSubmit
 }: EditProfileViewProps) {
-  const { user } = useAuth();
-
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
