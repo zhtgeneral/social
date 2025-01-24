@@ -9,11 +9,17 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "storybook": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED='true' expo start",
+    "env": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED='true'",
+    "storybook": "npm run env & expo start",
     "storybook-generate": "sb-rn-get-stories"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": [
+      "<rootDir>/jest.setup.js",
+      "dotenv/config"
+    ],
+    "setupFilesAfterEnv": ["dotenv/config"]
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
@@ -70,6 +76,7 @@
     "@types/react-native": "^0.73.0",
     "@types/react-test-renderer": "^18.3.1",
     "babel-loader": "^8.4.1",
+    "dotenv": "^16.4.7",
     "eslint-plugin-import": "^2.31.0",
     "jest": "^29.7.0",
     "jest-expo": "~52.0.2",

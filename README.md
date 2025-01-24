@@ -65,6 +65,15 @@ Storybook:
   - Create meta object with the default values for the component's props
   - Export objects for different variants of the component
 
+Jest:
+
+- Setup mocks:
+  - Create `jest.setup.js` file and call `"jest.mock('@<package>/<module>')"` to mock a library ([example](/jest.setup.js))
+  - In `package.json` or optional replacement `jest.config.js`, add `"<rootDir>/jest.setup.js"` under `setupFiles`. ([example](/package.json))
+  - Create `__mocks__\@<package>\<module>.js` file
+  - Export mocks as objects using default export ([example](/__mocks__/@react-native-async-storage/async-storage.js))
+- Setup ENV (TODO):
+
 ##### The rest of the implementation
 
 - Create loading states ([example](/components/Loading.tsx), [example](/app/index.tsx))
